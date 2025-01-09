@@ -1,0 +1,128 @@
+' BS-engine
+' Functional testing - example file  
+'
+'
+' Written by   : Nils Soedahl   Date : 26.06.2006
+' Modified by                   Date 
+'---------------------------------------------------------------------
+BEND STIFFENER DATA
+' ID                  NSEG
+' inner diameter      Number of linear segments
+  0.142                 3
+' LENGTH   NEL   OD1     OD2    DENSITY  LIN/NOLIN  EMOD/MAT-ID
+' (m)      (-)   (m)     (m)    (kg/m3)  (-)        (kPa)
+  0.650     6   1.092   1.092  2000     LIN       2050712.851  
+'  6.000    120   1.000   0.325  1150     NOLIN-CONE     Shore60D
+'  0.200      4   0.325   0.325  1150     NOLIN-CYLINDER Shore60D
+  6.807    120   1.092   0.199  1150     LIN       195000
+  0.100      4   0.199   0.199  1150     LIN       195000
+''  0.100      5    0.199  0.199  1150    nolin-cylinder Poly_linear 
+'  2.       40    0.5     0.4   1150    nolin-cone     Poly_60ShoreD 
+'  .4       4     0.4     0.4   1150    nolin-cylinder Poly_60ShoreD 
+'----------------------------------------------------------------------- 
+'
+Umbilical data
+'SRIS,  NEL  EI,      EA,    GT        Mass   
+' (m)   (-)  (kNm^2)  (kN)   (kNm^2))  (kg/m)
+ 3.0    60    28.0   448000  27.0     31.4   
+'
+' mandatory data group
+' -------------------------------------------------
+ELEMENT PRINT
+'NSPEC
+3
+'IEL1    IEL2
+1         9
+10        30
+70        80
+' -------------------------------------------------
+FE SYSTEM DATA TEST PRINT
+'IFSPRI 1/2
+1
+'2
+' -------------------------------------------------
+FE ANALYSIS PARAMETERS
+'
+'  finite element analysis parameters
+'
+'TOLNOR  MAXIT
+ 1.E-07  30
+'DSINC,DSMIN,DSMAX,
+'1.  0.1 10.
+ 5.  0.1 10.
+' 
+'----------------------------------------------
+CURVATURE RANGE
+'----------------------------------------------
+'CURMAX  - Maximum curvature 
+'NCURV   - Number of curvature levels
+'
+'CURMAX (1/m),NCURV
+'0.5       30
+'0.5       32
+ 0.3       100
+'---------------------------------------------------
+FORCE
+'Relang  tension
+'(deg)   (kN)
+  10.05   415.59
+'----------------------------------------------------
+MATERIAL DATA
+'----------------------------------------------------
+' Material identifier 
+Shore60D 
+'NMAT - Number of points in stress/strain table for BS material
+31
+' Data for Polyurethane, 60 Shore D 20 deg C Density, 1150 kg/m**3
+' strain   stress (kPa)    - Nmat input lines
+0       0.0 
+0.005  1352.330
+0.010  2562.594
+0.015  3597.093
+0.020  4476.971
+0.025  5221.674
+0.030  5849.021
+0.035  6375.264
+0.040  6815.156
+0.045  7182.014
+0.050  7487.784
+0.055  7743.107
+0.060  7957.381
+0.065  8138.830
+0.070  8294.565
+0.075  8430.650
+0.080  8552.170
+0.085  8663.288
+0.090  8767.319
+0.095  8866.789
+0.100  8963.500
+0.105  9058.598
+0.110  9152.634
+0.115  9245.632
+0.120  9337.152
+0.125  9426.357
+0.130  9512.072
+0.135  9592.856
+0.140  9667.063
+0.145  9732.907
+0.150  9788.528
+'----------------------------------------------------
+'MATERIAL DATA
+'----------------------------------------------------
+' Material identifier 
+'' Poly_linear 
+'NMAT - Number of points in stress/strain table for BS material
+'2
+' Data for Polyurethane, 60 Shore D 20 deg C Density, 1150 kg/m**3
+' strain   stress (Pa)    - Nmat input lines
+'0     0 
+'0.200 14.04e06
+'-----------------------------------------------------
+EXPORT MATERIAL DATA
+'--------------------------------------------------
+' IMEX   = 1 : tabular  =2 riflex format
+  1
+'---------------------------------------------
+end
+'mandatory data group
+'---------------------------------------------
