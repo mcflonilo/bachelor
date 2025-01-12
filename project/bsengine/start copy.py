@@ -420,50 +420,59 @@ def save_results_to_excel(results, filename, max_allowed_curvature):
     # Save the Excel file
     writer.close()
 
+
+import json
+import os
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+
 def printResults(threshold):
-    def generate_2d_array():
+    def generate_2d_arrays_by_case():
         # Load JSON data
         with open('40-results1.json') as f:
             results = json.load(f)
 
-        # Initialize rows, columns, and data storage
-        rows = []
-        cols = []
-        data = {}
+        # Initialize storage for case data
+        case_data = {}
 
-        # Process results to extract rows, columns, and map data
+        # Process results to group by case name
         for result in results:
             case_name = result['case_name']
             parts = case_name.split('-')
 
             if len(parts) >= 3:
-                row = float(parts[1])  # First number
-                col = float(parts[2])  # Second number
+                case_prefix = parts[0]  # First part is the case prefix
+                row = float(parts[1])  # Second part is row
+                col = float(parts[2])  # Third part is column
 
-                # Add unique rows and columns
-                if row not in rows:
-                    rows.append(row)
-                if col not in cols:
-                    cols.append(col)
+                if case_prefix not in case_data:
+                    case_data[case_prefix] = {"rows": set(), "cols": set(), "data": {}}
 
-                # Store data in a dictionary with (row, col) as key
-                data[(row, col)] = float(result['maximum_curvature'])
+                # Add rows, columns, and data
+                case_data[case_prefix]["rows"].add(row)
+                case_data[case_prefix]["cols"].add(col)
+                case_data[case_prefix]["data"][(row, col)] = float(result['maximum_curvature'])
 
-        # Sort rows and columns in ascending order
-        rows.sort()
-        cols.sort()
+        # Convert sets to sorted lists and prepare DataFrames
+        for case_prefix in case_data:
+            case_info = case_data[case_prefix]
+            case_info["rows"] = sorted(case_info["rows"])
+            case_info["cols"] = sorted(case_info["cols"])
 
-        # Generate 2D DataFrame
-        table_data = {
-            row: [data.get((row, col), None) for col in cols]
-            for row in rows
-        }
-        df = pd.DataFrame.from_dict(table_data, orient='index', columns=cols)
+            # Generate DataFrame
+            case_info["df"] = pd.DataFrame(
+                {
+                    col: [case_info["data"].get((row, col), None) for col in case_info["cols"]]
+                    for row in case_info["rows"]
+                },
+                index=case_info["rows"],
+                columns=case_info["cols"],
+            )
 
-        # Return rows, cols, data, and DataFrame
-        return rows, cols, data, df
+        return case_data
 
-    def export_to_excel(df, file_name='curvature_data.xlsx'):
+    def export_to_excel(df, file_name, threshold):
         # Save the DataFrame to an Excel file
         df.to_excel(file_name, sheet_name='Curvature Data', index_label='Row')
 
@@ -489,15 +498,20 @@ def printResults(threshold):
         wb.save(file_name)
         print(f"Data exported to {file_name} with conditional formatting.")
 
-    # Generate the 2D array and print it
-    rows, cols, data, df = generate_2d_array()
-    print("Generated 2D Array:")
-    print(df)
+    # Generate 2D arrays for each case
+    case_data = generate_2d_arrays_by_case()
 
-    # Export the 2D array to Excel
-    export_to_excel(df)
+    # Create output directory
+    output_dir = "output_excel_files/case_files"
+    os.makedirs(output_dir, exist_ok=True)
 
-
+    x = 0
+    # Export each case to its own Excel file
+    for case_prefix, case_info in case_data.items():
+        x+=1
+        print(f"Processing case: {case_prefix}")
+        file_name = os.path.join(output_dir, f"{x}_curvature_data.xlsx")
+        export_to_excel(case_info["df"], file_name, threshold)
 # Create the main window
 root = tk.Tk()
 root.title("GUI with Buttons and Input Fields")
