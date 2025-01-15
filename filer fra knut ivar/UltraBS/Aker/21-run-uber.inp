@@ -1,0 +1,12 @@
+RUN
+JOBS
+bsengine-cases.txt
+END JOBS
+NCPUS=32
+DLY=1000
+RIFLEXPATH=.\exe
+WORKINGFOLDER=.\
+CMD
+22-run-bsengine.bat $1
+END CMD
+END RUN
