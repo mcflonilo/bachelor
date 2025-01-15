@@ -1,11 +1,12 @@
- Volume in drive C is System
- Volume Serial Number is 628E-E8C1
+ Volume in drive C is OS
+ Volume Serial Number is 124E-4587
 
- Directory of C:\Users\lmoph\Desktop\github\bachelor\project\bsengine
+ Directory of C:\Users\lmoph\OneDrive\Skrivebord\git_repos\bachelor\project\bsengine
 
-12.01.2025  18:19    <DIR>          output_excel_files
-12.01.2025  16:57    <DIR>          case_files
-09.01.2025  16:11    <DIR>          .
-09.01.2025  16:10    <DIR>          ..
+01/13/2025  09:57 AM    <DIR>          test
+01/13/2025  09:53 AM    <DIR>          output_excel_files
+01/13/2025  09:53 AM    <DIR>          case_files
+01/13/2025  09:53 AM    <DIR>          ..
+01/13/2025  09:53 AM    <DIR>          .
                0 File(s)              0 bytes
-               4 Dir(s)  594ÿ488ÿ270ÿ848 bytes free
+               5 Dir(s)  319,687,172,096 bytes free
