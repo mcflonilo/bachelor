@@ -361,10 +361,10 @@ def generate_case_files(length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, M
 def main():
     BSParams1 = BSParams(1, 0.5, 0.2, 0.1, 0.05, 0.01, [60, 60], ['60D_15', '60D_30'])
     RiserParams1 = RiserParams(100, 100, 100, 100, 100)
-    generate_case_files(RiserParams1.length, RiserParams1.EA, RiserParams1.EI, RiserParams1.GT, RiserParams1.m, [8, 16.5, 19, 19.1, 18.6, 17.5, 14], BSParams1.ID, BSParams1.SL, BSParams1.OD, BSParams1.CL, BSParams1.TL, BSParams1.TOD, BSParams1.MAT, BSParams1.MATID)
-    #run_threads() #running the threads will create a lot of log files, which will be used to create the csv file.
-    #createCSVResultFile('testbsengine-cases.txt', 'testbsengine-summary.csv') #creates the csv file that is used to create the excel file.
-    #save_results_to_excel('testbsengine-summary.csv', 'testbsengine-summary.xlsx', 0.0417592324286036) #creates the excel file with conditional formatting.
+    #generate_case_files(RiserParams1.length, RiserParams1.EA, RiserParams1.EI, RiserParams1.GT, RiserParams1.m, [8, 16.5, 19, 19.1, 18.6, 17.5, 14], BSParams1.ID, BSParams1.SL, BSParams1.OD, BSParams1.CL, BSParams1.TL, BSParams1.TOD, BSParams1.MAT, BSParams1.MATID)
+    run_threads() #running the threads will create a lot of log files, which will be used to create the csv file.
+    createCSVResultFile('testbsengine-cases.txt', 'testbsengine-summary.csv') #creates the csv file that is used to create the excel file.
+    save_results_to_excel('testbsengine-summary.csv', 'testbsengine-summary.xlsx', 0.0417592324286036) #creates the excel file with conditional formatting.
 
 main()
 
