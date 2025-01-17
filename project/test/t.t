@@ -7,4 +7,4 @@
 16.01.2025  10:13    <DIR>          .
 16.01.2025  10:13    <DIR>          ..
                0 File(s)              0 bytes
-               3 Dir(s)  589ÿ574ÿ897ÿ664 bytes free
+               3 Dir(s)  582ÿ030ÿ331ÿ904 bytes free

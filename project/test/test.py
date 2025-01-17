@@ -7,17 +7,95 @@ import re
 import csv
 import pandas as pd
 from openpyxl.styles import PatternFill
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
+import tkinter as tk
+import logging
 
+######################################################
+# INPUT UMBILICAL DATA
+length = 5.0  # length of the umbilical outside the BS SRIS
+#NREL MANGLER???
+EA = 1040000  # Axial stiffness [kN]
+EI = 185.0    # Bending stiffness [kNm2]
+GT = 143.0    # Torsional stiffness [kNm2]
+m = 88.4      # Mass per unit length [kg/m]
+umbilical_outer_diameter = 0.22  # outer diameter of the umbilical
+#####################################################
+
+#####################################################
+# INPUT LOAD CASES
+
+cases = ['4.0  550.0', '18.0  650.0', '23.0  750.0', '23.0  850.0', '16.0  1000.0', '10.0  1050.0', '2.0  1100.0']
+#cases = ['4.0  550.0', '18.0  650.0']
+# cases = ['15.0  470.0', '20.0  490.0', '25.0  700.0', '26.0  800.0', '25.0  930.0', '20.0  1020.0', '5.0  1140.0']
+#cases = ['23.0  850.0']
+#####################################################
+
+#####################################################
+# INPUT BS DIMENSIONS TO CALCULATE RESPONSE FOR
+ODtolerance = 0.003
+ODClearance = 0.010
+ID = umbilical_outer_diameter+ODtolerance+(2*ODClearance) # inner diameter
+#NSEG = 3 # number of segments
+SL = 0.700 # segment length
+#NSEL = 50 # number of elements
+OD = ['1.559'] # ['1.559'] # ['1.409', '1.434', '1.459', '1.484', '1.509', '1.534', '1.559', '1.584', '1.609', '1.634', '1.659']  # ['1.534'] #, '0.250', '0.300', '0.350', '0.400', '0.450', '0.500', '0.550', '0.600', '0.650', '0.700', '0.750', '0.800', '0.850', '0.900', '0.950', '1.000', '1.050', '1.100', '1.150', '1.200']
+#OD2 
+CL = ['12.799'] # ['12.799'] #['11.299', '11.549', '11.799', '12.049', '12.299', '12.549', '12.799', '13.049', '13.299', '13.549', '13.799']  # ['12.594'] #, '1.75', '2.00', '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00']
+#cone length
+TL = 0.150 #tip length
+TOD = ID+0.04 #tip outer diameter
+MAT = ['NOLIN  60D_30'] #250000'] #, 'LIN  162300', 'NOLIN  60D-15deg', 'NOLIN  60D-30.8deg']
+MATID = ['60D_30'] #, '162300', '60D-15deg', '60D-30.8deg']
+
+thresholds = {
+        "case_files\\Case1": {"maximum_bs_curvature": 0.055835668, "maximum_curvature": 0.055835668},
+        "case_files\\Case2": {"maximum_bs_curvature": 0.051167134, "maximum_curvature": 0.051167134},
+        "case_files\\Case3": {"maximum_bs_curvature": 0.046473762, "maximum_curvature": 0.046473762},
+        "case_files\\Case4": {"maximum_bs_curvature": 0.041759232, "maximum_curvature": 0.041759232},
+        "case_files\\Case5": {"maximum_bs_curvature": 0.034737267, "maximum_curvature": 0.034737267},
+        "case_files\\Case6": {"maximum_bs_curvature": 0.032398017, "maximum_curvature": 0.032398017},
+        "case_files\\Case7": {"maximum_bs_curvature": 0.030050334, "maximum_curvature": 0.030050334},
+    }
+
+#bslength = sl + cl + tl
+#####################################################
 
 class BSParams:
-    def __init__(self, ID, SL, OD, CL, TL, TOD, MAT, MATID):
-        self.ID = ID
+    def __init__(self, 
+                 ODtolerance=0.003, 
+                 ODClearance=0.010, 
+                 umbilical_outer_diameter=0.22,  # Default example value
+                 SL=0.700, 
+                 OD=['1.559'], 
+                 CL=['12.799'], 
+                 TL=0.150, 
+                 MAT=['NOLIN  60D_30'], 
+                 MATID=['60D_30']):
+        """
+        Initialize BSParams with default or user-specified values.
+
+        Parameters:
+        - ODtolerance (float): Outer diameter tolerance
+        - ODClearance (float): Outer diameter clearance
+        - umbilical_outer_diameter (float): Umbilical's outer diameter
+        - SL (float): Segment length
+        - OD (list): List of outer diameters
+        - CL (list): List of cone lengths
+        - TL (float): Tip length
+        - MAT (list): List of materials
+        - MATID (list): List of material IDs
+        """
+        self.ODtolerance = ODtolerance
+        self.ODClearance = ODClearance
+        self.umbilical_outer_diameter = umbilical_outer_diameter
+        self.ID = (self.umbilical_outer_diameter + self.ODtolerance + 
+                   (2 * self.ODClearance))  # Inner diameter
         self.SL = SL
         self.OD = OD
         self.CL = CL
         self.TL = TL
-        self.TOD = TOD
+        self.TOD = self.ID + 0.04  # Tip outer diameter
         self.MAT = MAT
         self.MATID = MATID
 
@@ -29,6 +107,15 @@ class RiserParams:
         self.GT = GT
         self.m = m
 
+    def __init__(self):
+        self.length = 5.0
+        self.EA = 1040000
+        self.EI = 185.0
+        self.GT = 143.0
+        self.m = 88.4
+        self.umbilicalOD = 0.22
+
+
 def runBSEngine(case, case_queue):
         current_directory = os.getcwd()
         process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
@@ -39,8 +126,25 @@ def runBSEngine(case, case_queue):
             print(f"Error encountered with case: {case}. Re-queuing the case.")
             case_queue.put(case)
 
+def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, incrementSize_fieldWidth):
+    cl = min_cl
+    od = min_od
+    cl_array = []
+    od_array = []
+    while cl <= max_cl:
+        cl_array.append(round(cl, 3))
+        cl += incrementSize_fieldLength
+    while od <= max_od:
+        od_array.append(round(od, 3))
+        od += incrementSize_fieldWidth
+
+    print(cl_array)
+    print(od_array)
+
+    return cl_array, od_array
+    
 def createCaseQueue():
-    cases = open('testbsengine-cases.txt', 'r').readlines()
+    cases = open('bsengine-cases.txt', 'r').readlines()
     cases = [case.strip() for case in cases]
     case_queue = Queue()
     for case in cases:
@@ -124,81 +228,89 @@ def createCSVResultFile(case_list_file, summary_file_name):
     except Exception as e:
         print(f"Error processing {case_list_file}: {e}")
 
-def save_results_to_excel(csv_file, excel_file, threshold):
-    def generate_2d_array():
-        # Load CSV data
-        df = pd.read_csv(csv_file)
 
-        # Initialize rows, columns, and data storage
-        rows = []
-        cols = []
-        data = {}
 
-        # Process results to extract rows, columns, and map data
-        for _, result in df.iterrows():
-            case_name = result['case_name']
-            parts = case_name.split('-')
+def save_results_to_excel(csv_file, excel_file, thresholds):
+    def sanitize_sheet_name(sheet_name):
+        """
+        Sanitize the sheet name to ensure it is valid for Excel.
+        """
+        sanitized_name = re.sub(r'[\\/*?:\[\]]', '_', sheet_name)
+        return sanitized_name[:31]  # Truncate to 31 characters
 
-            if len(parts) >= 3:
-                row = float(parts[1])  # First number
-                col = float(parts[2])  # Second number
+    def parse_case_name(case_name):
+        """
+        Extract the base case name (e.g., "case_files\\Case1") and additional numerical values.
+        """
+        match = re.match(r'(case_files\\Case\d+)-([\d.]+)-([\d.]+)-(.+)', case_name)
+        if match:
+            base_name = match.group(1)  # "case_files\\CaseX"
+            row_val = float(match.group(2))  # First number
+            col_val = float(match.group(3))  # Second number
+            return base_name, row_val, col_val
+        return None, None, None
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-                # Add unique rows and columns
-                if row not in rows:
-                    rows.append(row)
-                if col not in cols:
-                    cols.append(col)
+    # Ensure thresholds is a dictionary
+    if not isinstance(thresholds, dict):
+        raise ValueError("Thresholds must be provided as a dictionary with case names as keys.")
 
-                # Store data in a dictionary with (row, col) as key
-                data[(row, col)] = float(result['maximum_curvature'])
+    # Read the CSV file
+    df = pd.read_csv(csv_file)
 
-        # Sort rows and columns in ascending order
-        rows.sort()
-        cols.sort()
+    # Create 'col_val' and 'row_val' columns by parsing 'case_name'
+    df['base_name'], df['row_val'], df['col_val'] = zip(*df['case_name'].apply(parse_case_name))
 
-        # Generate 2D DataFrame
-        table_data = {
-            row: [data.get((row, col), None) for col in cols]
-            for row in rows
-        }
-        df = pd.DataFrame.from_dict(table_data, orient='index', columns=cols)
+    # Create a Pandas Excel writer using openpyxl as the engine
+    writer = pd.ExcelWriter(excel_file, engine='openpyxl')
+    workbook = writer.book
 
-        # Return rows, cols, data, and DataFrame
-        return rows, cols, data, df
+    # Group data by base case name
+    case_groups = df.groupby('base_name')
 
-    def export_to_excel(df, file_name):
-        # Save the DataFrame to an Excel file
-        df.to_excel(file_name, sheet_name='Curvature Data', index_label='Row')
+    for base_name, group in case_groups:
+        if base_name not in thresholds:
+            logging.warning(f"No threshold found for case: {base_name}")
+            continue
+        threshold = thresholds[base_name]
 
-        # Apply conditional formatting
-        wb = load_workbook(file_name)
-        sheet = wb['Curvature Data']
+        # Sanitize sheet name and create sheet
+        sanitized_name = sanitize_sheet_name(base_name)
+        if sanitized_name not in workbook.sheetnames:
+            sheet = workbook.create_sheet(title=sanitized_name)
+        else:
+            sheet = workbook[sanitized_name]
 
-        # Define color fills
+        # Log the threshold being applied
+        logging.info(f"Exporting case: {base_name}, Threshold: {threshold}")
+
+        # Write headers
+        sheet.cell(row=1, column=1, value="Row\\Col")
+        cols = group['col_val'].unique()
+        rows = group['row_val'].unique()
+        for idx, col in enumerate(cols, start=2):
+            sheet.cell(row=1, column=idx, value=col)
+        for idx, row in enumerate(rows, start=2):
+            sheet.cell(row=idx, column=1, value=row)
+
+        # Write data and apply conditional formatting
         green_fill = PatternFill(start_color='00FF00', end_color='00FF00', fill_type='solid')
         red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
 
-        # Loop through DataFrame values and apply formatting
-        for row_idx, row in enumerate(df.itertuples(index=False), start=2):  # Data starts at Excel row 2
-            for col_idx, value in enumerate(row, start=2):  # Data starts at Excel column B
-                if value is not None:
-                    cell = sheet.cell(row=row_idx, column=col_idx)
-                    if value < threshold:
-                        cell.fill = green_fill
-                    else:
-                        cell.fill = red_fill
+        for _, row in group.iterrows():
+            row_idx = rows.tolist().index(row['row_val']) + 2
+            col_idx = cols.tolist().index(row['col_val']) + 2
+            cell = sheet.cell(row=row_idx, column=col_idx, value=row['maximum_bs_curvature'])
 
-        # Save the workbook
-        wb.save(file_name)
-        print(f"Data exported to {file_name} with conditional formatting.")
+            # Apply formatting
+            if row['maximum_bs_curvature'] < threshold['maximum_bs_curvature']:
+                cell.fill = green_fill
+            else:
+                cell.fill = red_fill
 
-    # Generate the 2D array and print it
-    rows, cols, data, df = generate_2d_array()
-    print("Generated 2D Array:")
-    print(df)
-
-    # Export the 2D array to Excel
-    export_to_excel(df, excel_file)
+    # Save the Excel file
+    writer.close()
 
 def generate_case_files(length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID):
     inp1 = open('bsengine-cases.txt', 'w')
@@ -357,14 +469,179 @@ def generate_case_files(length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, M
 
     inp.close()
     inp1.close()
+       
+def makeGui():
+        # Create the main window
+        root = tk.Tk()
+        root.title("GUI with Buttons and Input Fields")
+
+        # Create a frame for umbilical parameters
+        umbilical_frame = tk.LabelFrame(root, text="Umbilical Parameters", padx=10, pady=10)
+        umbilical_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        # Create input fields and labels for umbilical parameters
+        length_field = tk.Entry(umbilical_frame, width=50)
+        length_field.insert(0, str(length))
+        length_field.grid(row=0, column=1, padx=10, pady=10)
+        length_label = tk.Label(umbilical_frame, text="Length:")
+        length_label.grid(row=0, column=0, padx=10, pady=10)
+
+        ea_field = tk.Entry(umbilical_frame, width=50)
+        ea_field.insert(0, str(EA))
+        ea_field.grid(row=1, column=1, padx=10, pady=10)
+        ea_label = tk.Label(umbilical_frame, text="EA:")
+        ea_label.grid(row=1, column=0, padx=10, pady=10)
+
+        ei_field = tk.Entry(umbilical_frame, width=50)
+        ei_field.insert(0, str(EI))
+        ei_field.grid(row=2, column=1, padx=10, pady=10)
+        ei_label = tk.Label(umbilical_frame, text="EI:")
+        ei_label.grid(row=2, column=0, padx=10, pady=10)
+
+        gt_field = tk.Entry(umbilical_frame, width=50)
+        gt_field.insert(0, str(GT))
+        gt_field.grid(row=3, column=1, padx=10, pady=10)
+        gt_label = tk.Label(umbilical_frame, text="GT:")
+        gt_label.grid(row=3, column=0, padx=10, pady=10)
+
+        m_field = tk.Entry(umbilical_frame, width=50)
+        m_field.insert(0, str(m))
+        m_field.grid(row=4, column=1, padx=10, pady=10)
+        m_label = tk.Label(umbilical_frame, text="Mass per unit length:")
+        m_label.grid(row=4, column=0, padx=10, pady=10)
+
+        # Create a frame for load cases
+        cases_frame = tk.LabelFrame(root, text="Load Cases", padx=10, pady=10)
+        cases_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        # Create input field and label for load cases
+        cases_field = tk.Entry(cases_frame, width=50)
+        cases_field.insert(0, ', '.join(cases))
+        cases_field.grid(row=0, column=1, padx=10, pady=10)
+        cases_label = tk.Label(cases_frame, text="Cases:")
+        cases_label.grid(row=0, column=0, padx=10, pady=10)
+
+        # Create a frame for other parameters
+        other_params_frame = tk.LabelFrame(root, text="BS dimensions", padx=10, pady=10)
+        other_params_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        # Create input fields and labels for other parameters
+        min_length_field = tk.Entry(other_params_frame, width=50)
+        min_length_field.grid(row=8, column=1, padx=10, pady=10)
+        min_length_field.insert(0, str(11.299))
+        min_length_label = tk.Label(other_params_frame, text="Min Length:")
+        min_length_label.grid(row=8, column=0, padx=10, pady=10)
+
+        max_length_field = tk.Entry(other_params_frame, width=50)
+        max_length_field.grid(row=9, column=1, padx=10, pady=10)
+        max_length_field.insert(0, str(13.799))
+        max_length_label = tk.Label(other_params_frame, text="Max Length:")
+        max_length_label.grid(row=9, column=0, padx=10, pady=10)
+
+        min_diameter_field = tk.Entry(other_params_frame, width=50)
+        min_diameter_field.grid(row=10, column=1, padx=10, pady=10)
+        min_diameter_field.insert(0, str(1.409))
+        min_diameter_label = tk.Label(other_params_frame, text="Min Diameter:")
+        min_diameter_label.grid(row=10, column=0, padx=10, pady=10)
+
+        max_diameter_field = tk.Entry(other_params_frame, width=50)
+        max_diameter_field.grid(row=11, column=1, padx=10, pady=10)
+        max_diameter_field.insert(0, str(1.659))
+        max_diameter_label = tk.Label(other_params_frame, text="Max Diameter:")
+        max_diameter_label.grid(row=11, column=0, padx=10, pady=10)
+
+        incrementSize_fieldLength = tk.Entry(other_params_frame, width=50)
+        incrementSize_fieldLength.grid(row=12, column=1, padx=10, pady=10)
+        incrementSize_fieldLength.insert(0, str(0.25))
+        incrementSize_labelLength = tk.Label(other_params_frame, text="Increment size length:")
+        incrementSize_labelLength.grid(row=12, column=0, padx=10, pady=10)
+
+        incrementSize_fieldWidth = tk.Entry(other_params_frame, width=50)
+        incrementSize_fieldWidth.grid(row=13, column=1, padx=10, pady=10)
+        incrementSize_fieldWidth.insert(0, str(0.025))
+        incrementSize_labelWidth = tk.Label(other_params_frame, text="Increment size width:")
+        incrementSize_labelWidth.grid(row=13, column=0, padx=10, pady=10)
+
+        id_field = tk.Entry(other_params_frame, width=50)
+        id_field.insert(0, str(ID))
+        id_field.grid(row=0, column=1, padx=10, pady=10)
+        id_label = tk.Label(other_params_frame, text="ID:")
+        id_label.grid(row=0, column=0, padx=10, pady=10)
+
+        sl_field = tk.Entry(other_params_frame, width=50)
+        sl_field.insert(0, str(SL))
+        sl_field.grid(row=1, column=1, padx=10, pady=10)
+        sl_label = tk.Label(other_params_frame, text="SL:")
+        sl_label.grid(row=1, column=0, padx=10, pady=10)
+
+        od_field = tk.Entry(other_params_frame, width=50)
+        od_field.insert(0, ', '.join(OD))
+        od_field.grid(row=2, column=1, padx=10, pady=10)
+        od_label = tk.Label(other_params_frame, text="OD:")
+        od_label.grid(row=2, column=0, padx=10, pady=10)
+
+        cl_field = tk.Entry(other_params_frame, width=50)
+        cl_field.insert(0, ', '.join(CL))
+        cl_field.grid(row=3, column=1, padx=10, pady=10)
+        cl_label = tk.Label(other_params_frame, text="CL:")
+        cl_label.grid(row=3, column=0, padx=10, pady=10)
+
+        tl_field = tk.Entry(other_params_frame, width=50)
+        tl_field.insert(0, str(TL))
+        tl_field.grid(row=4, column=1, padx=10, pady=10)
+        tl_label = tk.Label(other_params_frame, text="TL:")
+        tl_label.grid(row=4, column=0, padx=10, pady=10)
+
+        tod_field = tk.Entry(other_params_frame, width=50)
+        tod_field.insert(0, str(TOD))
+        tod_field.grid(row=5, column=1, padx=10, pady=10)
+        tod_label = tk.Label(other_params_frame, text="TOD:")
+        tod_label.grid(row=5, column=0, padx=10, pady=10)
+
+        mat_field = tk.Entry(other_params_frame, width=50)
+        mat_field.insert(0, ', '.join(MAT))
+        mat_field.grid(row=6, column=1, padx=10, pady=10)
+        mat_label = tk.Label(other_params_frame, text="MAT:")
+        mat_label.grid(row=6, column=0, padx=10, pady=10)
+
+        matid_field = tk.Entry(other_params_frame, width=50)
+        matid_field.insert(0, ', '.join(MATID))
+        matid_field.grid(row=7, column=1, padx=10, pady=10)
+        matid_label = tk.Label(other_params_frame, text="MATID:")
+        matid_label.grid(row=7, column=0, padx=10, pady=10)
+
+
+        def createResults():
+            createCSVResultFile('bsengine-cases.txt', 'bsengine-summary.csv')
+            save_results_to_excel('bsengine-summary.csv', 'bsengine-summary.xlsx', thresholds)
+
+        def completeAnalysis():
+            CL, OD = cl_od_to_array(float(min_length_field.get()), float(max_length_field.get()), float(min_diameter_field.get()), float(max_diameter_field.get()), float(incrementSize_fieldLength.get()), float(incrementSize_fieldWidth.get()))
+            generate_case_files(float(length_field.get()), float(ea_field.get()), float(ei_field.get()), float(gt_field.get()), float(m_field.get()),cases_field.get().split(', '), float(id_field.get()), float(sl_field.get()), OD,CL, float(tl_field.get()), float(tod_field.get()), mat_field.get().split(', '),matid_field.get().split(', '))
+            run_threads()
+            createResults()
+
+        def generateCaseFilesProper():
+            CL, OD = cl_od_to_array(float(min_length_field.get()), float(max_length_field.get()), float(min_diameter_field.get()), float(max_diameter_field.get()), float(incrementSize_fieldLength.get()), float(incrementSize_fieldWidth.get()))
+            generate_case_files(float(length_field.get()), float(ea_field.get()), float(ei_field.get()), float(gt_field.get()), float(m_field.get()),cases_field.get().split(', '), float(id_field.get()), float(sl_field.get()), OD,CL, float(tl_field.get()), float(tod_field.get()), mat_field.get().split(', '),matid_field.get().split(', '))
+        # Create buttons
+        button1 = tk.Button(root, text="Run analysis", command=lambda: completeAnalysis())
+        button1.grid(row=3, column=0, padx=10, pady=10)
+        button3 = tk.Button(root, text="Check results without rerunning analysis", command=lambda: createResults()) 
+        button3.grid(row=3, column=1, padx=10, pady=10)
+        button4 = tk.Button(root, text="generate case files", command=lambda: generateCaseFilesProper())
+        button4.grid(row=3, column=2, padx=10, pady=10)
+
+        return root
 
 def main():
-    BSParams1 = BSParams(1, 0.5, 0.2, 0.1, 0.05, 0.01, [60, 60], ['60D_15', '60D_30'])
-    RiserParams1 = RiserParams(100, 100, 100, 100, 100)
+    #BSParams1 = BSParams(1, 0.5, 0.2, 0.1, 0.05, 0.01, [60, 60], ['60D_15', '60D_30'])
     #generate_case_files(RiserParams1.length, RiserParams1.EA, RiserParams1.EI, RiserParams1.GT, RiserParams1.m, [8, 16.5, 19, 19.1, 18.6, 17.5, 14], BSParams1.ID, BSParams1.SL, BSParams1.OD, BSParams1.CL, BSParams1.TL, BSParams1.TOD, BSParams1.MAT, BSParams1.MATID)
-    run_threads() #running the threads will create a lot of log files, which will be used to create the csv file.
-    createCSVResultFile('testbsengine-cases.txt', 'testbsengine-summary.csv') #creates the csv file that is used to create the excel file.
-    save_results_to_excel('testbsengine-summary.csv', 'testbsengine-summary.xlsx', 0.0417592324286036) #creates the excel file with conditional formatting.
+    #run_threads() #running the threads will create a lot of log files, which will be used to create the csv file.
+    #createCSVResultFile('bsengine-cases.txt', 'bsengine-summary.csv') #creates the csv file that is used to create the excel file.
+    #save_results_to_excel('bsengine-summary.csv', 'bsengine-summary.xlsx', 0.0417592324286036) #creates the excel file with conditional formatting.
+    root = makeGui()
+    root.mainloop()
 
 main()
 

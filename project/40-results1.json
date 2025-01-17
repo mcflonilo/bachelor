@@ -1,0 +1,607 @@
+[
+    {
+        "case_name": "case_files\\Case1-1.409-11.299-60D_30",
+        "maximum_bs_curvature": "0.216141E-01",
+        "maximum_curvature": "0.216141E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-11.549-60D_30",
+        "maximum_bs_curvature": "0.214497E-01",
+        "maximum_curvature": "0.214497E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-11.799-60D_30",
+        "maximum_bs_curvature": "0.213141E-01",
+        "maximum_curvature": "0.213141E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-12.049-60D_30",
+        "maximum_bs_curvature": "0.212050E-01",
+        "maximum_curvature": "0.212050E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-12.299-60D_30",
+        "maximum_bs_curvature": "0.211213E-01",
+        "maximum_curvature": "0.211213E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-12.549-60D_30",
+        "maximum_bs_curvature": "0.210615E-01",
+        "maximum_curvature": "0.210615E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-12.799-60D_30",
+        "maximum_bs_curvature": "0.210264E-01",
+        "maximum_curvature": "0.210264E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-13.049-60D_30",
+        "maximum_bs_curvature": "0.210138E-01",
+        "maximum_curvature": "0.210138E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-13.299-60D_30",
+        "maximum_bs_curvature": "0.210229E-01",
+        "maximum_curvature": "0.210229E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-13.549-60D_30",
+        "maximum_bs_curvature": "0.210540E-01",
+        "maximum_curvature": "0.210540E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.409-13.799-60D_30",
+        "maximum_bs_curvature": "0.211063E-01",
+        "maximum_curvature": "0.211063E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-11.299-60D_30",
+        "maximum_bs_curvature": "0.212097E-01",
+        "maximum_curvature": "0.212097E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-11.549-60D_30",
+        "maximum_bs_curvature": "0.210055E-01",
+        "maximum_curvature": "0.210055E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-11.799-60D_30",
+        "maximum_bs_curvature": "0.208284E-01",
+        "maximum_curvature": "0.208284E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-12.049-60D_30",
+        "maximum_bs_curvature": "0.206782E-01",
+        "maximum_curvature": "0.206782E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-12.299-60D_30",
+        "maximum_bs_curvature": "0.205529E-01",
+        "maximum_curvature": "0.205529E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-12.549-60D_30",
+        "maximum_bs_curvature": "0.204516E-01",
+        "maximum_curvature": "0.204516E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-12.799-60D_30",
+        "maximum_bs_curvature": "0.203726E-01",
+        "maximum_curvature": "0.203726E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-13.049-60D_30",
+        "maximum_bs_curvature": "0.203154E-01",
+        "maximum_curvature": "0.203154E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-13.299-60D_30",
+        "maximum_bs_curvature": "0.202794E-01",
+        "maximum_curvature": "0.202794E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-13.549-60D_30",
+        "maximum_bs_curvature": "0.202644E-01",
+        "maximum_curvature": "0.202644E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.434-13.799-60D_30",
+        "maximum_bs_curvature": "0.202693E-01",
+        "maximum_curvature": "0.202693E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-11.299-60D_30",
+        "maximum_bs_curvature": "0.208916E-01",
+        "maximum_curvature": "0.208916E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-11.549-60D_30",
+        "maximum_bs_curvature": "0.206514E-01",
+        "maximum_curvature": "0.206514E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-11.799-60D_30",
+        "maximum_bs_curvature": "0.204388E-01",
+        "maximum_curvature": "0.204388E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-12.049-60D_30",
+        "maximum_bs_curvature": "0.202516E-01",
+        "maximum_curvature": "0.202516E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-12.299-60D_30",
+        "maximum_bs_curvature": "0.200904E-01",
+        "maximum_curvature": "0.200904E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-12.549-60D_30",
+        "maximum_bs_curvature": "0.199527E-01",
+        "maximum_curvature": "0.199527E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-12.799-60D_30",
+        "maximum_bs_curvature": "0.198371E-01",
+        "maximum_curvature": "0.198371E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-13.049-60D_30",
+        "maximum_bs_curvature": "0.197426E-01",
+        "maximum_curvature": "0.197426E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-13.299-60D_30",
+        "maximum_bs_curvature": "0.196683E-01",
+        "maximum_curvature": "0.196683E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-13.549-60D_30",
+        "maximum_bs_curvature": "0.196136E-01",
+        "maximum_curvature": "0.196136E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.459-13.799-60D_30",
+        "maximum_bs_curvature": "0.195775E-01",
+        "maximum_curvature": "0.195775E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-11.299-60D_30",
+        "maximum_bs_curvature": "0.206481E-01",
+        "maximum_curvature": "0.206481E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-11.549-60D_30",
+        "maximum_bs_curvature": "0.203759E-01",
+        "maximum_curvature": "0.203759E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-11.799-60D_30",
+        "maximum_bs_curvature": "0.201311E-01",
+        "maximum_curvature": "0.201311E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-12.049-60D_30",
+        "maximum_bs_curvature": "0.199138E-01",
+        "maximum_curvature": "0.199138E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-12.299-60D_30",
+        "maximum_bs_curvature": "0.197203E-01",
+        "maximum_curvature": "0.197203E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-12.549-60D_30",
+        "maximum_bs_curvature": "0.195502E-01",
+        "maximum_curvature": "0.195502E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-12.799-60D_30",
+        "maximum_bs_curvature": "0.194014E-01",
+        "maximum_curvature": "0.194014E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-13.049-60D_30",
+        "maximum_bs_curvature": "0.192731E-01",
+        "maximum_curvature": "0.192731E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-13.299-60D_30",
+        "maximum_bs_curvature": "0.191646E-01",
+        "maximum_curvature": "0.191646E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-13.549-60D_30",
+        "maximum_bs_curvature": "0.190746E-01",
+        "maximum_curvature": "0.190746E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.484-13.799-60D_30",
+        "maximum_bs_curvature": "0.190030E-01",
+        "maximum_curvature": "0.190030E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-11.299-60D_30",
+        "maximum_bs_curvature": "0.204689E-01",
+        "maximum_curvature": "0.204689E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-11.549-60D_30",
+        "maximum_bs_curvature": "0.201668E-01",
+        "maximum_curvature": "0.201668E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-11.799-60D_30",
+        "maximum_bs_curvature": "0.198941E-01",
+        "maximum_curvature": "0.198941E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-12.049-60D_30",
+        "maximum_bs_curvature": "0.196471E-01",
+        "maximum_curvature": "0.196471E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-12.299-60D_30",
+        "maximum_bs_curvature": "0.194247E-01",
+        "maximum_curvature": "0.194247E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-12.549-60D_30",
+        "maximum_bs_curvature": "0.192255E-01",
+        "maximum_curvature": "0.192255E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-12.799-60D_30",
+        "maximum_bs_curvature": "0.190472E-01",
+        "maximum_curvature": "0.190472E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-13.049-60D_30",
+        "maximum_bs_curvature": "0.188888E-01",
+        "maximum_curvature": "0.188888E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-13.299-60D_30",
+        "maximum_bs_curvature": "0.187495E-01",
+        "maximum_curvature": "0.187495E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-13.549-60D_30",
+        "maximum_bs_curvature": "0.186286E-01",
+        "maximum_curvature": "0.186286E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.509-13.799-60D_30",
+        "maximum_bs_curvature": "0.185254E-01",
+        "maximum_curvature": "0.185254E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-11.299-60D_30",
+        "maximum_bs_curvature": "0.203442E-01",
+        "maximum_curvature": "0.203442E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-11.549-60D_30",
+        "maximum_bs_curvature": "0.200165E-01",
+        "maximum_curvature": "0.200165E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-11.799-60D_30",
+        "maximum_bs_curvature": "0.197165E-01",
+        "maximum_curvature": "0.197165E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-12.049-60D_30",
+        "maximum_bs_curvature": "0.194427E-01",
+        "maximum_curvature": "0.194427E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-12.299-60D_30",
+        "maximum_bs_curvature": "0.191944E-01",
+        "maximum_curvature": "0.191944E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-12.549-60D_30",
+        "maximum_bs_curvature": "0.189685E-01",
+        "maximum_curvature": "0.189685E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-12.799-60D_30",
+        "maximum_bs_curvature": "0.187628E-01",
+        "maximum_curvature": "0.187628E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-13.049-60D_30",
+        "maximum_bs_curvature": "0.185765E-01",
+        "maximum_curvature": "0.185765E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-13.299-60D_30",
+        "maximum_bs_curvature": "0.184107E-01",
+        "maximum_curvature": "0.184107E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-13.549-60D_30",
+        "maximum_bs_curvature": "0.182625E-01",
+        "maximum_curvature": "0.182625E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.534-13.799-60D_30",
+        "maximum_bs_curvature": "0.181321E-01",
+        "maximum_curvature": "0.181321E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-11.299-60D_30",
+        "maximum_bs_curvature": "0.202683E-01",
+        "maximum_curvature": "0.202683E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-11.549-60D_30",
+        "maximum_bs_curvature": "0.199148E-01",
+        "maximum_curvature": "0.199148E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-11.799-60D_30",
+        "maximum_bs_curvature": "0.195905E-01",
+        "maximum_curvature": "0.195905E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-12.049-60D_30",
+        "maximum_bs_curvature": "0.192918E-01",
+        "maximum_curvature": "0.192918E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-12.299-60D_30",
+        "maximum_bs_curvature": "0.190184E-01",
+        "maximum_curvature": "0.190184E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-12.549-60D_30",
+        "maximum_bs_curvature": "0.187682E-01",
+        "maximum_curvature": "0.187682E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-12.799-60D_30",
+        "maximum_bs_curvature": "0.185383E-01",
+        "maximum_curvature": "0.185383E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-13.049-60D_30",
+        "maximum_bs_curvature": "0.183289E-01",
+        "maximum_curvature": "0.183289E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-13.299-60D_30",
+        "maximum_bs_curvature": "0.181383E-01",
+        "maximum_curvature": "0.181383E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-13.549-60D_30",
+        "maximum_bs_curvature": "0.179668E-01",
+        "maximum_curvature": "0.179668E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.559-13.799-60D_30",
+        "maximum_bs_curvature": "0.178127E-01",
+        "maximum_curvature": "0.178127E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-11.299-60D_30",
+        "maximum_bs_curvature": "0.202349E-01",
+        "maximum_curvature": "0.202349E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-11.549-60D_30",
+        "maximum_bs_curvature": "0.198581E-01",
+        "maximum_curvature": "0.198581E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-11.799-60D_30",
+        "maximum_bs_curvature": "0.195088E-01",
+        "maximum_curvature": "0.195088E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-12.049-60D_30",
+        "maximum_bs_curvature": "0.191880E-01",
+        "maximum_curvature": "0.191880E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-12.299-60D_30",
+        "maximum_bs_curvature": "0.188904E-01",
+        "maximum_curvature": "0.188904E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-12.549-60D_30",
+        "maximum_bs_curvature": "0.186175E-01",
+        "maximum_curvature": "0.186175E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-12.799-60D_30",
+        "maximum_bs_curvature": "0.183658E-01",
+        "maximum_curvature": "0.183658E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-13.049-60D_30",
+        "maximum_bs_curvature": "0.181341E-01",
+        "maximum_curvature": "0.181341E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-13.299-60D_30",
+        "maximum_bs_curvature": "0.179232E-01",
+        "maximum_curvature": "0.179232E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-13.549-60D_30",
+        "maximum_bs_curvature": "0.177290E-01",
+        "maximum_curvature": "0.177290E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.584-13.799-60D_30",
+        "maximum_bs_curvature": "0.175540E-01",
+        "maximum_curvature": "0.175540E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-11.299-60D_30",
+        "maximum_bs_curvature": "0.202406E-01",
+        "maximum_curvature": "0.202406E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-11.549-60D_30",
+        "maximum_bs_curvature": "0.198387E-01",
+        "maximum_curvature": "0.198387E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-11.799-60D_30",
+        "maximum_bs_curvature": "0.194691E-01",
+        "maximum_curvature": "0.194691E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-12.049-60D_30",
+        "maximum_bs_curvature": "0.191240E-01",
+        "maximum_curvature": "0.191240E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-12.299-60D_30",
+        "maximum_bs_curvature": "0.188067E-01",
+        "maximum_curvature": "0.188067E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-12.549-60D_30",
+        "maximum_bs_curvature": "0.185108E-01",
+        "maximum_curvature": "0.185108E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-12.799-60D_30",
+        "maximum_bs_curvature": "0.182389E-01",
+        "maximum_curvature": "0.182389E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-13.049-60D_30",
+        "maximum_bs_curvature": "0.179869E-01",
+        "maximum_curvature": "0.179869E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-13.299-60D_30",
+        "maximum_bs_curvature": "0.177560E-01",
+        "maximum_curvature": "0.177560E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-13.549-60D_30",
+        "maximum_bs_curvature": "0.175422E-01",
+        "maximum_curvature": "0.175422E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.609-13.799-60D_30",
+        "maximum_bs_curvature": "0.173466E-01",
+        "maximum_curvature": "0.173466E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-11.299-60D_30",
+        "maximum_bs_curvature": "0.202799E-01",
+        "maximum_curvature": "0.202799E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-11.549-60D_30",
+        "maximum_bs_curvature": "0.198566E-01",
+        "maximum_curvature": "0.198566E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-11.799-60D_30",
+        "maximum_bs_curvature": "0.194637E-01",
+        "maximum_curvature": "0.194637E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-12.049-60D_30",
+        "maximum_bs_curvature": "0.190991E-01",
+        "maximum_curvature": "0.190991E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-12.299-60D_30",
+        "maximum_bs_curvature": "0.187592E-01",
+        "maximum_curvature": "0.187592E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-12.549-60D_30",
+        "maximum_bs_curvature": "0.184448E-01",
+        "maximum_curvature": "0.184448E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-12.799-60D_30",
+        "maximum_bs_curvature": "0.181512E-01",
+        "maximum_curvature": "0.181512E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-13.049-60D_30",
+        "maximum_bs_curvature": "0.178819E-01",
+        "maximum_curvature": "0.178819E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-13.299-60D_30",
+        "maximum_bs_curvature": "0.176303E-01",
+        "maximum_curvature": "0.176303E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-13.549-60D_30",
+        "maximum_bs_curvature": "0.173993E-01",
+        "maximum_curvature": "0.173993E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.634-13.799-60D_30",
+        "maximum_bs_curvature": "0.171840E-01",
+        "maximum_curvature": "0.171840E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-11.299-60D_30",
+        "maximum_bs_curvature": "0.203511E-01",
+        "maximum_curvature": "0.203511E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-11.549-60D_30",
+        "maximum_bs_curvature": "0.199059E-01",
+        "maximum_curvature": "0.199059E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-11.799-60D_30",
+        "maximum_bs_curvature": "0.194909E-01",
+        "maximum_curvature": "0.194909E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-12.049-60D_30",
+        "maximum_bs_curvature": "0.191066E-01",
+        "maximum_curvature": "0.191066E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-12.299-60D_30",
+        "maximum_bs_curvature": "0.187465E-01",
+        "maximum_curvature": "0.187465E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-12.549-60D_30",
+        "maximum_bs_curvature": "0.184125E-01",
+        "maximum_curvature": "0.184125E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-12.799-60D_30",
+        "maximum_bs_curvature": "0.181013E-01",
+        "maximum_curvature": "0.181013E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-13.049-60D_30",
+        "maximum_bs_curvature": "0.178118E-01",
+        "maximum_curvature": "0.178118E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-13.299-60D_30",
+        "maximum_bs_curvature": "0.175440E-01",
+        "maximum_curvature": "0.175440E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-13.549-60D_30",
+        "maximum_bs_curvature": "0.172935E-01",
+        "maximum_curvature": "0.172935E-01"
+    },
+    {
+        "case_name": "case_files\\Case1-1.659-13.799-60D_30",
+        "maximum_bs_curvature": "0.170618E-01",
+        "maximum_curvature": "0.170618E-01"
+    }
+]
