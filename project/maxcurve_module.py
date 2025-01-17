@@ -4,16 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
 class DataPlotter:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Tension vs. Curvature Plotter")
+    def __init__(self, frame):
+        self.frame = frame
 
         # Create frames
-        self.input_frame = ttk.Frame(self.root)
+        self.input_frame = ttk.Frame(self.frame)
         self.input_frame.pack(side=tk.LEFT, padx=10, pady=10)
-        self.plot_frame = ttk.Frame(self.root)
+        self.plot_frame = ttk.Frame(self.frame)
         self.plot_frame.pack(side=tk.RIGHT, padx=10, pady=10)
 
         # Initialize rows for normal and abnormal operations
@@ -189,9 +187,10 @@ class DataPlotter:
         self.ax.legend()
         self.canvas.draw()
 
-
-# Main application
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     app = DataPlotter(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

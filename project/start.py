@@ -10,6 +10,7 @@ from openpyxl.styles import PatternFill
 from openpyxl import load_workbook, Workbook
 import tkinter as tk
 import logging
+from maxcurve_module import DataPlotter
 
 ######################################################
 # INPUT UMBILICAL DATA
@@ -114,7 +115,8 @@ class RiserParams:
         self.GT = 143.0
         self.m = 88.4
         self.umbilicalOD = 0.22
-
+def switch_frame(frame):
+    frame.tkraise()
 
 def runBSEngine(case, case_queue):
         current_directory = os.getcwd()
@@ -475,140 +477,134 @@ def makeGui():
         root = tk.Tk()
         root.title("GUI with Buttons and Input Fields")
 
-        # Create a frame for umbilical parameters
-        umbilical_frame = tk.LabelFrame(root, text="Umbilical Parameters", padx=10, pady=10)
-        umbilical_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+        # Create main frame
+        main_frame = tk.Frame(root)
+        main_frame.grid(row=0, column=0, sticky="nsew")
+
+        # Create maxcurve frame
+        maxcurve_frame = tk.Frame(root)
+        maxcurve_frame.grid(row=0, column=0, sticky="nsew")
 
         # Create input fields and labels for umbilical parameters
-        length_field = tk.Entry(umbilical_frame, width=50)
+        length_label = tk.Label(main_frame, text="Length:")
+        length_label.grid(row=0, column=0, padx=10, pady=10)
+        length_field = tk.Entry(main_frame, width=50)
         length_field.insert(0, str(length))
         length_field.grid(row=0, column=1, padx=10, pady=10)
-        length_label = tk.Label(umbilical_frame, text="Length:")
-        length_label.grid(row=0, column=0, padx=10, pady=10)
 
-        ea_field = tk.Entry(umbilical_frame, width=50)
+        ea_label = tk.Label(main_frame, text="EA:")
+        ea_label.grid(row=1, column=0, padx=10, pady=10)
+        ea_field = tk.Entry(main_frame, width=50)
         ea_field.insert(0, str(EA))
         ea_field.grid(row=1, column=1, padx=10, pady=10)
-        ea_label = tk.Label(umbilical_frame, text="EA:")
-        ea_label.grid(row=1, column=0, padx=10, pady=10)
 
-        ei_field = tk.Entry(umbilical_frame, width=50)
+        ei_label = tk.Label(main_frame, text="EI:")
+        ei_label.grid(row=2, column=0, padx=10, pady=10)
+        ei_field = tk.Entry(main_frame, width=50)
         ei_field.insert(0, str(EI))
         ei_field.grid(row=2, column=1, padx=10, pady=10)
-        ei_label = tk.Label(umbilical_frame, text="EI:")
-        ei_label.grid(row=2, column=0, padx=10, pady=10)
 
-        gt_field = tk.Entry(umbilical_frame, width=50)
+        gt_label = tk.Label(main_frame, text="GT:")
+        gt_label.grid(row=3, column=0, padx=10, pady=10)
+        gt_field = tk.Entry(main_frame, width=50)
         gt_field.insert(0, str(GT))
         gt_field.grid(row=3, column=1, padx=10, pady=10)
-        gt_label = tk.Label(umbilical_frame, text="GT:")
-        gt_label.grid(row=3, column=0, padx=10, pady=10)
 
-        m_field = tk.Entry(umbilical_frame, width=50)
+        m_label = tk.Label(main_frame, text="Mass per unit length:")
+        m_label.grid(row=4, column=0, padx=10, pady=10)
+        m_field = tk.Entry(main_frame, width=50)
         m_field.insert(0, str(m))
         m_field.grid(row=4, column=1, padx=10, pady=10)
-        m_label = tk.Label(umbilical_frame, text="Mass per unit length:")
-        m_label.grid(row=4, column=0, padx=10, pady=10)
 
-        # Create a frame for load cases
-        cases_frame = tk.LabelFrame(root, text="Load Cases", padx=10, pady=10)
-        cases_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
-
-        # Create input field and label for load cases
-        cases_field = tk.Entry(cases_frame, width=50)
+        cases_label = tk.Label(main_frame, text="Cases:")
+        cases_label.grid(row=5, column=0, padx=10, pady=10)
+        cases_field = tk.Entry(main_frame, width=50)
         cases_field.insert(0, ', '.join(cases))
-        cases_field.grid(row=0, column=1, padx=10, pady=10)
-        cases_label = tk.Label(cases_frame, text="Cases:")
-        cases_label.grid(row=0, column=0, padx=10, pady=10)
+        cases_field.grid(row=5, column=1, padx=10, pady=10)
 
-        # Create a frame for other parameters
-        other_params_frame = tk.LabelFrame(root, text="BS dimensions", padx=10, pady=10)
-        other_params_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
-
-        # Create input fields and labels for other parameters
-        min_length_field = tk.Entry(other_params_frame, width=50)
-        min_length_field.grid(row=8, column=1, padx=10, pady=10)
+        min_length_label = tk.Label(main_frame, text="Min Length:")
+        min_length_label.grid(row=6, column=0, padx=10, pady=10)
+        min_length_field = tk.Entry(main_frame, width=50)
         min_length_field.insert(0, str(11.299))
-        min_length_label = tk.Label(other_params_frame, text="Min Length:")
-        min_length_label.grid(row=8, column=0, padx=10, pady=10)
+        min_length_field.grid(row=6, column=1, padx=10, pady=10)
 
-        max_length_field = tk.Entry(other_params_frame, width=50)
-        max_length_field.grid(row=9, column=1, padx=10, pady=10)
+        max_length_label = tk.Label(main_frame, text="Max Length:")
+        max_length_label.grid(row=7, column=0, padx=10, pady=10)
+        max_length_field = tk.Entry(main_frame, width=50)
         max_length_field.insert(0, str(13.799))
-        max_length_label = tk.Label(other_params_frame, text="Max Length:")
-        max_length_label.grid(row=9, column=0, padx=10, pady=10)
+        max_length_field.grid(row=7, column=1, padx=10, pady=10)
 
-        min_diameter_field = tk.Entry(other_params_frame, width=50)
-        min_diameter_field.grid(row=10, column=1, padx=10, pady=10)
+        min_diameter_label = tk.Label(main_frame, text="Min Diameter:")
+        min_diameter_label.grid(row=8, column=0, padx=10, pady=10)
+        min_diameter_field = tk.Entry(main_frame, width=50)
         min_diameter_field.insert(0, str(1.409))
-        min_diameter_label = tk.Label(other_params_frame, text="Min Diameter:")
-        min_diameter_label.grid(row=10, column=0, padx=10, pady=10)
+        min_diameter_field.grid(row=8, column=1, padx=10, pady=10)
 
-        max_diameter_field = tk.Entry(other_params_frame, width=50)
-        max_diameter_field.grid(row=11, column=1, padx=10, pady=10)
+        max_diameter_label = tk.Label(main_frame, text="Max Diameter:")
+        max_diameter_label.grid(row=9, column=0, padx=10, pady=10)
+        max_diameter_field = tk.Entry(main_frame, width=50)
         max_diameter_field.insert(0, str(1.659))
-        max_diameter_label = tk.Label(other_params_frame, text="Max Diameter:")
-        max_diameter_label.grid(row=11, column=0, padx=10, pady=10)
+        max_diameter_field.grid(row=9, column=1, padx=10, pady=10)
 
-        incrementSize_fieldLength = tk.Entry(other_params_frame, width=50)
-        incrementSize_fieldLength.grid(row=12, column=1, padx=10, pady=10)
+        incrementSize_labelLength = tk.Label(main_frame, text="Increment size length:")
+        incrementSize_labelLength.grid(row=10, column=0, padx=10, pady=10)
+        incrementSize_fieldLength = tk.Entry(main_frame, width=50)
         incrementSize_fieldLength.insert(0, str(0.25))
-        incrementSize_labelLength = tk.Label(other_params_frame, text="Increment size length:")
-        incrementSize_labelLength.grid(row=12, column=0, padx=10, pady=10)
+        incrementSize_fieldLength.grid(row=10, column=1, padx=10, pady=10)
 
-        incrementSize_fieldWidth = tk.Entry(other_params_frame, width=50)
-        incrementSize_fieldWidth.grid(row=13, column=1, padx=10, pady=10)
+        incrementSize_labelWidth = tk.Label(main_frame, text="Increment size width:")
+        incrementSize_labelWidth.grid(row=11, column=0, padx=10, pady=10)
+        incrementSize_fieldWidth = tk.Entry(main_frame, width=50)
         incrementSize_fieldWidth.insert(0, str(0.025))
-        incrementSize_labelWidth = tk.Label(other_params_frame, text="Increment size width:")
-        incrementSize_labelWidth.grid(row=13, column=0, padx=10, pady=10)
+        incrementSize_fieldWidth.grid(row=11, column=1, padx=10, pady=10)
 
-        id_field = tk.Entry(other_params_frame, width=50)
+        id_label = tk.Label(main_frame, text="ID:")
+        id_label.grid(row=12, column=0, padx=10, pady=10)
+        id_field = tk.Entry(main_frame, width=50)
         id_field.insert(0, str(ID))
-        id_field.grid(row=0, column=1, padx=10, pady=10)
-        id_label = tk.Label(other_params_frame, text="ID:")
-        id_label.grid(row=0, column=0, padx=10, pady=10)
+        id_field.grid(row=12, column=1, padx=10, pady=10)
 
-        sl_field = tk.Entry(other_params_frame, width=50)
+        sl_label = tk.Label(main_frame, text="SL:")
+        sl_label.grid(row=13, column=0, padx=10, pady=10)
+        sl_field = tk.Entry(main_frame, width=50)
         sl_field.insert(0, str(SL))
-        sl_field.grid(row=1, column=1, padx=10, pady=10)
-        sl_label = tk.Label(other_params_frame, text="SL:")
-        sl_label.grid(row=1, column=0, padx=10, pady=10)
+        sl_field.grid(row=13, column=1, padx=10, pady=10)
 
-        od_field = tk.Entry(other_params_frame, width=50)
+        od_label = tk.Label(main_frame, text="OD:")
+        od_label.grid(row=14, column=0, padx=10, pady=10)
+        od_field = tk.Entry(main_frame, width=50)
         od_field.insert(0, ', '.join(OD))
-        od_field.grid(row=2, column=1, padx=10, pady=10)
-        od_label = tk.Label(other_params_frame, text="OD:")
-        od_label.grid(row=2, column=0, padx=10, pady=10)
+        od_field.grid(row=14, column=1, padx=10, pady=10)
 
-        cl_field = tk.Entry(other_params_frame, width=50)
+        cl_label = tk.Label(main_frame, text="CL:")
+        cl_label.grid(row=15, column=0, padx=10, pady=10)
+        cl_field = tk.Entry(main_frame, width=50)
         cl_field.insert(0, ', '.join(CL))
-        cl_field.grid(row=3, column=1, padx=10, pady=10)
-        cl_label = tk.Label(other_params_frame, text="CL:")
-        cl_label.grid(row=3, column=0, padx=10, pady=10)
+        cl_field.grid(row=15, column=1, padx=10, pady=10)
 
-        tl_field = tk.Entry(other_params_frame, width=50)
+        tl_label = tk.Label(main_frame, text="TL:")
+        tl_label.grid(row=16, column=0, padx=10, pady=10)
+        tl_field = tk.Entry(main_frame, width=50)
         tl_field.insert(0, str(TL))
-        tl_field.grid(row=4, column=1, padx=10, pady=10)
-        tl_label = tk.Label(other_params_frame, text="TL:")
-        tl_label.grid(row=4, column=0, padx=10, pady=10)
+        tl_field.grid(row=16, column=1, padx=10, pady=10)
 
-        tod_field = tk.Entry(other_params_frame, width=50)
+        tod_label = tk.Label(main_frame, text="TOD:")
+        tod_label.grid(row=17, column=0, padx=10, pady=10)
+        tod_field = tk.Entry(main_frame, width=50)
         tod_field.insert(0, str(TOD))
-        tod_field.grid(row=5, column=1, padx=10, pady=10)
-        tod_label = tk.Label(other_params_frame, text="TOD:")
-        tod_label.grid(row=5, column=0, padx=10, pady=10)
+        tod_field.grid(row=17, column=1, padx=10, pady=10)
 
-        mat_field = tk.Entry(other_params_frame, width=50)
+        mat_label = tk.Label(main_frame, text="MAT:")
+        mat_label.grid(row=18, column=0, padx=10, pady=10)
+        mat_field = tk.Entry(main_frame, width=50)
         mat_field.insert(0, ', '.join(MAT))
-        mat_field.grid(row=6, column=1, padx=10, pady=10)
-        mat_label = tk.Label(other_params_frame, text="MAT:")
-        mat_label.grid(row=6, column=0, padx=10, pady=10)
+        mat_field.grid(row=18, column=1, padx=10, pady=10)
 
-        matid_field = tk.Entry(other_params_frame, width=50)
+        matid_label = tk.Label(main_frame, text="MATID:")
+        matid_label.grid(row=19, column=0, padx=10, pady=10)
+        matid_field = tk.Entry(main_frame, width=50)
         matid_field.insert(0, ', '.join(MATID))
-        matid_field.grid(row=7, column=1, padx=10, pady=10)
-        matid_label = tk.Label(other_params_frame, text="MATID:")
-        matid_label.grid(row=7, column=0, padx=10, pady=10)
+        matid_field.grid(row=19, column=1, padx=10, pady=10)
 
 
         def createResults():
@@ -624,6 +620,8 @@ def makeGui():
         def generateCaseFilesProper():
             CL, OD = cl_od_to_array(float(min_length_field.get()), float(max_length_field.get()), float(min_diameter_field.get()), float(max_diameter_field.get()), float(incrementSize_fieldLength.get()), float(incrementSize_fieldWidth.get()))
             generate_case_files(float(length_field.get()), float(ea_field.get()), float(ei_field.get()), float(gt_field.get()), float(m_field.get()),cases_field.get().split(', '), float(id_field.get()), float(sl_field.get()), OD,CL, float(tl_field.get()), float(tod_field.get()), mat_field.get().split(', '),matid_field.get().split(', '))
+        
+        
         # Create buttons
         button1 = tk.Button(root, text="Run analysis", command=lambda: completeAnalysis())
         button1.grid(row=3, column=0, padx=10, pady=10)
@@ -631,6 +629,17 @@ def makeGui():
         button3.grid(row=3, column=1, padx=10, pady=10)
         button4 = tk.Button(root, text="generate case files", command=lambda: generateCaseFilesProper())
         button4.grid(row=3, column=2, padx=10, pady=10)
+        # Add a new button to switch to the maxcurve_frame
+        button5 = tk.Button(main_frame, text="Open MaxCurve GUI", command=lambda: switch_frame(maxcurve_frame))
+        button5.grid(row=3, column=3, padx=10, pady=10)
+
+        maxcurve_app = DataPlotter(maxcurve_frame)
+        # Add a return button to switch back to the main_frame
+        return_button = tk.Button(maxcurve_frame, text="Return", command=lambda: switch_frame(main_frame))
+        return_button.pack(pady=10)
+
+        # Raise the main_frame initially
+        main_frame.tkraise()
 
         return root
 
