@@ -509,7 +509,7 @@ btn_design_bs.pack(pady=10)  # Vertical spacing
 
 # Create the button
 btn_check_bs = tk.Button(frame, text="CHECK IF EXISTING BS IS SUITABLE", width=100, height=2, 
-                         bg="#333333", fg="white", command=show_check_screen)
+                         bg="#e81cb8", fg="white", command=show_check_screen)
 btn_check_bs.pack(pady=50)
 
 btn_run_cases = tk.Button(frame, text="RUN LOAD CASES ON EXISTING BS", width=100, height=2, 
