@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 # Function to handle "Input Riser Capacities"
 def open_riser_capacities_screen():
     # Create a new window for riser capacities input
@@ -158,6 +161,70 @@ def open_bs_information_screen():
     btn_cancel = tk.Button(frame_buttons, text="CANCEL", width=10, height=2, bg="#333333", fg="white", 
                            command=bs_info_window.destroy)
     btn_cancel.pack(side=tk.LEFT, padx=10)
+def open_run_analysis_screen():
+    # Create a new window for Run Analysis
+    analysis_window = tk.Toplevel()
+    analysis_window.title("Run Analysis Screen")
+    analysis_window.geometry("800x800")
+
+    # Placeholder frame for plots
+    plot_frame = tk.Frame(analysis_window, bg="white", width=600, height=400)
+    plot_frame.pack(pady=10)
+
+    # Label for results
+    results_label = tk.Label(analysis_window, text="Results:")
+    results_label.pack()
+
+    
+    # Generate dummy data
+    x = np.linspace(0, 1, 100)
+    y1 = 1 - x**2  # Dummy curve for Riser Capacity
+    y2 = x**2      # Dummy curve for Riser Response
+
+    # Plotting
+    fig, axes = plt.subplots(2, 2, figsize=(8, 6))  # Subplots for 4 plots
+    fig.subplots_adjust(wspace=0.4, hspace=0.6)
+
+    # Normal Operation
+    axes[0, 0].plot(x, y1, color='red')
+    axes[0, 0].set_title("Riser Capacity (Normal)")
+    axes[0, 0].set_xlabel("Curvature")
+    axes[0, 0].set_ylabel("Tension")
+    axes[0, 1].plot(x, y2, color='blue')
+    axes[0, 1].set_title("Riser Response (Normal)")
+    axes[0, 1].set_xlabel("Curvature")
+    axes[0, 1].set_ylabel("Tension")
+
+        # Abnormal Operation
+    axes[1, 0].plot(x, y1 + 0.2, color='red')
+    axes[1, 0].set_title("Riser Capacity (Abnormal)")
+    axes[1, 0].set_xlabel("Curvature")
+    axes[1, 0].set_ylabel("Tension")
+    axes[1, 1].plot(x, y2 - 0.2, color='blue')
+    axes[1, 1].set_title("Riser Response (Abnormal)")
+    axes[1, 1].set_xlabel("Curvature")
+    axes[1, 1].set_ylabel("Tension")
+
+    # Clear previous plot if any
+    for widget in plot_frame.winfo_children():
+        widget.destroy()
+
+    # Embed the new plot in Tkinter
+    canvas = FigureCanvasTkAgg(fig, master=plot_frame)
+    canvas_widget = canvas.get_tk_widget()
+    canvas_widget.pack()
+
+    # Display the plot
+    canvas.draw()
+
+
+    btn_ok = tk.Button(analysis_window, text="OK", width=10, height=2, bg="#333333", fg="white")
+    btn_ok.pack(side=tk.LEFT, padx=10)
+
+    # Cancel button to close the window
+    btn_cancel = tk.Button(analysis_window, text="CANCEL", width=10, height=2, bg="#333333", fg="white", 
+                           command=analysis_window.destroy)
+    btn_cancel.pack(side=tk.LEFT, padx=10)
 # Function to handle "BS Geometry Constraints" screen
 def open_bs_geometry_constraints_screen():
     # Create a new window for BS Geometry Constraints
@@ -230,7 +297,7 @@ def open_analysis_screen():
 
     # Add RUN and CANCEL buttons at the bottom right
     btn_run = tk.Button(
-        analysis_window, text="RUN", width=10, height=2, bg="#333333", fg="white", command=lambda: print("Run clicked")
+        analysis_window, text="RUN", width=10, height=2, bg="#333333", fg="white", command=open_run_analysis_screen,
     )
     btn_run.place(x=450, y=320)
 
@@ -361,7 +428,71 @@ def open_design_screen():
     btn_cancel = tk.Button(frame, text="CANCEL", width=10, height=2, bg="#333333", fg="white", 
                            command=design_window.destroy)
     btn_cancel.pack(side=tk.LEFT, padx=10)
+def show_check_screen():
+    # Create a new top-level window
+    check_window = tk.Toplevel()
+    check_window.title("Check Existing BS")
+    
+    # Set window size
+    check_window.geometry("1000x1000")
+    check_window.configure(bg="white")
+    
+    # Create label
+    label = tk.Label(check_window, text="Check if existing BS is suitable", bg="white", font=("Arial", 14))
+    label.pack(pady=20)
+    
+    # Create a placeholder for the question mark
+    question_label = tk.Label(check_window, text="?", bg="white", font=("Arial", 48))
+    question_label.pack(pady=20)
+    
+    # Create OK button
+    btn_ok = tk.Button(check_window, text="OK", width=10, height=2, bg="#333333", fg="white")
+    btn_ok.pack(side=tk.LEFT, padx=20, pady=20)
+    
+    # Create Cancel button
+    btn_cancel = tk.Button(check_window, text="CANCEL", width=10, height=2, bg="#333333", fg="white", command=check_window.destroy)
+    btn_cancel.pack(side=tk.RIGHT, padx=20, pady=20)
 
+def open_run_cases_screen():
+    # Create a new window for running load cases
+    run_cases_window = tk.Toplevel(root)
+    run_cases_window.title("Run Load Cases")
+    run_cases_window.geometry("600x400")  # Adjust window size as needed
+
+    # Add title label
+    lbl_title = tk.Label(run_cases_window, text="RUN LOAD CASES ON EXISTING BS", font=("Arial", 14))
+    lbl_title.pack(pady=10)
+
+    # Add buttons in the new screen
+    btn_project_info = tk.Button(run_cases_window, text="INPUT PROJECT INFORMATION", width=30, height=2, 
+                                 bg="#333333", fg="white", command=open_project_info_screen)
+    btn_project_info.pack(pady=10)
+
+    btn_riser_info = tk.Button(run_cases_window, text="INPUT RISER INFORMATION", width=30, height=2, 
+                               bg="#333333", fg="white", command=open_riser_info_screen)
+    btn_riser_info.pack(pady=10)
+
+    
+
+    btn_riser_response = tk.Button(run_cases_window, text="INPUT RISER RESPONSE", width=30, height=2, 
+                                   bg="#333333", fg="white",command=open_riser_RESPONSE_screen)
+    btn_riser_response.pack(pady=10)
+
+    btn_bs_info = tk.Button(run_cases_window, text="INPUT BS INFORMATION", width=30, height=2, 
+                            bg="#333333", fg="white",command=open_bs_information_screen)
+    btn_bs_info.pack(pady=10)
+
+    # Add OK and CANCEL buttons
+    frame = tk.Frame(run_cases_window)
+    frame.pack(pady=20)
+
+    btn_ok = tk.Button(frame, text="OK", width=10, height=2, bg="#333333", fg="white")
+    btn_ok.pack(side=tk.LEFT, padx=10)
+
+    # Cancel button to close the window
+    btn_cancel = tk.Button(frame, text="CANCEL", width=10, height=2, bg="#333333", fg="white", 
+                           command=run_cases_window.destroy)
+    btn_cancel.pack(side=tk.LEFT, padx=10)
 # Main application window
 root = tk.Tk()
 root.title("Tkinter Project")
@@ -376,12 +507,13 @@ btn_design_bs = tk.Button(frame, text="DESIGN BS", command=open_design_screen, w
                           bg="#333333", fg="white")
 btn_design_bs.pack(pady=10)  # Vertical spacing
 
+# Create the button
 btn_check_bs = tk.Button(frame, text="CHECK IF EXISTING BS IS SUITABLE", width=100, height=2, 
-                         bg="#333333", fg="white")
-btn_check_bs.pack(pady=50)  # Vertical spacing
+                         bg="#333333", fg="white", command=show_check_screen)
+btn_check_bs.pack(pady=50)
 
 btn_run_cases = tk.Button(frame, text="RUN LOAD CASES ON EXISTING BS", width=100, height=2, 
-                          bg="#333333", fg="white")
+                          bg="#333333", fg="white", command=open_run_cases_screen)
 btn_run_cases.pack(pady=30)  # Vertical spacing
 
 # Run the application
