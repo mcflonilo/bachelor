@@ -1,0 +1,2 @@
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Engine\obj\Debug\UltraBend.Engine.csproj.AssemblyReference.cache
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Engine\obj\Debug\UltraBend.Engine.csproj.CoreCompileInputs.cache

@@ -1,0 +1,568 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PostSharp.6.3.11\build\PostSharp.props" Condition="Exists('..\packages\PostSharp.6.3.11\build\PostSharp.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0555E470-440D-48A5-975D-1984F81BDD82}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>UltraBend</RootNamespace>
+    <AssemblyName>UltraBend</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Application.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-Installer|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug-Installer\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accord, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.8.0\lib\net45\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.0\lib\net45\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math.Core, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.0\lib\net45\Accord.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper, Version=6.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.6.1.0\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FParsec, Version=1.0.0.0, Culture=neutral, PublicKeyToken=40ccfc0a09edbb5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\FParsec.1.0.3\lib\net40-client\FParsec.dll</HintPath>
+    </Reference>
+    <Reference Include="FParsecCS, Version=1.0.0.0, Culture=neutral, PublicKeyToken=40ccfc0a09edbb5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\FParsec.1.0.3\lib\net40-client\FParsecCS.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.7.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Core.4.7.0\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Gu.Units, Version=0.10.6.1, Culture=neutral, PublicKeyToken=f63e313197facf71, processorArchitecture=MSIL">
+      <HintPath>..\packages\Gu.Units.0.10.6.1\lib\net45\Gu.Units.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.WinForms, Version=0.9.7.1, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.WinForms.0.9.7.1\lib\net45\LiveCharts.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.9.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics.FSharp, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.FSharp.4.9.0\lib\net45\MathNet.Numerics.FSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Symbolics, Version=0.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Symbolics.0.20.0\lib\net45\MathNet.Symbolics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Microsoft.Solver.Foundation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp, Version=6.3.11.0, Culture=neutral, PublicKeyToken=b13fd38b8f9c99d7, processorArchitecture=MSIL">
+      <HintPath>..\packages\PostSharp.Redist.6.3.11\lib\net45\PostSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Patterns.Aggregation, Version=6.3.11.0, Culture=neutral, PublicKeyToken=e7f631e6ce13f078, processorArchitecture=MSIL">
+      <HintPath>..\packages\PostSharp.Patterns.Aggregation.Redist.6.3.11\lib\net45\PostSharp.Patterns.Aggregation.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Patterns.Caching, Version=6.3.11.0, Culture=neutral, PublicKeyToken=e7f631e6ce13f078, processorArchitecture=MSIL">
+      <HintPath>..\packages\PostSharp.Patterns.Caching.Redist.6.3.11\lib\net45\PostSharp.Patterns.Caching.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Patterns.Common, Version=6.3.11.0, Culture=neutral, PublicKeyToken=e7f631e6ce13f078, processorArchitecture=MSIL">
+      <HintPath>..\packages\PostSharp.Patterns.Common.Redist.6.3.11\lib\net45\PostSharp.Patterns.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PostSharp.Patterns.Model, Version=6.3.11.0, Culture=neutral, PublicKeyToken=e7f631e6ce13f078, processorArchitecture=MSIL">
+      <HintPath>..\packages\PostSharp.Patterns.Model.Redist.6.3.11\lib\net40\PostSharp.Patterns.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SQLite.CodeFirst, Version=1.5.2.28, Culture=neutral, PublicKeyToken=eb96ba0a78d831a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLite.CodeFirst.1.5.2.28\lib\net45\SQLite.CodeFirst.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.6.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net451\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.111.0\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.112.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Telerik.Reporting, Version=13.2.19.918, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Telerik.Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Reporting.XpsRendering, Version=13.2.19.918, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Telerik.Reporting.XpsRendering.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.ReportViewer.WinForms, Version=13.2.19.918, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Telerik.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.ChartView, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.ChartView.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.GridView, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.GridView.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.RadDiagram, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.RadDiagram.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.RadDock, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.RadDock.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.RadSpreadsheet, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.RadSpreadsheet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Material, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.Material.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.MaterialBlueGrey, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.MaterialBlueGrey.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Office2013Dark, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.Office2013Dark.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Office2013Light, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.Office2013Light.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.TelerikMetro, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.TelerikMetro.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.VisualStudio2012Light, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.VisualStudio2012Light.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Windows7, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.Windows7.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Windows8, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.Themes.Windows8.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.WinControls.UI, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.WinControls.UI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Core, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Fixed, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Fixed.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Spreadsheet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.Xls, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Documents.Spreadsheet.FormatProviders.Xls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Telerik.Windows.Zip, Version=2020.3.1019.40, Culture=neutral, PublicKeyToken=5803cfa389c90ce7, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\Telerik.Windows.Zip.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TelerikCommon, Version=2020.3.1020.40, Culture=neutral, PublicKeyToken=5bb2a467cbec794e, processorArchitecture=MSIL">
+      <HintPath>..\lib\RCWF\2020.3.1020.40\TelerikCommon.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\CsvBindingList.cs" />
+    <Compile Include="Controls\CsvGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\DataPropertySelectedEventArgs.cs" />
+    <Compile Include="Models\BendStiffenerDesignViewModel.cs" />
+    <Compile Include="Models\LoadContourViewModelRowEntry.cs" />
+    <Compile Include="Models\CaseViewModel.cs" />
+    <Compile Include="Models\LoadContourViewModel.cs" />
+    <Compile Include="Models\MainViewModel.cs" />
+    <Compile Include="Models\MaterialViewModel.cs" />
+    <Compile Include="Models\OutputViewModel.cs" />
+    <Compile Include="Models\ProjectViewModel.cs" />
+    <Compile Include="Models\StudyViewModel.cs" />
+    <Compile Include="Models\UmbilicalViewModel.cs" />
+    <Compile Include="Presenters\BendStiffenerDesignPresenter.cs" />
+    <Compile Include="Presenters\LoadContourPresenter.cs" />
+    <Compile Include="Presenters\CasePresenter.cs" />
+    <Compile Include="Presenters\MainPresenter.cs" />
+    <Compile Include="Presenters\MaterialPresenter.cs" />
+    <Compile Include="Presenters\OutputPresenter.cs" />
+    <Compile Include="Presenters\ProjectPresenter.cs" />
+    <Compile Include="Presenters\StudyPresenter.cs" />
+    <Compile Include="Presenters\UmbilicalPresenter.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\BendStiffenerDesignView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\BendStiffenerDesignView.Designer.cs">
+      <DependentUpon>BendStiffenerDesignView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\LoadContourView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\LoadContourView.Designer.cs">
+      <DependentUpon>LoadContourView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\Modals\CapacityCurves.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewForms\Modals\CapacityCurves.Designer.cs">
+      <DependentUpon>CapacityCurves.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\StudyDesignView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\StudyDesignView.Designer.cs">
+      <DependentUpon>StudyDesignView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\CaseDesignView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\CaseDesignView.Designer.cs">
+      <DependentUpon>CaseDesignView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\MainView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewForms\MainView.Designer.cs">
+      <DependentUpon>MainView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\MaterialView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\MaterialView.Designer.cs">
+      <DependentUpon>MaterialView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\OptimizationView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\OptimizationView.Designer.cs">
+      <DependentUpon>OptimizationView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\OutputView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\OutputView.Designer.cs">
+      <DependentUpon>OutputView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\ProjectView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\ProjectView.Designer.cs">
+      <DependentUpon>ProjectView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewForms\UmbilicalView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewForms\UmbilicalView.Designer.cs">
+      <DependentUpon>UmbilicalView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ButtonGroup.cs" />
+    <Compile Include="Views\IBendStiffenerDesignView.cs" />
+    <Compile Include="Views\IButtonGroup.cs" />
+    <Compile Include="Views\ILoadContourView.cs" />
+    <Compile Include="Views\ICaseView.cs" />
+    <Compile Include="Views\ICoreView.cs" />
+    <Compile Include="Views\IMainView.cs" />
+    <Compile Include="Views\IMaterialView.cs" />
+    <Compile Include="Views\IOptimizationView.cs" />
+    <Compile Include="Views\IOutputView.cs" />
+    <Compile Include="Views\IProjectView.cs" />
+    <Compile Include="Views\IPropertySelectable.cs" />
+    <Compile Include="Views\IStudyView.cs" />
+    <Compile Include="Views\IUmbilicalView.cs" />
+    <Compile Include="Views\IWindowPresenter.cs" />
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\BendStiffenerDesignView.resx">
+      <DependentUpon>BendStiffenerDesignView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\LoadContourView.resx">
+      <DependentUpon>LoadContourView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\Modals\CapacityCurves.resx">
+      <DependentUpon>CapacityCurves.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\StudyDesignView.resx">
+      <DependentUpon>StudyDesignView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\CaseDesignView.resx">
+      <DependentUpon>CaseDesignView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\MainView.resx">
+      <DependentUpon>MainView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\MaterialView.resx">
+      <DependentUpon>MaterialView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\OutputView.resx">
+      <DependentUpon>OutputView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForms\ProjectView.resx">
+      <DependentUpon>ProjectView.cs</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="bsengine.lic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="ViewForms\UmbilicalView.resx">
+      <DependentUpon>UmbilicalView.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\UltraBend.Common.Math.PolynomialRegression.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Common.Math.RegressionCoefficient.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Common.Math.RegressionDataSource+Coefficient.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Common.Math.RegressionDataSource.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Data.Material.Material.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Data.Material.MaterialData.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Data.Material.MaterialDataItem.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Models.LoadContourViewModelRowEntry.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Services.DomainObjects.Case.datasource" />
+    <None Include="Properties\DataSources\UltraBend.Services.DomainObjects.Umbilical.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UltraBend.Common\UltraBend.Common.csproj">
+      <Project>{26171e4e-3c71-41dd-8b75-c215ea9de0ca}</Project>
+      <Name>UltraBend.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UltraBend.Databases\UltraBend.Databases.csproj">
+      <Project>{b8146aff-87b0-4827-a1da-6deadc6f61f9}</Project>
+      <Name>UltraBend.Databases</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UltraBend.Engine\UltraBend.Engine.csproj">
+      <Project>{4f52bba8-d0a9-410a-acb2-f59e11192b2f}</Project>
+      <Name>UltraBend.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UltraBend.Reports\UltraBend.Reports.csproj">
+      <Project>{cabb4300-c41a-456b-9c8b-e72d326fe63f}</Project>
+      <Name>UltraBend.Reports</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UltraBend.Services\UltraBend.Services.csproj">
+      <Project>{c1485185-b52a-453b-b485-6f192b16cd48}</Project>
+      <Name>UltraBend.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Application.ico" />
+    <Content Include="bsengine.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ActionAdd_32px.png" />
+    <Content Include="Resources\CloseSolution_32px.png" />
+    <Content Include="Resources\DesignMode_32px.png" />
+    <Content Include="Resources\Exit_32px.png" />
+    <Content Include="Resources\FileCollection_32px.png" />
+    <Content Include="Resources\OpenFileFromProject_32px.png" />
+    <None Include="Resources\play_40x.png" />
+    <None Include="Resources\Process_256x.png" />
+    <None Include="Resources\Process_32x.png" />
+    <None Include="Resources\ParentChildRelationship_32x.png" />
+    <Content Include="Resources\Remove_32px.png" />
+    <Content Include="Resources\Save_32px.png" />
+    <Content Include="Resources\SaveAs_32px.png" />
+    <None Include="Resources\UltraBend_16px.png" />
+    <None Include="Resources\UltraBend_16px.ico" />
+    <None Include="Resources\StackedLineChart_24x.png" />
+    <Content Include="Resources\UltraBend_32px.png" />
+    <Content Include="Resources\SelectTable_32px.png" />
+    <Content Include="Resources\SelectTable_16px.png" />
+    <Content Include="Resources\OpenFolder_32px.png" />
+    <Content Include="Resources\NewFile_32px.png" />
+    <Content Include="Resources\ImportPackage_256x.png" />
+    <Content Include="Resources\ImportPackage_64x.png" />
+    <Content Include="Resources\ImportPackage_48x.png" />
+    <Content Include="Resources\ImportPackage_32x.png" />
+    <Content Include="Resources\ImportPackage_16x.png" />
+    <Content Include="Resources\ImportFile_32x.png" />
+    <Content Include="Resources\ImportFile_32px.png" />
+    <Content Include="Resources\ExportFile_32px.png" />
+    <Content Include="Resources\ultrabend_start.png" />
+    <None Include="Resources\VariableProperty_32x.png" />
+    <None Include="Resources\Watch_32x.png" />
+    <None Include="Resources\Watch.ico" />
+    <Content Include="Resources\Web_32px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Humanizer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.6\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Accord.3.8.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.0\build\Accord.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.2.9.6\build\Microsoft.CodeQuality.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.2.9.6\build\Microsoft.NetCore.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.2.9.6\build\Microsoft.NetFramework.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.6\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+    <Error Condition="!Exists('..\packages\PostSharp.6.3.11\build\PostSharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PostSharp.6.3.11\build\PostSharp.props'))" />
+    <Error Condition="!Exists('..\packages\PostSharp.6.3.11\build\PostSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PostSharp.6.3.11\build\PostSharp.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Import Project="..\packages\PostSharp.6.3.11\build\PostSharp.targets" Condition="Exists('..\packages\PostSharp.6.3.11\build\PostSharp.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net451\System.Data.SQLite.Core.targets')" />
+</Project>

@@ -1,0 +1,5 @@
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Reports\obj\Debug\UltraBend.Reports.csproj.AssemblyReference.cache
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Reports\obj\Debug\UltraBend.Reports.CaseDesignView.resources
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Reports\obj\Debug\UltraBend.Reports.Properties.Resources.resources
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Reports\obj\Debug\UltraBend.Reports.csproj.GenerateResource.cache
+C:\Users\lmoph\Desktop\github\bachelor\nyttige filer\bitbucket filer\ultradeep-ultrabend-ec886561e05a-2\src-v1\UltraBend\UltraBend.Reports\obj\Debug\UltraBend.Reports.dll.licenses
