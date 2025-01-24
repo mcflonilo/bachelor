@@ -4,8 +4,10 @@ def switch_frame(frame):
     frame.tkraise()
 
 class BSDimensionWindow:
-    def __init__(self, root):
+    def __init__(self, root, prev_frame):
         self.root = root
+        self.prev_frame = prev_frame
+
         # Add title label
         lbl_title = tk.Label(root, text="BS Geometry Constraints:", font=("Arial", 12, "bold"), anchor="w")
         lbl_title.grid(row=0, column=0, columnspan=2, sticky="w", pady=10, padx=20)
@@ -28,10 +30,10 @@ class BSDimensionWindow:
         # Add OK and CANCEL buttons
         frame_buttons = tk.Frame(root)
         frame_buttons.grid(row=len(labels) + 1, column=0, columnspan=2, pady=20)
-        btn_ok = tk.Button(frame_buttons, text="OK", command=self.get_data)
-        btn_ok.pack(side=tk.LEFT, padx=10)
-        btn_cancel = tk.Button(frame_buttons, text="CANCEL", command=root.quit)
-        btn_cancel.pack(side=tk.LEFT, padx=10)
+        btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
+        btn_ok.grid(row=0, column=0, padx=10)
+        btn_cancel = tk.Button(frame_buttons, text="CANCEL", width=10, height=2, bg="#333333", fg="white", command=root.quit)
+        btn_cancel.grid(row=0, column=1, padx=10)
 
     def get_data(self):
         """Return all data from the input fields."""
@@ -42,7 +44,9 @@ class BSDimensionWindow:
 
 def main():
     root = tk.Tk()
-    app = BSDimensionWindow(root)
+    prev_frame = tk.Frame(root)
+    prev_frame.grid(row=0, column=0, sticky="nsew")
+    app = BSDimensionWindow(root, prev_frame)
     root.mainloop()
 
 if __name__ == "__main__":

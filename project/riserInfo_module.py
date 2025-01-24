@@ -34,7 +34,7 @@ class RiserInfoWindow:
             self.entries[field] = entry
 
         # Add OK and CANCEL buttons
-        OK_buttons = tk.Button(root, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: switch_frame(prev_frame))
+        OK_buttons = tk.Button(root, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
         OK_buttons.pack(pady=20)
 
     def get_data(self):

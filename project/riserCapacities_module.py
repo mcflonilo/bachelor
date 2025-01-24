@@ -4,8 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+def switch_frame(frame):
+    frame.tkraise()
+
 class riserCapacities:
-    def __init__(self, frame):
+    def __init__(self, frame, prev_frame):
         self.frame = frame
 
         # Create frames
@@ -65,6 +68,10 @@ class riserCapacities:
             self.add_normal_row()
             self.add_abnormal_row()
 
+        OK_buttons = tk.Button(frame, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
+        OK_buttons.pack(pady=20)
+        
+
     def add_normal_row(self):
         """Add a new input row for Normal Operation."""
         row_index = len(self.normal_rows) + 3
@@ -103,7 +110,7 @@ class riserCapacities:
                 continue
         return data
 
-    def get_all_data(self):
+    def get_data(self):
         """Return all data from the input fields."""
         normal_data = self.get_data_from_entries(self.normal_rows)
         abnormal_data = self.get_data_from_entries(self.abnormal_rows)
