@@ -88,6 +88,37 @@ class BSMaterialWindow:
                 "elastic_modules": entries["elastic_modules"].get()
             }
         return data
+    
+    def set_data(self, data):
+        """Set data to the input fields."""
+        self.entry_no_of_sections.delete(0, tk.END)
+        self.entry_no_of_sections.insert(0, len(data))
+
+        # Clear existing sections
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Label) or isinstance(widget, tk.Entry) or isinstance(widget, ttk.Combobox) or isinstance(widget, tk.Canvas) or isinstance(widget, tk.Button):
+                widget.destroy()
+
+        # Recreate the input field and button
+        lbl_no_of_sections = tk.Label(self.root, text="No. of sections to create:")
+        lbl_no_of_sections.grid(row=0, column=0, sticky="w", padx=20, pady=10)
+        self.entry_no_of_sections = tk.Entry(self.root, width=10)
+        self.entry_no_of_sections.grid(row=0, column=1, sticky="w", padx=10)
+        create_sections_button = tk.Button(self.root, text="Create Sections", command=self.create_sections)
+        create_sections_button.grid(row=0, column=2, padx=10, pady=10)
+
+        # Create the sections based on the data
+        self.section_entries = {}
+        for i, (section, values) in enumerate(data.items()):
+            self.create_bs_section(self.root, section, i * 5 + 1)
+            self.section_entries[section]["material_characteristics"].set(values["material_characteristics"])
+            self.section_entries[section]["elastic_modules"].delete(0, tk.END)
+            self.section_entries[section]["elastic_modules"].insert(0, values["elastic_modules"])
+
+        # Add OK button to switch frames
+        ok_button = tk.Button(self.root, text="OK", command=lambda: self.switch_frame(self.next_frame))
+        ok_button.grid(row=len(data) * 5 + 2, column=0, columnspan=3, pady=20)
+
 
 def main():
     root = tk.Tk()

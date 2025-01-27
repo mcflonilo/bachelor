@@ -45,6 +45,16 @@ class ProjectInfoWindow:
             "designer_name": self.entry_designer_name.get()
         }
         return data
+    
+    def set_data(self, data):
+        """Set data to the input fields."""
+        self.entry_project_name.delete(0, tk.END)
+        self.entry_project_name.insert(0, data.get("project_name", ""))
+        self.entry_client.delete(0, tk.END)
+        self.entry_client.insert(0, data.get("client", ""))
+        self.entry_designer_name.delete(0, tk.END)
+        self.entry_designer_name.insert(0, data.get("designer_name", ""))
+
 
 def main():
     root = tk.Tk()

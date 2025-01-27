@@ -6,6 +6,7 @@ def switch_frame(frame):
 class RiserInfoWindow:
     def __init__(self, root, prev_frame):
         self.root = root
+        self.prev_frame = prev_frame
 
         # Add title label
         lbl_title = tk.Label(root, text="RISER INFORMATION", font=("Arial", 14))
@@ -45,6 +46,13 @@ class RiserInfoWindow:
         for field, entry in self.entries.items():
             data[field] = entry.get()
         return data
+
+    def set_data(self, data):
+        """Set data to the input fields."""
+        for field, value in data.items():
+            if field in self.entries:
+                self.entries[field].delete(0, tk.END)
+                self.entries[field].insert(0, value)
 
 def main():
     root = tk.Tk()

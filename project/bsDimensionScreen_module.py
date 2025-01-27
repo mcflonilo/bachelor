@@ -16,7 +16,7 @@ class BSDimensionWindow:
         labels = [
             "Input root length:", "Input tip length:", "Input MIN root OD:",
             "Input MAX root OD:", "Input MIN overall length:", "Input MAX overall length:",
-            "Input clearance:", "Input thidm(??):", "BS ID:"
+            "Input clearance:", "Input thidm(??):", "BS ID:", "Increment Width:", "Increment Length:"
         ]
         self.entries = {}
 
@@ -41,6 +41,13 @@ class BSDimensionWindow:
         for label, entry in self.entries.items():
             data[label] = entry.get()
         return data
+
+    def set_data(self, data):
+        """Set data to the input fields."""
+        for label, value in data.items():
+            if label in self.entries:
+                self.entries[label].delete(0, tk.END)
+                self.entries[label].insert(0, value)
 
 def main():
     root = tk.Tk()
