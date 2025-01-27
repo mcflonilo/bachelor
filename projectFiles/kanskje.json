@@ -1,0 +1,34 @@
+{
+    "project_info": {
+        "project_name": "kanskje",
+        "client": "",
+        "designer_name": ""
+    },
+    "riser_info": {
+        "Riser Identification": "",
+        "Outer Diameter": "",
+        "Outer Diameter Tolerance": "",
+        "Mass Per Unit Length": "",
+        "Axial Stiffness": "",
+        "Bending Stiffness": "",
+        "Torsial Stiffness": "",
+        "Riser Length": ""
+    },
+    "riser_capacities": {
+        "normal": [],
+        "abnormal": [],
+        "interpolation": []
+    },
+    "bs_dimension": {
+        "Input root length:": "",
+        "Input tip length:": "",
+        "Input MIN root OD:": "",
+        "Input MAX root OD:": "",
+        "Input MIN overall length:": "",
+        "Input MAX overall length:": "",
+        "Input clearance:": "",
+        "Input thidm(??):": "",
+        "BS ID:": ""
+    },
+    "bs_material": {}
+}

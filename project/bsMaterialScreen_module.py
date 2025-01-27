@@ -49,7 +49,7 @@ class BSMaterialWindow:
             self.create_bs_section(self.root, f"Section {i + 1}", i * 5 + 1)
 
         # Add OK button to switch frames
-        ok_button = tk.Button(self.root, text="OK", command=lambda: switch_frame(self.next_frame))
+        ok_button = tk.Button(self.root, text="OK", command=lambda: self.switch_frame(self.next_frame))
         ok_button.grid(row=no_of_sections * 5 + 2, column=0, columnspan=3, pady=20)
 
     def create_bs_section(self, parent, section_title, row):

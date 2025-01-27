@@ -1,0 +1,129 @@
+{
+    "project_info": {
+        "project_name": "awd",
+        "client": "ddawd",
+        "designer_name": "awd"
+    },
+    "riser_info": {
+        "Riser Identification": "awd",
+        "Outer Diameter": "wda",
+        "Outer Diameter Tolerance": "wd",
+        "Mass Per Unit Length": "awda",
+        "Axial Stiffness": "wdw",
+        "Bending Stiffness": "da",
+        "Torsial Stiffness": "wdwa",
+        "Riser Length": "d"
+    },
+    "riser_capacities": {
+        "normal": [
+            [
+                0.08197,
+                0.0
+            ],
+            [
+                0.07752,
+                87.0
+            ],
+            [
+                0.07353,
+                174.0
+            ],
+            [
+                0.06944,
+                261.0
+            ],
+            [
+                0.06536,
+                348.0
+            ],
+            [
+                0.05714,
+                522.0
+            ],
+            [
+                0.04902,
+                696.0
+            ],
+            [
+                0.04082,
+                870.0
+            ],
+            [
+                0.03268,
+                1044.0
+            ],
+            [
+                0.02451,
+                1218.0
+            ]
+        ],
+        "abnormal": [
+            [
+                0.11765,
+                0.0
+            ],
+            [
+                0.11236,
+                133.0
+            ],
+            [
+                0.10753,
+                266.0
+            ],
+            [
+                0.10204,
+                399.0
+            ],
+            [
+                0.09709,
+                532.0
+            ],
+            [
+                0.08696,
+                798.0
+            ],
+            [
+                0.07519,
+                1064.0
+            ],
+            [
+                0.0625,
+                1330.0
+            ],
+            [
+                0.05,
+                1596.0
+            ],
+            [
+                0.03125,
+                1676.0
+            ]
+        ],
+        "interpolation": []
+    },
+    "bs_dimension": {
+        "Input root length:": "efs",
+        "Input tip length:": "efs",
+        "Input MIN root OD:": "efs",
+        "Input MAX root OD:": "efse",
+        "Input MIN overall length:": "fsef",
+        "Input MAX overall length:": "sefsef",
+        "Input clearance:": "sefs",
+        "Input thidm(??):": "efsefse",
+        "BS ID:": "fsefsef"
+    },
+    "bs_material": {
+        "Section 1": {
+            "material_characteristics": "Titanium",
+            "elastic_modules": "3"
+        },
+        "Section 2": {
+            "material_characteristics": "Silicon",
+            "elastic_modules": "4"
+        },
+        "Section 3": {
+            "material_characteristics": "Steel",
+            "elastic_modules": "2"
+        }
+    }
+}
