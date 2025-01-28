@@ -101,29 +101,73 @@
         ],
         "interpolation": []
     },
+    "riser_response": {
+        "normal": [
+            [
+                4.0,
+                18.0,
+                23.0,
+                23.0,
+                16.0,
+                10.0,
+                2.0
+            ],
+            [
+                550.0,
+                650.0,
+                750.0,
+                850.0,
+                1000.0,
+                1050.0,
+                1100.0
+            ]
+        ],
+        "abnormal": [
+            [
+                15.0,
+                20.0,
+                25.0,
+                26.0,
+                25.0,
+                20.0,
+                5.0
+            ],
+            [
+                470.0,
+                490.0,
+                700.0,
+                800.0,
+                930.0,
+                1020.0,
+                1140.0
+            ]
+        ]
+    },
     "bs_dimension": {
-        "Input root length:": "efs",
-        "Input tip length:": "efs",
-        "Input MIN root OD:": "efs",
-        "Input MAX root OD:": "efse",
-        "Input MIN overall length:": "fsef",
-        "Input MAX overall length:": "sefsef",
-        "Input clearance:": "sefs",
-        "Input thidm(??):": "efsefse",
-        "BS ID:": "fsefsef"
+        "Input root length:": "sef",
+        "Input tip length:": "sef",
+        "Input MIN root OD:": "ef",
+        "Input MAX root OD:": "sefs",
+        "Input MIN overall length:": "efse",
+        "Input MAX overall length:": "fsefse",
+        "Input clearance:": "fse",
+        "Input thidm(??):": "fse",
+        "BS ID:": "fsef",
+        "Increment Width:": "sefse",
+        "Increment Length:": "fsef"
     },
     "bs_material": {
         "Section 1": {
-            "material_characteristics": "Titanium",
-            "elastic_modules": "3"
+            "material_characteristics": "Silicon",
+            "elastic_modules": "1"
         },
         "Section 2": {
-            "material_characteristics": "Silicon",
-            "elastic_modules": "4"
+            "material_characteristics": "Titanium",
+            "elastic_modules": "23"
         },
         "Section 3": {
-            "material_characteristics": "Steel",
-            "elastic_modules": "2"
+            "material_characteristics": "Copper",
+            "elastic_modules": "3"
         }
     }
 }
