@@ -23,6 +23,7 @@ thresholds = {
     "case_files\\Case7": {"maximum_curvature": 0.030050334},
 }
 min_width, max_width, min_length, max_length, width_increment, length_increment = 0.5, 8, 0.5, 8, 0.025, 0.25
+min_width, max_width, min_length, max_length, width_increment, length_increment = 1.4, 1.5, 10, 11, 0.05, 0.5
 
 
 def print_data(groups):
@@ -30,6 +31,37 @@ def print_data(groups):
         print(f"Case Group: {case_group}")
         print(group)
 
+def extract_key_results(case_file):
+        try:
+            with open(case_file, 'r') as res_file:
+                res_lines = res_file.readlines()
+
+            keyres1 = None
+            keyres2 = None
+
+            # Search for key results in the log file
+            for line in res_lines:
+                if re.search(r'Maximum BS curvature', line):
+                    keyres1 = line.strip().split(':')[-1].strip()
+                if re.search(r'Maximum curvature', line):
+                    keyres2 = line.strip().split(':')[-1].strip()
+
+            if keyres1 and keyres2:
+                return {
+                    "case_name": case_file.rstrip('.log'),
+                    "maximum_bs_curvature": keyres1,
+                    "maximum_curvature": keyres2
+                }
+            else:
+                print(f"Key results not found in {case_file}")
+                return None
+
+        except FileNotFoundError:
+            print(f"File not found: {case_file}")
+            return None
+        except Exception as e:
+            print(f"Error processing {case_file}: {e}")
+            return None
 
 def save_search_log(case_group, log_data):
     """Save the search log to a CSV file, appending to it if it already exists."""
@@ -55,12 +87,49 @@ def redefine_group_as_2d_array(group):
         width_length_dict[width][length] = row
     return width_length_dict
 
+def runBSEngine(case):
+        current_directory = os.getcwd()
+        process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
+        stdout, stderr = process.communicate()
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        if process.returncode != 0:
+            print(f"Error encountered with case: {case}. FIKS AT DEN KJØRES PÅ NYTT PÅ EN ELLER ANNEN MÅTE DITT NEK.")
+        
+        case_file = case.strip().replace('.inp', '.log')
+        result = extract_key_results(case_file)
+        result = float(result['maximum_curvature'])
+        return result
 
-def find_shortest_valid_result(group, case_group):
+def check_min_length_column(group, case_group, groups):
+    case_group_data = groups.get_group(case_group)
+    case_2d_array = redefine_group_as_2d_array(case_group_data)
+    threshold = thresholds[case_group]['maximum_curvature']
+
+    current_width = min_width
+    current_length = min_length
+
+    while current_width <= max_width:
+        rounded_length = round(current_length, 5)
+
+        if min_width in case_2d_array and rounded_length in case_2d_array[min_width]:
+            curvature = runBSEngine(case_2d_array[min_width][rounded_length]["case_name"])
+
+            if curvature <= threshold:
+                print("valid bs found in min length, case should be dismissed")
+            else:
+                current_width += width_increment
+
+    # List to store checked values
+    search_log = []
+
+
+
+
+def find_shortest_valid_result(group, case_group, groups):
     """Find the shortest valid result for each case group and log the search path."""
     case_group_data = groups.get_group(case_group)
     case_2d_array = redefine_group_as_2d_array(case_group_data)
-    min_width, max_width, min_length, max_length, width_increment, length_increment = 0.5, 2, 8, 17, 0.025, 0.25
     threshold = thresholds[case_group]['maximum_curvature']
 
     best_result = None
@@ -71,23 +140,23 @@ def find_shortest_valid_result(group, case_group):
     search_log = []
 
     # Check top left corner
-    search_log.append([case_group, min_width, min_length, case_2d_array[min_width][min_length]['maximum_curvature'], "Checked"])
-    if case_2d_array[min_width][min_length]['maximum_curvature'] <= threshold:
+    search_log.append([case_group, min_width, min_length, case_2d_array[min_width][min_length]['case_name'], "Checked"])
+    if runBSEngine(case_2d_array[min_width][min_length]['case_name']) <= threshold:
         print("first result is valid (top left). case should be dismissed")
         save_search_log(case_group, search_log)
         return case_2d_array[min_width][min_length]
 
     # Check bottom left corner
-    search_log.append([case_group, max_width, min_length, case_2d_array[max_width][min_length]['maximum_curvature'], "Checked"])
-    if case_2d_array[max_width][min_length]['maximum_curvature'] <= threshold:
+    search_log.append([case_group, max_width, min_length, case_2d_array[max_width][min_length]['case_name'], "Checked"])
+    if runBSEngine(case_2d_array[max_width][min_length]['case_name']) <= threshold:
         print("max width min length valid (bottom left). case should be dismissed")
         save_search_log(case_group, search_log)
         return case_2d_array[max_width][min_length]
 
     # Check top right corner
-    search_log.append([case_group, max_width, max_length, case_2d_array[max_width][max_length]['maximum_curvature'], "Checked"])
-    if case_2d_array[max_width][max_length]['maximum_curvature'] > threshold:
-        print("max width max length invalid (top right). case should be dismissed")
+    search_log.append([case_group, max_width, max_length, case_2d_array[max_width][max_length]['case_name'], "Checked"])
+    if runBSEngine(case_2d_array[max_width][max_length]['case_name']) > threshold:
+        print("max width max length valid (top right). case should be dismissed")
         save_search_log(case_group, search_log)
         return None
     
@@ -97,14 +166,13 @@ def find_shortest_valid_result(group, case_group):
         rounded_length = round(current_length, 5)
 
         if rounded_width in case_2d_array and rounded_length in case_2d_array[rounded_width]:
-            row = case_2d_array[rounded_width][rounded_length]
-            curvature = row['maximum_curvature']
+            curvature = runBSEngine(case_2d_array[rounded_width][rounded_length]["case_name"])
 
             # Log each checked entry
             search_log.append([case_group, rounded_width, rounded_length, curvature, "Checked"])
 
             if curvature <= threshold:
-                best_result = row
+                best_result = case_2d_array[rounded_width][rounded_length]
                 current_length -= length_increment
             else:
                 current_width += width_increment
@@ -114,38 +182,42 @@ def find_shortest_valid_result(group, case_group):
     save_search_log(case_group, search_log)
     return best_result
 
-def save_results_to_excel(csv_file, excel_file, thresholds):
-    """Save the results to an Excel file and apply conditional formatting."""
-    data = pd.read_csv(csv_file)
-    writer = pd.ExcelWriter(excel_file, engine='openpyxl')
-    data.to_excel(writer, index=False, sheet_name='Results')
+def test_BS_against_all_cases(casegroupname,width,length, groups):
+    for casegroup in groups:
+        print(f"Testing casegroup {casegroup}")
 
-    workbook = writer.book
-    sheet = writer.sheets['Results']
 
-    green_fill = PatternFill(start_color='00FF00', end_color='00FF00', fill_type='solid')
-    red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
 
-    for _, row in data.iterrows():
-        row_idx = row.name + 2  # Adjust for header row
-        cell = sheet.cell(row=row_idx, column=4, value=row['Curvature'])
+def loadBSCases():
+    """loads all the bsengine cases and splits tyhem into groups and extracts the width and length from the case name"""
+    file_path = 'bsengine-cases.txt'
+    cases = []
+    with open(file_path, 'r') as file:
+        cases = file.readlines()
 
-        # Apply formatting
-        case_group = row['Case Group']
-        if case_group in thresholds:
-            threshold = thresholds[case_group]
-            if row['Curvature'] <= threshold['maximum_curvature']:
-                cell.fill = green_fill
-            else:
-                cell.fill = red_fill
+    data = []
+    for case in cases:
+        case_name = case.strip()
+        case_group = case_name.split('-')[0]
+        width = float(case_name.split('-')[1])
+        length = float(case_name.split('-')[2])
+        data.append({"case_name": case_name, "case_group": case_group, "width": width, "length": length})
 
-    # Ensure at least one sheet is visible
-    if not workbook.sheetnames:
-        workbook.create_sheet(title='Sheet1')
+    df = pd.DataFrame(data)
 
-    # Save the Excel file
-    writer.close()
-    
+    # Separate the data into groups based on the extracted case name
+    groups = df.groupby('case_group')
+
+    test_BS_against_all_cases("Case1",1.4,10,groups)
+    #for case in thresholds.keys():
+     #   shortest_valid_result = find_shortest_valid_result(groups.get_group(case), case, groups)
+      #  print(f"Shortest valid result for {case}: {shortest_valid_result}\n")
+
+loadBSCases()
+
+
+"""
+
 
 # Load the CSV file
 file_path = 'bsengine-summary.csv'
@@ -160,11 +232,10 @@ data['length'] = data['case_name'].apply(lambda x: float(x.split('-')[2]))
 # Separate the data into groups based on the extracted case name
 groups = data.groupby('case_group')
 
-groups = data.groupby('case_group')
-
 # Run the search for each case
 for case in thresholds.keys():
     shortest_valid_result = find_shortest_valid_result(groups.get_group(case), case)
     print(f"Shortest valid result for {case}: {shortest_valid_result}\n")
 
-save_results_to_excel('optimized_search_log.csv', 'optimized_search_log.xlsx', thresholds)
+"""
+
