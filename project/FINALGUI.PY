@@ -1,10 +1,10 @@
 import tkinter as tk
-from designBS_module import DesignWindow
-from riserCapacities_module import riserCapacities
-from projectInfo_module import ProjectInfoWindow
-from riserInfo_module import RiserInfoWindow
-from bsMaterialScreen_module import BSMaterialWindow
-from bsDimensionScreen_module import BSDimensionWindow
+from modules.designBS_module import DesignWindow
+from modules.riserCapacities_module import riserCapacities
+from modules.projectInfo_module import ProjectInfoWindow
+from modules.riserInfo_module import RiserInfoWindow
+from modules.bsMaterialScreen_module import BSMaterialWindow
+from modules.bsDimensionScreen_module import BSDimensionWindow
 
 def switch_frame(frame):
     frame.tkraise()

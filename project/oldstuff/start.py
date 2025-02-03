@@ -10,7 +10,7 @@ from openpyxl.styles import PatternFill
 from openpyxl import load_workbook, Workbook
 import tkinter as tk
 import logging
-from maxcurve_module import DataPlotter
+from modules.maxcurve_module import DataPlotter
 
 ######################################################
 # INPUT UMBILICAL DATA

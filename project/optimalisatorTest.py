@@ -10,7 +10,7 @@ from openpyxl.styles import PatternFill
 from openpyxl import load_workbook, Workbook
 import tkinter as tk
 import logging
-from maxcurve_module import DataPlotter
+from modules.maxcurve_module import DataPlotter
 
 
 thresholds = {
@@ -123,9 +123,6 @@ def check_min_length_column(group, case_group, groups):
     # List to store checked values
     search_log = []
 
-
-
-
 def find_shortest_valid_result(group, case_group, groups):
     """Find the shortest valid result for each case group and log the search path."""
     case_group_data = groups.get_group(case_group)
@@ -190,8 +187,6 @@ def test_BS_against_all_cases(casegroupname,width,length, groups):
             print(f"Testing casegroup {casegroup["case_group"]}-{width}-{length}")
             #runBSEngine(groups.get_group(casegroup).iloc[0]["case_name"])
         print(f"Testing casegroup {casegroup}")
-
-
 
 def loadBSCases():
     """loads all the bsengine cases and splits tyhem into groups and extracts the width and length from the case name"""
