@@ -224,13 +224,13 @@ class AnalysisScreen:
             lbl.pack(fill="x", padx=40, pady=5)
 
     def display_riser_capacities(self, parent, capacities):
-        lbl_section_title = tk.Label(parent, text="Riser Capacities", font=("Arial", 12, "bold"), anchor="w")
+        lbl_section_title = tk.Label(parent, text="Riser capacities", font=("Arial", 12, "bold"), anchor="w")
         lbl_section_title.pack(fill="x", padx=20, pady=5)
         for key, values in capacities.items():
             lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"), anchor="w")
             lbl_key.pack(fill="x", padx=40, pady=5)
-            for value in values:
-                lbl_value = tk.Label(parent, text=f"Curvature: {value[0]}, Tension: {value[1]}", anchor="w")
+            for angle, tension in zip(values[0], values[1]):
+                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}", anchor="w")
                 lbl_value.pack(fill="x", padx=60, pady=2)
 
     def display_riser_response(self, parent, response):

@@ -148,25 +148,23 @@ class riserCapacities:
         
     def set_data(self, data):
         """Set data to the input fields."""
-        normal_data = data.get("normal", [])
-        abnormal_data = data.get("abnormal", [])
-        interpolation_data = data.get("interpolation", [])
+        normal_angles = data.get("normal", [[], []])[0]
+        normal_tensions = data.get("normal", [[], []])[1]
+        abnormal_angles = data.get("abnormal", [[], []])[0]
+        abnormal_tensions = data.get("abnormal", [[], []])[1]
 
-        for row, (curvature, tension) in zip(self.normal_rows, normal_data):
+        for row, angle, tension in zip(self.normal_rows, normal_angles, normal_tensions):
             row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
+            row[0].insert(0, angle)
             row[1].delete(0, tk.END)
             row[1].insert(0, tension)
 
-        for row, (curvature, tension) in zip(self.abnormal_rows, abnormal_data):
+        for row, angle, tension in zip(self.abnormal_rows, abnormal_angles, abnormal_tensions):
             row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
+            row[0].insert(0, angle)
             row[1].delete(0, tk.END)
             row[1].insert(0, tension)
 
-        for entry, tension in zip(self.interpolation_rows, interpolation_data):
-            entry.delete(0, tk.END)
-            entry.insert(0, tension)
     def autofill_data(self):
         """Autofill the input fields with predefined data."""
         normal_data = [
@@ -213,25 +211,25 @@ class riserCapacities:
         
     def get_data_from_entries(self, rows):
         """Extract data from entry rows."""
-        data = []
+        curvature = []
+        tension = []
         for curvature_entry, tension_entry in rows:
             try:
                 curvature_value = float(curvature_entry.get())
                 tension_value = float(tension_entry.get())
-                data.append((curvature_value, tension_value))
+                curvature.append(curvature_value)
+                tension.append(tension_value)
             except ValueError:
                 continue
-        return data
+        return curvature, tension
 
     def get_data(self):
         """Return all data from the input fields."""
         normal_data = self.get_data_from_entries(self.normal_rows)
         abnormal_data = self.get_data_from_entries(self.abnormal_rows)
-        interpolation_data = [float(entry.get()) for entry in self.interpolation_rows if entry.get().strip() != ""]
         return {
             "normal": normal_data,
-            "abnormal": abnormal_data,
-            "interpolation": interpolation_data
+            "abnormal": abnormal_data
         }
 def main():
     root = tk.Tk()

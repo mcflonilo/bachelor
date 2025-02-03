@@ -79,8 +79,8 @@ class DesignWindow:
                                   bg="#333333", fg="white", command=self.load_data)
         btn_load_data.grid(row=1, column=3, pady=10)
 
-        btn_print_data = tk.Button(self.frame, text="PRINT DATA", width=30, height=2,
-                                      bg="#333333", fg="white", command=self.print_data)
+        btn_print_data = tk.Button(self.frame, text="check DATA", width=30, height=2,
+                                      bg="#333333", fg="white", command=self.check_data)
         btn_print_data.grid(row=3, column=3, pady=10)
 
     def get_data(self):
@@ -95,7 +95,7 @@ class DesignWindow:
         print(data)
         return data
     
-    def print_data(self):
+    def check_data(self):
         data = self.get_data()
         all_valid = True  # Track if all fields are valid
 
