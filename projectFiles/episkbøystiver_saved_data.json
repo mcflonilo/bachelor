@@ -1,0 +1,141 @@
+{
+    "project_info": {
+        "project_name": "episkb\u00f8ystiver",
+        "client": "knut ivar",
+        "designer_name": "lars opheim"
+    },
+    "riser_info": {
+        "Riser Identification": "riser1",
+        "Outer Diameter": "0.22",
+        "Outer Diameter Tolerance": "0.003",
+        "Mass Per Unit Length": "88.4",
+        "Axial Stiffness": "1040000",
+        "Bending Stiffness": "185",
+        "Torsial Stiffness": "143",
+        "Riser Length": "5"
+    },
+    "riser_capacities": {
+        "normal": [
+            [
+                0.08197,
+                0.07752,
+                0.07353,
+                0.06944,
+                0.06536,
+                0.05714,
+                0.04902,
+                0.04082,
+                0.03268,
+                0.02451
+            ],
+            [
+                0.0,
+                87.0,
+                174.0,
+                261.0,
+                348.0,
+                522.0,
+                696.0,
+                870.0,
+                1044.0,
+                1218.0
+            ]
+        ],
+        "abnormal": [
+            [
+                0.11765,
+                0.11236,
+                0.10753,
+                0.10204,
+                0.09709,
+                0.08696,
+                0.07519,
+                0.0625,
+                0.05,
+                0.03125
+            ],
+            [
+                0.0,
+                133.0,
+                266.0,
+                399.0,
+                532.0,
+                798.0,
+                1064.0,
+                1330.0,
+                1596.0,
+                1676.0
+            ]
+        ],
+        "interpolation": []
+    },
+    "riser_response": {
+        "normal": [
+            [
+                4.0,
+                18.0,
+                23.0,
+                23.0,
+                16.0,
+                10.0,
+                2.0
+            ],
+            [
+                550.0,
+                650.0,
+                750.0,
+                850.0,
+                1000.0,
+                1050.0,
+                1100.0
+            ]
+        ],
+        "abnormal": [
+            [
+                15.0,
+                20.0,
+                25.0,
+                26.0,
+                25.0,
+                20.0,
+                5.0
+            ],
+            [
+                470.0,
+                490.0,
+                700.0,
+                800.0,
+                930.0,
+                1020.0,
+                1140.0
+            ]
+        ]
+    },
+    "bs_dimension": {
+        "Input root length:": "0.650",
+        "Input tip length:": "0.150",
+        "Input MIN root OD:": "1",
+        "Input MAX root OD:": "2",
+        "Input MIN overall length:": "10",
+        "Input MAX overall length:": "13",
+        "Input clearance:": "10",
+        "Input thidm(??):": "fse",
+        "BS ID:": "101",
+        "Increment Width:": "0.10",
+        "Increment Length:": "0.250"
+    },
+    "bs_material": {
+        "Section 1": {
+            "material_characteristics": "Silicon",
+            "elastic_modules": "1"
+        },
+        "Section 2": {
+            "material_characteristics": "Titanium",
+            "elastic_modules": "23"
+        },
+        "Section 3": {
+            "material_characteristics": "Copper",
+            "elastic_modules": "3"
+        }
+    }
+}

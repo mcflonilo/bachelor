@@ -34,8 +34,6 @@ class ProjectInfoWindow:
         frame_buttons.grid(row=4, column=0, columnspan=2, pady=20)
         btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
         btn_ok.grid(row=0, column=0, padx=10)
-        btn_cancel = tk.Button(frame_buttons, text="CANCEL", width=10, height=2, bg="#333333", fg="white", command=root.quit)
-        btn_cancel.grid(row=0, column=1, padx=10)
 
     def get_data(self):
         """Return all data from the input fields."""

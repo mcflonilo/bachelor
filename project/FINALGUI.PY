@@ -31,6 +31,8 @@ def main():
     root = tk.Tk()
     root.title("GUI with Buttons and Input Fields")
 
+    root.protocol("WM_DELETE_WINDOW", root.quit)
+
     # Create main frame
     main_frame = tk.Frame(root)
     main_frame.grid(row=0, column=0, sticky="nsew")
@@ -43,7 +45,8 @@ def main():
     main_frame.tkraise()
 
     root.mainloop()
-
+    print("Application closed")
+    root.destroy()  
 # Main application window
 
 

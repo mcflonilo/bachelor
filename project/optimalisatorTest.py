@@ -184,6 +184,11 @@ def find_shortest_valid_result(group, case_group, groups):
 
 def test_BS_against_all_cases(casegroupname,width,length, groups):
     for casegroup in groups:
+        if casegroup == casegroupname:
+            pass
+        else:
+            print(f"Testing casegroup {casegroup["case_group"]}-{width}-{length}")
+            #runBSEngine(groups.get_group(casegroup).iloc[0]["case_name"])
         print(f"Testing casegroup {casegroup}")
 
 
