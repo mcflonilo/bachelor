@@ -88,6 +88,7 @@ class DesignWindow:
             "bs_dimension": self.bsDimension_app.get_data(),
             "bs_material": self.bsMaterial_app.get_data()
         }
+        print(data)
         return data
     
     def show_frame(self, target_frame):
@@ -221,6 +222,7 @@ class DesignWindow:
             self.bsDimension_app.set_data(data["bs_dimension"])
             self.bsMaterial_app.set_data(data["bs_material"])
             print(f"Data loaded from {filename}")
+            self.check_data()
 
     def create_analysis_screen(self):
         data = self.get_data()

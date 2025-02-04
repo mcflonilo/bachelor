@@ -18,7 +18,6 @@ class riserCapacities:
         # Initialize rows for normal and abnormal operations
         self.normal_rows = []
         self.abnormal_rows = []
-        self.interpolation_rows = []
 
         # Create headers for Normal Operation
         ttk.Label(self.input_frame, text="Normal Operation").grid(row=0, column=0, columnspan=3, pady=5)
@@ -36,19 +35,7 @@ class riserCapacities:
 
         # Autofill button
         ttk.Button(self.input_frame, text="Autofill Data", command=self.autofill_data).grid(row=300, column=0, columnspan=3, pady=10)
-
-        # Interpolation section
-        ttk.Label(self.input_frame, text="Interpolation").grid(row=200, column=0, columnspan=3, pady=10)
-        ttk.Label(self.input_frame, text="Input Tension [kN]").grid(row=201, column=0, padx=5)
-        self.interpolation_rows_frame = ttk.Frame(self.input_frame)
-        self.interpolation_rows_frame.grid(row=202, column=0, columnspan=3)
-
-        # Add initial interpolation field
-        self.add_interpolation_field()
-
-        ttk.Button(self.input_frame, text="Add Interpolation Field", command=self.add_interpolation_field).grid(row=203, column=0, columnspan=3, pady=5)
-        ttk.Button(self.input_frame, text="Interpolate & Plot", command=self.interpolate_and_plot).grid(row=204, column=0, columnspan=3, pady=5)
-
+        
         # Plot button
         ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).grid(row=400, column=0, columnspan=3, pady=10)
 
@@ -87,14 +74,6 @@ class riserCapacities:
         tension_entry.grid(row=row_index, column=1, padx=5, pady=2)
         self.abnormal_rows.append((curvature_entry, tension_entry))
 
-    def add_interpolation_field(self):
-        """Add a new input field for interpolation."""
-        frame = self.interpolation_rows_frame
-        row_index = len(self.interpolation_rows)
-        tension_entry = ttk.Entry(frame, width=10)
-        tension_entry.grid(row=row_index, column=0, padx=5, pady=2)
-        self.interpolation_rows.append(tension_entry)
-
     def get_data_from_entries(self, rows):
         """Extract data from entry rows."""
         curvature = []
@@ -109,43 +88,6 @@ class riserCapacities:
                 continue
         return curvature, tension
 
-    def get_tension_from_interpolation_rows(self):
-        """Extract tension values from interpolation rows."""
-        tensions = []
-        for entry in self.interpolation_rows:
-            try:
-                tension_value = float(entry.get())
-                tensions.append(tension_value)
-            except ValueError:
-                continue
-        return tensions
-
-    def interpolate_and_plot(self):
-        """Interpolate curvature based on tension and plot the results."""
-        tensions = self.get_tension_from_interpolation_rows()
-
-        curvature_normal, tension_normal = self.get_data_from_entries(self.normal_rows)
-        curvature_abnormal, tension_abnormal = self.get_data_from_entries(self.abnormal_rows)
-
-        normal_sorted = sorted(zip(tension_normal, curvature_normal))
-        abnormal_sorted = sorted(zip(tension_abnormal, curvature_abnormal))
-
-        tension_normal, curvature_normal = zip(*normal_sorted) if normal_sorted else ([], [])
-        tension_abnormal, curvature_abnormal = zip(*abnormal_sorted) if abnormal_sorted else ([], [])
-
-        self.ax.scatter([], [], color='blue', label="Interpolated Normal")
-        self.ax.scatter([], [], color='red', label="Interpolated Abnormal")
-
-        for tension in tensions:
-            if tension_normal:
-                interpolated_normal = np.interp(tension, tension_normal, curvature_normal)
-                self.ax.scatter(interpolated_normal, tension, color='blue', zorder=5)
-            if tension_abnormal:
-                interpolated_abnormal = np.interp(tension, tension_abnormal, curvature_abnormal)
-                self.ax.scatter(interpolated_abnormal, tension, color='red', zorder=5)
-
-        self.ax.legend()
-        self.canvas.draw()
         
     def set_data(self, data):
         """Set data to the input fields."""
@@ -234,7 +176,10 @@ class riserCapacities:
         }
 def main():
     root = tk.Tk()
-    app = riserCapacities(root)
+    prev_frame = ttk.Frame(root)
+    prev_frame.grid(row=0, column=0, sticky="nsew")
+    show_frame = ttk.Frame(root)
+    app = riserCapacities(root, prev_frame, show_frame)
     root.mainloop()
 
 if __name__ == "__main__":

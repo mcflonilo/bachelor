@@ -1,6 +1,10 @@
 import tkinter as tk
 import os
-
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
+from scipy.interpolate import interp1d
 def switch_frame(frame):
     frame.tkraise()
 
@@ -159,7 +163,24 @@ def generate_case_files(length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, M
 
     inp.close()
     inp1.close()
-       
+
+def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, incrementSize_fieldWidth):
+    cl = min_cl
+    od = min_od
+    cl_array = []
+    od_array = []
+    while cl <= max_cl:
+        cl_array.append(round(cl, 3))
+        cl += incrementSize_fieldLength
+    while od <= max_od:
+        od_array.append(round(od, 3))
+        od += incrementSize_fieldWidth
+
+    print(cl_array)
+    print(od_array)
+
+    return cl_array, od_array
+    
 
 class AnalysisScreen:
     def __init__(self, root, prev_frame, data):
@@ -216,7 +237,44 @@ class AnalysisScreen:
         btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: switch_frame(prev_frame))
         btn_return.pack(pady=20)
 
-        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: generate_case_files(5, 1040000, 185, 143, 88.4, [0.08197, 0.07752, 0.07353, 0.06944, 0.06536, 0.05714, 0.04902, 0.04082, 0.03268, 0.02451], 101, 0.65, 1, 2, 10, 13, 0.15, ['Steel', 'Titanium'], ['60D_15', '60D_30']))
+        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: generate_case_files())
+        self.abnormal_max_curve, self.normal_max_curve = self.interpolate_max_curve(riser_capacities, riser_response)
+
+        print(bs_dimensions.get("Input MIN overall length"))
+
+        self.length = riser_info.get("Riser Length")
+        self.EA = riser_info.get("Axial Stiffness")
+        self.EI = riser_info.get("Bending Stiffness")
+        self.GT = riser_info.get("Torsial Stiffness")
+        self.m = riser_info.get("Mass Per Unit Length")
+        self.cases = [0, 8, 16.5, 19, 19.1, 18.6, 17.5, 14]
+        self.ID = 1
+        self.SL = 10
+        self.CL, self.OD = cl_od_to_array(bs_dimensions.get("Input MIN overall length"), 
+                                          bs_dimensions.get("Input MAX overall length"), 
+                                          bs_dimensions.get("Input MIN root OD"), 
+                                          bs_dimensions.get("Input MAX root OD"), 
+                                          bs_dimensions.get("Increment Length"), 
+                                          bs_dimensions.get("Increment Width"))
+        self.TL = bs_dimensions.get("Input tip length")
+        self.TOD = 0.15
+        self.MAT = ['Steel', 'Titanium']
+        self.MATID = [101, 102]
+
+        print("Length: ", self.length)
+        print("EA: ", self.EA)
+        print("EI: ", self.EI)
+        print("GT: ", self.GT)
+        print("m: ", self.m)
+        print("Cases: ", self.cases)
+        print("ID: ", self.ID)
+        print("SL: ", self.SL)
+        print("CL: ", self.CL)
+        print("OD: ", self.OD)
+        print("TL: ", self.TL)
+        print("TOD: ", self.TOD)
+        print("MAT: ", self.MAT)
+        print("MATID: ", self.MATID)
 
     def display_section(self, parent, title, section_data):
         lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
@@ -255,6 +313,31 @@ class AnalysisScreen:
                 lbl = tk.Label(parent, text=f"{key}: {value}", anchor="w")
                 lbl.pack(fill="x", padx=60, pady=2)
 
+    def interpolate_max_curve(self, capacities, response):
+        normal_capacities = capacities.get("normal", [[], []])
+        abnormal_capacities = capacities.get("abnormal", [[], []])
+
+        normal_response_tensions = response.get("normal", [[], []])
+        abnormal_response_tensions = response.get("abnormal", [[], []])
+
+        normal_response_tensions = normal_response_tensions[1]
+        abnormal_response_tensions = abnormal_response_tensions[1]
+
+        tension_normal = normal_capacities[1]
+        tension_abnormal = abnormal_capacities[1]
+        curvature_normal = normal_capacities[0] 
+        curvature_abnormal = abnormal_capacities[0]
+
+        f_linear_normal = interp1d(tension_normal, curvature_normal, kind='linear')
+        f_linear_abnormal = interp1d(tension_abnormal, curvature_abnormal, kind='linear')
+
+        # Using linear interpolation
+        new_curvatures_linear_normal = f_linear_normal(normal_response_tensions)
+        new_curvatures_linear_abnormal = f_linear_abnormal(abnormal_response_tensions)
+
+        return new_curvatures_linear_normal, new_curvatures_linear_abnormal
+
+
 def main():
     root = tk.Tk()
     prev_frame = tk.Frame(root)
@@ -276,12 +359,18 @@ def main():
     },
     'riser_capacities': {
         'normal': [
-            (0.08197, 0.0), (0.07752, 87.0), (0.07353, 174.0), (0.06944, 261.0), (0.06536, 348.0),
-            (0.05714, 522.0), (0.04902, 696.0), (0.04082, 870.0), (0.03268, 1044.0), (0.02451, 1218.0)
+            [0.08197, 0.07752, 0.07353, 0.06944, 0.06536, 0.05714, 0.04902, 0.04082, 0.03268, 0.02451], [0.0, 87.0, 174.0, 261.0, 348.0, 522.0, 696.0, 870.0, 1044.0, 1218.0]
         ],
         'abnormal': [
-            (15.0, 470.0), (20.0, 490.0), (25.0, 700.0), (26.0, 800.0), (25.0, 930.0),
-            (20.0, 1020.0), (5.0, 1140.0)
+            [0.11765, 0.11236, 0.10753, 0.10204, 0.09709, 0.08696, 0.07519, 0.0625, 0.05, 0.03125], [0.0, 133.0, 266.0, 399.0, 532.0, 798.0, 1064.0, 1330.0, 1596.0, 1676.0]
+        ],
+    },
+    'riser_response': {
+        'normal': [
+            [4.0, 18.0, 23.0, 23.0, 16.0, 10.0, 2.0], [550.0, 650.0, 750.0, 850.0, 1000.0, 1050.0, 1100.0]
+        ],
+        'abnormal': [
+            [15.0, 20.0, 25.0, 26.0, 25.0, 20.0, 5.0], [470.0, 490.0, 700.0, 800.0, 930.0, 1020.0, 1140.0]
         ],
     },
     'bs_dimension': {
