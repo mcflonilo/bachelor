@@ -1,12 +1,11 @@
 import tkinter as tk
 
-def switch_frame(frame):
-    frame.tkraise()
 
 class BSDimensionWindow:
-    def __init__(self, root, prev_frame):
+    def __init__(self, root, prev_frame, show_frame):
         self.root = root
         self.prev_frame = prev_frame
+        self.show_frame = show_frame
 
         # Add title label
         lbl_title = tk.Label(root, text="BS Geometry Constraints:", font=("Arial", 12, "bold"), anchor="w")
@@ -27,10 +26,10 @@ class BSDimensionWindow:
             entry.grid(row=i + 1, column=1, padx=10, pady=5)
             self.entries[label_text] = entry
 
-        # Add OK and CANCEL buttons
+        # Add OK
         frame_buttons = tk.Frame(root)
         frame_buttons.grid(row=len(labels) + 1, column=0, columnspan=2, pady=20)
-        btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
+        btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), self.show_frame(prev_frame)])
         btn_ok.grid(row=0, column=0, padx=10)
 
     def get_data(self):

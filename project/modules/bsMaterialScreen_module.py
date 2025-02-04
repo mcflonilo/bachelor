@@ -1,14 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 
-def switch_frame(frame):
-    frame.tkraise()
-
 class BSMaterialWindow:
-    def __init__(self, root, switch_frame, next_frame):
+    def __init__(self, root, next_frame, show_frame):
         self.root = root
-        self.switch_frame = switch_frame
         self.next_frame = next_frame
+        self.show_frame = show_frame
 
         # Add "No. of sections to create" input
         lbl_no_of_sections = tk.Label(self.root, text="No. of sections to create:")
@@ -49,7 +46,7 @@ class BSMaterialWindow:
             self.create_bs_section(self.root, f"Section {i + 1}", i * 5 + 1)
 
         # Add OK button to switch frames
-        ok_button = tk.Button(self.root, text="OK", command=lambda: self.switch_frame(self.next_frame))
+        ok_button = tk.Button(self.root, text="OK", command=lambda: self.show_frame(self.next_frame))
         ok_button.grid(row=no_of_sections * 5 + 2, column=0, columnspan=3, pady=20)
 
     def create_bs_section(self, parent, section_title, row):
@@ -121,6 +118,7 @@ class BSMaterialWindow:
 
 
 def main():
+    switch_frame = lambda frame: frame.tkraise()
     root = tk.Tk()
     next_frame = tk.Frame(root)
     next_frame.grid(row=0, column=0, sticky="nsew")

@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class riserCapacities:
-    def __init__(self, frame, prev_frame):
+    def __init__(self, frame, prev_frame, show_frame):
         self.frame = frame
+        self.show_frame = show_frame
 
         # Create frames
         self.input_frame = ttk.Frame(self.frame)
@@ -52,7 +53,7 @@ class riserCapacities:
         ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).grid(row=400, column=0, columnspan=3, pady=10)
 
         # back button
-        ttk.Button(self.input_frame, text="Back", command=lambda: prev_frame.tkraise()).grid(row=500, column=0, columnspan=3, pady=10)
+        ttk.Button(self.input_frame, text="Back", command=lambda: self.show_frame(prev_frame)).grid(row=500, column=0, columnspan=3, pady=10)
 
         # Matplotlib figure
         self.figure, self.ax = plt.subplots(figsize=(6, 4))

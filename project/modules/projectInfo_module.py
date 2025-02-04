@@ -4,8 +4,9 @@ def switch_frame(frame):
     frame.tkraise()
 
 class ProjectInfoWindow:
-    def __init__(self, root, prev_frame):
+    def __init__(self, root, prev_frame, show_frame):
         self.root = root
+        self.show_frame = show_frame
 
         # Add title label
         lbl_title = tk.Label(self.root, text="PROJECT INFORMATION", font=("Arial", 14))
@@ -32,7 +33,7 @@ class ProjectInfoWindow:
         # Add OK and CANCEL buttons
         frame_buttons = tk.Frame(self.root)
         frame_buttons.grid(row=4, column=0, columnspan=2, pady=20)
-        btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), switch_frame(prev_frame)])
+        btn_ok = tk.Button(frame_buttons, text="OK", width=10, height=2, bg="#333333", fg="white", command=lambda: [self.get_data(), self.show_frame(prev_frame)])
         btn_ok.grid(row=0, column=0, padx=10)
 
     def get_data(self):

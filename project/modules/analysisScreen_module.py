@@ -216,6 +216,8 @@ class AnalysisScreen:
         btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: switch_frame(prev_frame))
         btn_return.pack(pady=20)
 
+        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: generate_case_files(5, 1040000, 185, 143, 88.4, [0.08197, 0.07752, 0.07353, 0.06944, 0.06536, 0.05714, 0.04902, 0.04082, 0.03268, 0.02451], 101, 0.65, 1, 2, 10, 13, 0.15, ['Steel', 'Titanium'], ['60D_15', '60D_30']))
+
     def display_section(self, parent, title, section_data):
         lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
         lbl_section_title.pack(fill="x", padx=20, pady=5)
@@ -256,14 +258,56 @@ class AnalysisScreen:
 def main():
     root = tk.Tk()
     prev_frame = tk.Frame(root)
-    prev_frame.grid(row=0, column=0, sticky="nsew")
     data = {
-        'project_info': {'project_name': 'seafs', 'client': 'efs', 'designer_name': 'efsef'},
-        'riser_info': {'Riser Identification': 'sef', 'Outer Diameter': 'sef', 'Outer Diameter Tolerance': 'fsefsef', 'Mass Per Unit Length': 'sef', 'Axial Stiffness': 'sefse', 'Bending Stiffness': 'fsefs', 'Torsial Stiffness': 'sefef', 'Riser Length': 'efefs'},
-        'riser_capacities': {'normal': [(0.08197, 0.0), (0.07752, 87.0), (0.07353, 174.0), (0.06944, 261.0), (0.06536, 348.0), (0.05714, 522.0), (0.04902, 696.0), (0.04082, 870.0), (0.03268, 1044.0), (0.02451, 1218.0)], 'abnormal': [(0.11765, 0.0), (0.11236, 133.0), (0.10753, 266.0), (0.10204, 399.0), (0.09709, 532.0), (0.08696, 798.0), (0.07519, 1064.0), (0.0625, 1330.0), (0.05, 1596.0), (0.03125, 1676.0)], 'interpolation': []},
-        'bs_dimension': {'Input root length:': 'saefsef', 'Input tip length:': 'sef', 'Input MIN root OD:': 'sefs', 'Input MAX root OD:': 'efe', 'Input MIN overall length:': 'fefsefe', 'Input MAX overall length:': 'fsefe', 'Input clearance:': 'fsd', 'Input thidm(??):': 'fefsdf', 'BS ID:': 'e'},
-        'bs_material': {'Section 1': {'material_characteristics': 'Steel', 'elastic_modules': '23'}, 'Section 2': {'material_characteristics': 'Titanium', 'elastic_modules': '3'}}
+    'project_info': {
+        'project_name': 'episkbøystiver',
+        'client': 'knut ivar',
+        'designer_name': 'lars opheim'
+    },
+    'riser_info': {
+        'Riser Identification': 'riser1',
+        'Outer Diameter': '0.22',
+        'Outer Diameter Tolerance': '0.003',
+        'Mass Per Unit Length': '88.4',
+        'Axial Stiffness': '1040000',
+        'Bending Stiffness': '185',
+        'Torsial Stiffness': '143',
+        'Riser Length': '5'
+    },
+    'riser_capacities': {
+        'normal': [
+            (0.08197, 0.0), (0.07752, 87.0), (0.07353, 174.0), (0.06944, 261.0), (0.06536, 348.0),
+            (0.05714, 522.0), (0.04902, 696.0), (0.04082, 870.0), (0.03268, 1044.0), (0.02451, 1218.0)
+        ],
+        'abnormal': [
+            (15.0, 470.0), (20.0, 490.0), (25.0, 700.0), (26.0, 800.0), (25.0, 930.0),
+            (20.0, 1020.0), (5.0, 1140.0)
+        ],
+    },
+    'bs_dimension': {
+        'Input root length:': '0.650',
+        'Input tip length:': '0.150',
+        'Input MIN root OD:': '1',
+        'Input MAX root OD:': '2',
+        'Input MIN overall length:': '10',
+        'Input MAX overall length:': '13',
+        'Input clearance:': '10',
+        'Input thidm(??):': 'fse',
+        'BS ID:': '101',
+        'Increment Width:': '0.10',
+        'Increment Length:': '0.250'
+    },
+    'bs_material': {
+        'Section 1': {
+            'material_characteristics': 'Steel',
+            'elastic_modules': '23'
+        },
+        'Section 2': {
+            'material_characteristics': 'Titanium',
+            'elastic_modules': '3'
+        }
     }
+}
     app = AnalysisScreen(root, prev_frame, data)
     root.mainloop()
 
