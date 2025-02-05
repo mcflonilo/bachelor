@@ -244,7 +244,7 @@ class AnalysisScreen:
         self.GT = riser_info.get("Torsial Stiffness")
         self.m = riser_info.get("Mass Per Unit Length")
         self.cases = [0, 8, 16.5, 19, 19.1, 18.6, 17.5, 14]
-        self.ID = 1
+        self.ID = float(riser_info.get("Outer Diameter")) + (2 * float(riser_info.get("Outer Diameter Tolerance"))) + float(bs_dimensions.get("Input clearance:"))
         self.SL = 10
         self.CL, self.OD = cl_od_to_array(float(bs_dimensions.get("Input MIN overall length:")), 
                           float(bs_dimensions.get("Input MAX overall length:")), 
@@ -376,7 +376,7 @@ def main():
         'Input MAX root OD:': '2',
         'Input MIN overall length:': '10',
         'Input MAX overall length:': '13',
-        'Input clearance:': '10',
+        'Input clearance:': '0.010',
         'Input thidm(??):': 'fse',
         'BS ID:': '101',
         'Increment Width:': '0.10',
