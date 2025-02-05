@@ -189,9 +189,6 @@ class DesignWindow:
             #print("Some data fields are missing or invalid.")
             pass
 
-
-
-
     def save_data(self):
         data = self.get_data()
         project_name = data["project_info"].get("project_name", "default_project")
