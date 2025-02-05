@@ -176,9 +176,6 @@ def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, in
         od_array.append(round(od, 3))
         od += incrementSize_fieldWidth
 
-    print(cl_array)
-    print(od_array)
-
     return cl_array, od_array
     
 
@@ -240,7 +237,6 @@ class AnalysisScreen:
         btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: generate_case_files())
         self.abnormal_max_curve, self.normal_max_curve = self.interpolate_max_curve(riser_capacities, riser_response)
 
-        print(bs_dimensions.get("Input MIN overall length"))
 
         self.length = riser_info.get("Riser Length")
         self.EA = riser_info.get("Axial Stiffness")
@@ -250,13 +246,13 @@ class AnalysisScreen:
         self.cases = [0, 8, 16.5, 19, 19.1, 18.6, 17.5, 14]
         self.ID = 1
         self.SL = 10
-        self.CL, self.OD = cl_od_to_array(bs_dimensions.get("Input MIN overall length"), 
-                                          bs_dimensions.get("Input MAX overall length"), 
-                                          bs_dimensions.get("Input MIN root OD"), 
-                                          bs_dimensions.get("Input MAX root OD"), 
-                                          bs_dimensions.get("Increment Length"), 
-                                          bs_dimensions.get("Increment Width"))
-        self.TL = bs_dimensions.get("Input tip length")
+        self.CL, self.OD = cl_od_to_array(float(bs_dimensions.get("Input MIN overall length:")), 
+                          float(bs_dimensions.get("Input MAX overall length:")), 
+                          float(bs_dimensions.get("Input MIN root OD:")), 
+                          float(bs_dimensions.get("Input MAX root OD:")), 
+                          float(bs_dimensions.get("Increment Length:")), 
+                          float(bs_dimensions.get("Increment Width:")))
+        self.TL = float(bs_dimensions.get("Input tip length:"))
         self.TOD = 0.15
         self.MAT = ['Steel', 'Titanium']
         self.MATID = [101, 102]
