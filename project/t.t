@@ -3,10 +3,11 @@
 
  Directory of C:\Users\lmoph\Desktop\github\bachelor\project
 
-29.01.2025  12:31    <DIR>          case_files
+06.02.2025  16:04    <DIR>          case_files
+03.02.2025  13:57    <DIR>          modules
+03.02.2025  13:56    <DIR>          oldstuff
 17.01.2025  14:21    <DIR>          __pycache__
-16.01.2025  10:13    <DIR>          test
 16.01.2025  10:13    <DIR>          .
 16.01.2025  10:13    <DIR>          ..
                0 File(s)              0 bytes
-               5 Dir(s)  468ÿ841ÿ504ÿ768 bytes free
+               6 Dir(s)  488ÿ224ÿ763ÿ904 bytes free

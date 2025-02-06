@@ -25,7 +25,6 @@ def create_main_screen(frame, designBS_frame):
     return frame
 
 
-
 def main():
     #create frames for all the screens
     root = tk.Tk()

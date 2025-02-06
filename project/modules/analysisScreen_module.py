@@ -10,369 +10,19 @@ import re
 import subprocess
 import os
 
-min_width, max_width, min_length, max_length, width_increment, length_increment = 0, 0, 0, 0, 0, 0
-thresholds = {}
+thresholds_normal = {}
+thresholds_abnormal = {}
 
 
 def switch_frame(frame):
     frame.tkraise()
 
-def generate_case_files(length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID):
-    inp1 = open('bsengine-cases.txt', 'w')
 
-    x = 0 # Counter
-    y = 0
-    for i in cases:
-        x = 0
-        y = y + 1
-        for j in OD:
-            x = 0
-            for k in CL:
-                x = 0
-                for l in MAT:
-                    x = 0
-                    q = MATID[x]
-                    x = x + 1
-                    # Create a directory for the case files if it doesn't exist
-                    if not os.path.exists('case_files'):
-                        os.makedirs('case_files')
 
-                    inp = open(os.path.join('case_files', "Case" + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp"), 'w')
-                    inp1.write(os.path.join('case_files', "Case" + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp") + '\n')
 
-                    inp.write('BEND STIFFENER DATA'+'\n')
-                    inp.write("' ID   NSEG"+'\n')
-                    inp.write("' inner diameter      Number of linear segments"+'\n')
-                    inp.write(str(ID) + "   3"+'\n')
-                    inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID"+'\n')
-                    inp.write(str(SL) + "  50  " + str(j) + "  " + str(j) + "  2000  LIN  10000.E06"+'\n')
-                    inp.write(str(k) + "  100  " + str(j) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
-                    inp.write(str(TL) + "  50  " + str(TOD) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
-                    inp.write("'-----------------------------------------------------------------------"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("RISER DATA"+'\n')
-                    inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass"+'\n')
-                    inp.write("' (m)         kNm^2  kN              kg/m"+'\n')
-                    inp.write(str(length) + "  100  " + str(EI) + "  " + str(EA) + "  " + str(GT) + "  " + str(m) +'\n')
-                    inp.write("'"+'\n')
-                    inp.write("' mandatory data group"+'\n')
-                    inp.write("' -------------------------------------------------"+'\n')
-                    inp.write("ELEMENT PRINT"+'\n')
-                    inp.write("'NSPEC"+'\n')
-                    inp.write("3"+'\n')
-                    inp.write("'IEL1    IEL2"+'\n')
-                    inp.write("1         9"+'\n')
-                    inp.write("10        30"+'\n')
-                    inp.write("70        80"+'\n')
-                    inp.write("' -------------------------------------------------"+'\n')
-                    inp.write("FE SYSTEM DATA TEST PRINT"+'\n')
-                    inp.write("'IFSPRI 1/2"+'\n')
-                    inp.write("1"+'\n')
-                    inp.write("'2"+'\n')
-                    inp.write("' -------------------------------------------------"+'\n')
-                    inp.write("FE ANALYSIS PARAMETERS"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'  finite element analysis parameters"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'TOLNOR  MAXIT"+'\n')
-                    inp.write("1.E-07  30"+'\n')
-                    inp.write("'DSINC,DSMIN,DSMAX,"+'\n')
-                    inp.write("0.01  0.001  0.1"+'\n')
-                    inp.write("'3.0  0.01 10."+'\n')
-                    inp.write("'5.  0.1 10."+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'----------------------------------------------"+'\n')
-                    inp.write("CURVATURE RANGE"+'\n')
-                    inp.write("'----------------------------------------------"+'\n')
-                    inp.write("'CURMAX  - Maximum curvature"+'\n')
-                    inp.write("'NCURV   - Number of curvature levels"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'CURMAX (1/m),NCURV"+'\n')
-                    inp.write("'0.5       30"+'\n')
-                    inp.write("0.2       100"+'\n')
-                    inp.write("'---------------------------------------------------"+'\n')
-                    inp.write("FORCE"+'\n')
-                    inp.write("'Relang  tension"+'\n')
-                    inp.write("'(deg)   (kN)"+'\n')
-                    inp.write(str(i) + '\n')
-                    inp.write("'8.00   400.0"+'\n')
-                    inp.write("'16.5   500.0"+'\n')
-                    inp.write("'19.0   550.0"+'\n')
-                    inp.write("'19.1   600.0"+'\n')
-                    inp.write("'18.6   650.0"+'\n')
-                    inp.write("'17.5   700.0"+'\n')
-                    inp.write("'14.0   775.0"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'----------------------------------------------------"+'\n')
-                    inp.write("MATERIAL DATA"+'\n')
-                    inp.write("'----------------------------------------------------"+'\n')
-                    inp.write("' Material identifier"+'\n')
-                    inp.write("60D_15"+'\n')
-                    inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
-                    inp.write("21"+'\n')
-                    inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
-                    inp.write("0.0 0.0"+'\n')
-                    inp.write("0.005   1.40E+03"+'\n')
-                    inp.write("0.010   2.57E+03"+'\n')
-                    inp.write("0.015   3.61E+03"+'\n')
-                    inp.write("0.020   4.55E+03"+'\n')
-                    inp.write("0.025   5.36E+03"+'\n')
-                    inp.write("0.030   6.03E+03"+'\n')
-                    inp.write("0.035   6.59E+03"+'\n')
-                    inp.write("0.040   7.02E+03"+'\n')
-                    inp.write("0.045   7.37E+03"+'\n')
-                    inp.write("0.050   7.67E+03"+'\n')
-                    inp.write("0.055   7.92E+03"+'\n')
-                    inp.write("0.060   8.13E+03"+'\n')
-                    inp.write("0.065   8.31E+03"+'\n')
-                    inp.write("0.070   8.47E+03"+'\n')
-                    inp.write("0.075   8.61E+03"+'\n')
-                    inp.write("0.080   8.74E+03"+'\n')
-                    inp.write("0.085   8.86E+03"+'\n')
-                    inp.write("0.090   8.96E+03"+'\n')
-                    inp.write("0.095   9.06E+03"+'\n')
-                    inp.write("0.100   9.10E+03"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("MATERIAL DATA"+'\n')
-                    inp.write("' Material identifier"+'\n')
-                    inp.write("60D_30"+'\n')
-                    inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
-                    inp.write("21"+'\n')
-                    inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
-                    inp.write("0.000   0.0"+'\n')
-                    inp.write("0.005   1100.0"+'\n')
-                    inp.write("0.010   2060.0"+'\n')
-                    inp.write("0.015   2910.0"+'\n')
-                    inp.write("0.020   3690.0"+'\n')
-                    inp.write("0.025   4370.0"+'\n')
-                    inp.write("0.030   4950.0"+'\n')
-                    inp.write("0.035   5420.0"+'\n')
-                    inp.write("0.040   5810.0"+'\n')
-                    inp.write("0.045   6120.0"+'\n')
-                    inp.write("0.050   6400.0"+'\n')
-                    inp.write("0.055   6640.0"+'\n')
-                    inp.write("0.060   6840.0"+'\n')
-                    inp.write("0.065   7030.0"+'\n')
-                    inp.write("0.070   7180.0"+'\n')
-                    inp.write("0.075   7330.0"+'\n')
-                    inp.write("0.080   7470.0"+'\n')
-                    inp.write("0.085   7590.0"+'\n')
-                    inp.write("0.090   7710.0"+'\n')
-                    inp.write("0.095   7810.0"+'\n')
-                    inp.write("0.100   7920.0"+'\n')
-                    inp.write("'"+'\n')
-                    inp.write("'EXPORT MATERIAL DATA"+'\n')
-                    inp.write("'--------------------------------------------------"+'\n')
-                    inp.write("' IMEX   = 1 : tabular  =2 riflex format"+'\n')
-                    inp.write("'  1"+'\n')
-                    inp.write("'---------------------------------------------"+'\n')
-                    inp.write("end"+'\n')
-                    inp.write("'mandatory data group"+'\n')
-                    inp.write("'---------------------------------------------"+'\n')
 
-    inp.close()
-    inp1.close()
 
-def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, incrementSize_fieldWidth):
-    cl = min_cl
-    od = min_od
-    cl_array = []
-    od_array = []
-    while cl <= max_cl:
-        cl_array.append(round(cl, 3))
-        cl += incrementSize_fieldLength
-    while od <= max_od:
-        od_array.append(round(od, 3))
-        od += incrementSize_fieldWidth
 
-    return cl_array, od_array
-
-def print_data(groups):
-    for case_group, group in groups:
-        print(f"Case Group: {case_group}")
-        print(group)
-
-def extract_key_results(case_file):
-        try:
-            with open(case_file, 'r') as res_file:
-                res_lines = res_file.readlines()
-
-            keyres1 = None
-            keyres2 = None
-
-            # Search for key results in the log file
-            for line in res_lines:
-                if re.search(r'Maximum BS curvature', line):
-                    keyres1 = line.strip().split(':')[-1].strip()
-                if re.search(r'Maximum curvature', line):
-                    keyres2 = line.strip().split(':')[-1].strip()
-
-            if keyres1 and keyres2:
-                return {
-                    "case_name": case_file.rstrip('.log'),
-                    "maximum_bs_curvature": keyres1,
-                    "maximum_curvature": keyres2
-                }
-            else:
-                print(f"Key results not found in {case_file}")
-                return None
-
-        except FileNotFoundError:
-            print(f"File not found: {case_file}")
-            return None
-        except Exception as e:
-            print(f"Error processing {case_file}: {e}")
-            return None
-
-def save_search_log(case_group, log_data):
-    """Save the search log to a CSV file, appending to it if it already exists."""
-    file_name = f"optimized_search_log.csv"
-    df = pd.DataFrame(log_data, columns=["Case Group", "Width", "Length", "Curvature", "Status"])
-    
-    # Append to the file if it exists, otherwise create it
-    if os.path.isfile(file_name):
-        df.to_csv(file_name, mode='a', header=False, index=False)
-    else:
-        df.to_csv(file_name, index=False)
-    
-    print(f"Search log saved to {file_name}")
-
-def redefine_group_as_2d_array(group):
-    """Redefine the group as a 2D dictionary where width is the first key and length is the second key."""
-    width_length_dict = {}
-    for index, row in group.iterrows():
-        width = round(row['width'], 5)  # Round to 5 decimal places
-        length = round(row['length'], 5)
-        if width not in width_length_dict:
-            width_length_dict[width] = {}
-        width_length_dict[width][length] = row
-    return width_length_dict
-
-def runBSEngine(case):
-        current_directory = os.getcwd()
-        process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
-        stdout, stderr = process.communicate()
-        print(f"stdout: {stdout}")
-        print(f"stderr: {stderr}")
-        if process.returncode != 0:
-            print(f"Error encountered with case: {case}. FIKS AT DEN KJØRES PÅ NYTT PÅ EN ELLER ANNEN MÅTE DITT NEK.")
-        
-        case_file = case.strip().replace('.inp', '.log')
-        result = extract_key_results(case_file)
-        result = float(result['maximum_curvature'])
-        return result
-
-def check_min_length_column(group, case_group, groups):
-    case_group_data = groups.get_group(case_group)
-    case_2d_array = redefine_group_as_2d_array(case_group_data)
-    threshold = thresholds[case_group]['maximum_curvature']
-
-    current_width = min_width
-    current_length = min_length
-
-    while current_width <= max_width:
-        rounded_length = round(current_length, 5)
-
-        if min_width in case_2d_array and rounded_length in case_2d_array[min_width]:
-            curvature = runBSEngine(case_2d_array[min_width][rounded_length]["case_name"])
-
-            if curvature <= threshold:
-                print("valid bs found in min length, case should be dismissed")
-            else:
-                current_width += width_increment
-
-    # List to store checked values
-    search_log = []
-
-def find_shortest_valid_result(group, case_group, groups):
-    """Find the shortest valid result for each case group and log the search path."""
-    case_group_data = groups.get_group(case_group)
-    case_2d_array = redefine_group_as_2d_array(case_group_data)
-    threshold = thresholds[case_group]['maximum_curvature']
-
-    best_result = None
-    current_width = min_width
-    current_length = max_length
-
-    # List to store checked values
-    search_log = []
-
-    # Check top left corner
-    search_log.append([case_group, min_width, min_length, case_2d_array[min_width][min_length]['case_name'], "Checked"])
-    if runBSEngine(case_2d_array[min_width][min_length]['case_name']) <= threshold:
-        print("first result is valid (top left). case should be dismissed")
-        save_search_log(case_group, search_log)
-        return case_2d_array[min_width][min_length]
-
-    # Check bottom left corner
-    search_log.append([case_group, max_width, min_length, case_2d_array[max_width][min_length]['case_name'], "Checked"])
-    if runBSEngine(case_2d_array[max_width][min_length]['case_name']) <= threshold:
-        print("max width min length valid (bottom left). case should be dismissed")
-        save_search_log(case_group, search_log)
-        return case_2d_array[max_width][min_length]
-
-    # Check top right corner
-    search_log.append([case_group, max_width, max_length, case_2d_array[max_width][max_length]['case_name'], "Checked"])
-    if runBSEngine(case_2d_array[max_width][max_length]['case_name']) > threshold:
-        print("max width max length valid (top right). case should be dismissed")
-        save_search_log(case_group, search_log)
-        return None
-    
-
-    while current_width <= max_width and current_length >= min_length:
-        rounded_width = round(current_width, 5)
-        rounded_length = round(current_length, 5)
-
-        if rounded_width in case_2d_array and rounded_length in case_2d_array[rounded_width]:
-            curvature = runBSEngine(case_2d_array[rounded_width][rounded_length]["case_name"])
-
-            # Log each checked entry
-            search_log.append([case_group, rounded_width, rounded_length, curvature, "Checked"])
-
-            if curvature <= threshold:
-                best_result = case_2d_array[rounded_width][rounded_length]
-                current_length -= length_increment
-            else:
-                current_width += width_increment
-        else:
-            current_width += width_increment
-
-    save_search_log(case_group, search_log)
-    return best_result
-
-def test_BS_against_all_cases(casegroupname,width,length, groups):
-    for casegroup in groups:
-        if casegroup == casegroupname:
-            pass
-        else:
-            print(f"Testing casegroup {casegroup["case_group"]}-{width}-{length}")
-            #runBSEngine(groups.get_group(casegroup).iloc[0]["case_name"])
-        print(f"Testing casegroup {casegroup}")
-
-def loadBSCases():
-    """loads all the bsengine cases and splits tyhem into groups and extracts the width and length from the case name"""
-    file_path = 'bsengine-cases.txt'
-    cases = []
-    with open(file_path, 'r') as file:
-        cases = file.readlines()
-
-    data = []
-    for case in cases:
-        case_name = case.strip()
-        case_group = case_name.split('-')[0]
-        width = float(case_name.split('-')[1])
-        length = float(case_name.split('-')[2])
-        data.append({"case_name": case_name, "case_group": case_group, "width": width, "length": length})
-
-    df = pd.DataFrame(data)
-
-    # Separate the data into groups based on the extracted case name
-    groups = df.groupby('case_group')
-
-    #test_BS_against_all_cases("Case1",1.4,10,groups)
-    for case in thresholds.keys():
-        shortest_valid_result = find_shortest_valid_result(groups.get_group(case), case, groups)
-        print(f"Shortest valid result for {case}: {shortest_valid_result}\n")
 
 class AnalysisScreen:
     def __init__(self, root, prev_frame, data):
@@ -429,46 +79,74 @@ class AnalysisScreen:
         btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: switch_frame(prev_frame))
         btn_return.pack(pady=20)
 
-        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: generate_case_files())
-        self.abnormal_max_curve, self.normal_max_curve = self.interpolate_max_curve(riser_capacities, riser_response)
+        def casesBtn():
+            print("length: ", self.length)
+            print("EA: ", self.EA)
+            print("EI: ", self.EI)
+            print("GT: ", self.GT)
+            print("m: ", self.m)
+            print("ID: ", self.ID)
+            print("SL: ", self.SL)
+            print("CL: ", self.CL)
+            print("OD: ", self.OD)
+            print("TL: ", self.TL)
+            print("TOD: ", self.TOD)
+            print("MAT: ", self.MAT)
+            print("MATID: ", self.MATID)
+
+            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.normal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "normal")
+            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.abnormal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "abnormal")
+
+        btn_create_case_files = tk.Button(scrollable_frame, text="generate cases", width=10, height=2, bg="#333333", fg="white", command=lambda: casesBtn())                                   
+
+        btn_create_case_files.pack(pady=20)
+
+        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: self.loadBSCases("bsengine-cases-normal.txt"))
+        btn_run_analysis.pack(pady=20)
+
+        self.normal_max_curve, self.abnormal_max_curve = self.interpolate_max_curve(riser_capacities, riser_response)
 
 
-        self.length = riser_info.get("Riser Length")
-        self.EA = riser_info.get("Axial Stiffness")
-        self.EI = riser_info.get("Bending Stiffness")
-        self.GT = riser_info.get("Torsial Stiffness")
-        self.m = riser_info.get("Mass Per Unit Length")
-        self.cases = [0, 8, 16.5, 19, 19.1, 18.6, 17.5, 14]
-        self.ID = float(riser_info.get("Outer Diameter")) + (2 * float(riser_info.get("Outer Diameter Tolerance"))) + float(bs_dimensions.get("Input clearance:"))
-        self.SL = 0.700
-        self.CL, self.OD = cl_od_to_array(float(bs_dimensions.get("Input MIN overall length:")), 
-                          float(bs_dimensions.get("Input MAX overall length:")), 
-                          float(bs_dimensions.get("Input MIN root OD:")), 
-                          float(bs_dimensions.get("Input MAX root OD:")), 
-                          float(bs_dimensions.get("Increment Length:")), 
-                          float(bs_dimensions.get("Increment Width:")))
-        self.TL = float(bs_dimensions.get("Input tip length:"))
-        self.TOD = self.ID + 0.04 #DETTE MÅ DOBBELSJEKKES FORDI JEG VET IKKE
+        self.length = round(float(riser_info.get("Riser Length")), 3)
+        self.EA = round(float(riser_info.get("Axial Stiffness")), 3)
+        self.EI = round(float(riser_info.get("Bending Stiffness")), 3)
+        self.GT = round(float(riser_info.get("Torsial Stiffness")), 3)
+        self.m = round(float(riser_info.get("Mass Per Unit Length")), 3)
+        self.ID = round(float(riser_info.get("Outer Diameter")) + (2 * float(riser_info.get("Outer Diameter Tolerance"))) + float(bs_dimensions.get("Input clearance:")), 3)
+        self.SL = round(0.700, 3)
+        self.CL, self.OD = self.cl_od_to_array(
+            round(float(bs_dimensions.get("Input MIN overall length:")), 3), 
+            round(float(bs_dimensions.get("Input MAX overall length:")), 3), 
+            round(float(bs_dimensions.get("Input MIN root OD:")), 3), 
+            round(float(bs_dimensions.get("Input MAX root OD:")), 3), 
+            round(float(bs_dimensions.get("Increment Length:")), 3), 
+            round(float(bs_dimensions.get("Increment Width:")), 3)
+        )
+        self.TL = round(float(bs_dimensions.get("Input tip length:")), 3)
+        self.TOD = round(self.ID + 0.04, 3)  # DETTE MÅ DOBBELSJEKKES FORDI JEG VET IKKE
         self.MAT = ["NOLIN 60D_30"]
         self.MATID = ["60D_30"]
-        min_width = self.OD[0]
-        max_width = self.OD[-1]
-        min_length = self.CL[0]
-        max_length = self.CL[-1]
-        width_increment = float(bs_dimensions.get("Increment Width:"))
-        length_increment = float(bs_dimensions.get("Increment Length:"))
+        self.min_width = round(self.OD[0], 3)
+        self.max_width = round(self.OD[-1], 3)
+        self.min_length = round(self.CL[0], 3)
+        self.max_length = round(self.CL[-1], 3)
+        self.width_increment = round(float(bs_dimensions.get("Increment Width:")), 3)
+        self.length_increment = round(float(bs_dimensions.get("Increment Length:")), 3)
+        self.normal_cases, self.abnormal_cases = self.make_case_arrays(riser_response)
 
-        for value in self.normal_max_curve:
-            thresholds.add({"normal": {"maximum_curvature": value}})
-        for value in self.abnormal_max_curve:
-            thresholds.add({"abnormal": {"maximum_curvature": value}})
+        for i, value in enumerate(self.normal_max_curve):
+            thresholds_normal[f"case_files\\Case-normal{i+1}"] = {"maximum_curvature": value}
+        for i, value in enumerate(self.abnormal_max_curve):
+            thresholds_abnormal[f"case_files\\Case-normal{i+1}"] = {"maximum_curvature": value}
+
+        print("thresholds: ", thresholds_normal, thresholds_abnormal)
+        print("thresholds: ", thresholds_normal.keys(), thresholds_abnormal.keys())
         
         print("Length: ", self.length)
         print("EA: ", self.EA)
         print("EI: ", self.EI)
         print("GT: ", self.GT)
         print("m: ", self.m)
-        print("Cases: ", self.cases)
         print("ID: ", self.ID)
         print("SL: ", self.SL)
         print("CL: ", self.CL)
@@ -479,16 +157,25 @@ class AnalysisScreen:
         print("MATID: ", self.MATID)
         print("Normal max curve: ", self.normal_max_curve)
         print("Abnormal max curve: ", self.abnormal_max_curve)
-        print("Thresholds: ", thresholds)
-        print("Min width: ", min_width)
-        print("Max width: ", max_width)
-        print("Min length: ", min_length)
-        print("Max length: ", max_length)
-        print("Width increment: ", width_increment)
-        print("Length increment: ", length_increment)
+        print("Min width: ", self.min_width)
+        print("Max width: ", self.max_width)
+        print("Min length: ", self.min_length)
+        print("Max length: ", self.max_length)
+        print("Width increment: ", self.width_increment)
+        print("Length increment: ", self.length_increment)
+        print("Normal cases: ", self.normal_cases)
+        print("Abnormal cases: ", self.abnormal_cases)
 
-
-        #generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID)
+    def make_case_arrays(self, riser_response):
+        normal_cases = []
+        abnormal_cases = []
+        for key, values in riser_response.items():
+            for angle, tension in zip(values[0], values[1]):
+                if key == "normal":
+                    normal_cases.append((angle, tension))
+                elif key == "abnormal":
+                    abnormal_cases.append((angle, tension))
+        return normal_cases, abnormal_cases
 
     def display_section(self, parent, title, section_data):
         lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
@@ -550,6 +237,391 @@ class AnalysisScreen:
         new_curvatures_linear_abnormal = f_linear_abnormal(abnormal_response_tensions)
 
         return new_curvatures_linear_normal, new_curvatures_linear_abnormal
+    
+    def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, label):
+        # Create a text file to store the case filenames
+        inp1 = open(f'bsengine-cases-{label}.txt', 'w')
+        x = 0 # Counter
+        y = 0
+        
+
+        for i in cases:
+            x = 0
+            y = y + 1
+            for j in OD:
+                x = 0
+                for k in CL:
+                    x = 0
+                    for l in MAT:
+                        x = 0
+                        q = MATID[x]
+                        x = x + 1
+                        # Create a directory for the case files if it doesn't exist
+                        if not os.path.exists('case_files'):
+                            os.makedirs('case_files')
+
+                        inp = open(os.path.join(f'case_files', "Case-"+label + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp"), 'w')
+                        inp1.write(os.path.join('case_files', "Case-"+label + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp") + '\n')
+
+                        inp.write('BEND STIFFENER DATA'+'\n')
+                        inp.write("' ID   NSEG"+'\n')
+                        inp.write("' inner diameter      Number of linear segments"+'\n')
+                        inp.write(str(ID) + "   3"+'\n')
+                        inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID"+'\n')
+                        inp.write(str(SL) + "  50  " + str(j) + "  " + str(j) + "  2000  LIN  10000.E06"+'\n')
+                        inp.write(str(k) + "  100  " + str(j) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
+                        inp.write(str(TL) + "  50  " + str(TOD) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
+                        inp.write("'-----------------------------------------------------------------------"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("RISER DATA"+'\n')
+                        inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass"+'\n')
+                        inp.write("' (m)         kNm^2  kN              kg/m"+'\n')
+                        inp.write(str(length) + "  100  " + str(EI) + "  " + str(EA) + "  " + str(GT) + "  " + str(m) +'\n')
+                        inp.write("'"+'\n')
+                        inp.write("' mandatory data group"+'\n')
+                        inp.write("' -------------------------------------------------"+'\n')
+                        inp.write("ELEMENT PRINT"+'\n')
+                        inp.write("'NSPEC"+'\n')
+                        inp.write("3"+'\n')
+                        inp.write("'IEL1    IEL2"+'\n')
+                        inp.write("1         9"+'\n')
+                        inp.write("10        30"+'\n')
+                        inp.write("70        80"+'\n')
+                        inp.write("' -------------------------------------------------"+'\n')
+                        inp.write("FE SYSTEM DATA TEST PRINT"+'\n')
+                        inp.write("'IFSPRI 1/2"+'\n')
+                        inp.write("1"+'\n')
+                        inp.write("'2"+'\n')
+                        inp.write("' -------------------------------------------------"+'\n')
+                        inp.write("FE ANALYSIS PARAMETERS"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'  finite element analysis parameters"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'TOLNOR  MAXIT"+'\n')
+                        inp.write("1.E-07  30"+'\n')
+                        inp.write("'DSINC,DSMIN,DSMAX,"+'\n')
+                        inp.write("0.01  0.001  0.1"+'\n')
+                        inp.write("'3.0  0.01 10."+'\n')
+                        inp.write("'5.  0.1 10."+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'----------------------------------------------"+'\n')
+                        inp.write("CURVATURE RANGE"+'\n')
+                        inp.write("'----------------------------------------------"+'\n')
+                        inp.write("'CURMAX  - Maximum curvature"+'\n')
+                        inp.write("'NCURV   - Number of curvature levels"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'CURMAX (1/m),NCURV"+'\n')
+                        inp.write("'0.5       30"+'\n')
+                        inp.write("0.2       100"+'\n')
+                        inp.write("'---------------------------------------------------"+'\n')
+                        inp.write("FORCE"+'\n')
+                        inp.write("'Relang  tension"+'\n')
+                        inp.write("'(deg)   (kN)"+'\n')
+                        inp.write(str(i[0]) +"  "+ str(i[1]) + '\n')
+                        inp.write("'8.00   400.0"+'\n')
+                        inp.write("'16.5   500.0"+'\n')
+                        inp.write("'19.0   550.0"+'\n')
+                        inp.write("'19.1   600.0"+'\n')
+                        inp.write("'18.6   650.0"+'\n')
+                        inp.write("'17.5   700.0"+'\n')
+                        inp.write("'14.0   775.0"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'----------------------------------------------------"+'\n')
+                        inp.write("MATERIAL DATA"+'\n')
+                        inp.write("'----------------------------------------------------"+'\n')
+                        inp.write("' Material identifier"+'\n')
+                        inp.write("60D_15"+'\n')
+                        inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
+                        inp.write("21"+'\n')
+                        inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
+                        inp.write("0.0 0.0"+'\n')
+                        inp.write("0.005   1.40E+03"+'\n')
+                        inp.write("0.010   2.57E+03"+'\n')
+                        inp.write("0.015   3.61E+03"+'\n')
+                        inp.write("0.020   4.55E+03"+'\n')
+                        inp.write("0.025   5.36E+03"+'\n')
+                        inp.write("0.030   6.03E+03"+'\n')
+                        inp.write("0.035   6.59E+03"+'\n')
+                        inp.write("0.040   7.02E+03"+'\n')
+                        inp.write("0.045   7.37E+03"+'\n')
+                        inp.write("0.050   7.67E+03"+'\n')
+                        inp.write("0.055   7.92E+03"+'\n')
+                        inp.write("0.060   8.13E+03"+'\n')
+                        inp.write("0.065   8.31E+03"+'\n')
+                        inp.write("0.070   8.47E+03"+'\n')
+                        inp.write("0.075   8.61E+03"+'\n')
+                        inp.write("0.080   8.74E+03"+'\n')
+                        inp.write("0.085   8.86E+03"+'\n')
+                        inp.write("0.090   8.96E+03"+'\n')
+                        inp.write("0.095   9.06E+03"+'\n')
+                        inp.write("0.100   9.10E+03"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("MATERIAL DATA"+'\n')
+                        inp.write("' Material identifier"+'\n')
+                        inp.write("60D_30"+'\n')
+                        inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
+                        inp.write("21"+'\n')
+                        inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
+                        inp.write("0.000   0.0"+'\n')
+                        inp.write("0.005   1100.0"+'\n')
+                        inp.write("0.010   2060.0"+'\n')
+                        inp.write("0.015   2910.0"+'\n')
+                        inp.write("0.020   3690.0"+'\n')
+                        inp.write("0.025   4370.0"+'\n')
+                        inp.write("0.030   4950.0"+'\n')
+                        inp.write("0.035   5420.0"+'\n')
+                        inp.write("0.040   5810.0"+'\n')
+                        inp.write("0.045   6120.0"+'\n')
+                        inp.write("0.050   6400.0"+'\n')
+                        inp.write("0.055   6640.0"+'\n')
+                        inp.write("0.060   6840.0"+'\n')
+                        inp.write("0.065   7030.0"+'\n')
+                        inp.write("0.070   7180.0"+'\n')
+                        inp.write("0.075   7330.0"+'\n')
+                        inp.write("0.080   7470.0"+'\n')
+                        inp.write("0.085   7590.0"+'\n')
+                        inp.write("0.090   7710.0"+'\n')
+                        inp.write("0.095   7810.0"+'\n')
+                        inp.write("0.100   7920.0"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'EXPORT MATERIAL DATA"+'\n')
+                        inp.write("'--------------------------------------------------"+'\n')
+                        inp.write("' IMEX   = 1 : tabular  =2 riflex format"+'\n')
+                        inp.write("'  1"+'\n')
+                        inp.write("'---------------------------------------------"+'\n')
+                        inp.write("end"+'\n')
+                        inp.write("'mandatory data group"+'\n')
+                        inp.write("'---------------------------------------------"+'\n')
+
+        inp.close()
+        inp1.close()
+    
+    def extract_key_results(self, case_file):
+        try:
+            with open(case_file, 'r') as res_file:
+                res_lines = res_file.readlines()
+
+            keyres1 = None
+            keyres2 = None
+
+            # Search for key results in the log file
+            for line in res_lines:
+                if re.search(r'Maximum BS curvature', line):
+                    keyres1 = line.strip().split(':')[-1].strip()
+                if re.search(r'Maximum curvature', line):
+                    keyres2 = line.strip().split(':')[-1].strip()
+
+            if keyres1 and keyres2:
+                return {
+                    "case_name": case_file.rstrip('.log'),
+                    "maximum_bs_curvature": keyres1,
+                    "maximum_curvature": keyres2
+                }
+            else:
+                print(f"Key results not found in {case_file}")
+                return None
+
+        except FileNotFoundError:
+            print(f"File not found: {case_file}")
+            return None
+        except Exception as e:
+            print(f"Error processing {case_file}: {e}")
+            return None
+    
+    def cl_od_to_array(self, min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, incrementSize_fieldWidth):
+        cl = min_cl
+        od = min_od
+        cl_array = []
+        od_array = []
+        while cl <= max_cl:
+            cl_array.append(round(cl, 3))
+            cl += incrementSize_fieldLength
+        while od <= max_od:
+            od_array.append(round(od, 3))
+            od += incrementSize_fieldWidth
+
+        return cl_array, od_array
+
+    def print_data(self, groups):
+        for case_group, group in groups:
+            print(f"Case Group: {case_group}")
+            print(group)
+
+    def save_search_log(self, case_group, log_data):
+        """Save the search log to a CSV file, appending to it if it already exists."""
+        file_name = f"optimized_search_log.csv"
+        df = pd.DataFrame(log_data, columns=["Case Group", "Width", "Length", "Curvature", "Status"])
+        
+        # Append to the file if it exists, otherwise create it
+        if os.path.isfile(file_name):
+            df.to_csv(file_name, mode='a', header=False, index=False)
+        else:
+            df.to_csv(file_name, index=False)
+        
+        print(f"Search log saved to {file_name}")
+
+    def redefine_group_as_2d_array(self, group):
+        """Redefine the group as a 2D dictionary where width is the first key and length is the second key."""
+        width_length_dict = {}
+        for index, row in group.iterrows():
+            width = round(row['width'], 5)  # Round to 5 decimal places
+            length = round(row['length'], 5)
+            if width not in width_length_dict:
+                width_length_dict[width] = {}
+            width_length_dict[width][length] = row
+        return width_length_dict
+
+    def runBSEngine(self, case):
+            current_directory = os.getcwd()
+            print(f"Running case: {case}")
+            process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
+            stdout, stderr = process.communicate()
+            print(f"stdout: {stdout}")
+            print(f"stderr: {stderr}")
+            if process.returncode != 0:
+                print(f"Error encountered with case: {case}. FIKS AT DEN KJØRES PÅ NYTT PÅ EN ELLER ANNEN MÅTE DITT NEK.")
+            
+            case_file = case.strip().replace('.inp', '.log')
+            result = self.extract_key_results(case_file)
+            result = float(result['maximum_curvature'])
+            return result
+
+    def check_min_length_column(self,group, case_group, groups):
+        case_group_data = groups.get_group(case_group)
+        case_2d_array = self.redefine_group_as_2d_array(case_group_data)
+        threshold = thresholds_normal[case_group]['maximum_curvature']
+
+        current_width = self.min_width
+        current_length = self.min_length
+
+        while current_width <= self.max_width:
+            rounded_length = round(current_length, 5)
+
+            if self.min_width in case_2d_array and rounded_length in case_2d_array[self.min_width]:
+                curvature = self.runBSEngine(case_2d_array[self.min_width][rounded_length]["case_name"])
+
+                if curvature <= threshold:
+                    print("valid bs found in min length, case should be dismissed")
+                else:
+                    current_width += self.width_increment
+
+        # List to store checked values
+        search_log = []
+
+    def find_shortest_valid_result(self, group, case_group, groups):
+        """Find the shortest valid result for each case group and log the search path."""
+        case_group_data = groups.get_group(case_group)
+        case_2d_array = self.redefine_group_as_2d_array(case_group_data)
+        threshold = thresholds_normal[case_group]['maximum_curvature']
+
+        best_result = None
+        current_width = self.min_width
+        current_length = self.max_length
+
+        # List to store checked values
+        search_log = []
+        
+
+        # Check top left corner
+        search_log.append([case_group, self.min_width, self.min_length, case_2d_array[self.min_width][self.min_length]['case_name'], "Checked"])
+        if self.runBSEngine(case_2d_array[self.min_width][self.min_length]['case_name']) <= threshold:
+            print("first result is valid (top left). case should be dismissed")
+            self.save_search_log(case_group, search_log)
+            return case_2d_array[self.min_width][self.min_length]
+
+        # Check bottom left corner
+        search_log.append([case_group, self.max_width, self.min_length, case_2d_array[self.max_width][self.min_length]['case_name'], "Checked"])
+        if self.runBSEngine(case_2d_array[self.max_width][self.min_length]['case_name']) <= threshold:
+            print("max width min length valid (bottom left). case should be dismissed")
+            self.save_search_log(case_group, search_log)
+            return case_2d_array[self.max_width][self.min_length]
+
+        # Check top right corner
+        search_log.append([case_group, self.max_width, self.max_length, case_2d_array[self.max_width][self.max_length]['case_name'], "Checked"])
+        if self.runBSEngine(case_2d_array[self.max_width][self.max_length]['case_name']) > threshold:
+            print("max width max length valid (top right). case should be dismissed")
+            self.save_search_log(case_group, search_log)
+            return None
+        
+
+        while current_width <= self.max_width and current_length >= self.min_length:
+            rounded_width = round(current_width, 5)
+            rounded_length = round(current_length, 5)
+
+            if rounded_width in case_2d_array and rounded_length in case_2d_array[rounded_width]:
+                curvature = self.runBSEngine(case_2d_array[rounded_width][rounded_length]["case_name"])
+
+                # Log each checked entry
+                search_log.append([case_group, rounded_width, rounded_length, curvature, "Checked"])
+
+                if curvature <= threshold:
+                    best_result = case_2d_array[rounded_width][rounded_length]
+                    current_length -= self.length_increment
+                else:
+                    current_width += self.width_increment
+            else:
+                current_width += self.width_increment
+
+        self.save_search_log(case_group, search_log)
+        return best_result
+
+    def test_BS_against_all_cases(casegroupname,width,length, groups):
+        for casegroup in groups:
+            if casegroup == casegroupname:
+                pass
+            else:
+                print(f"Testing casegroup {casegroup["case_group"]}-{width}-{length}")
+                #runBSEngine(groups.get_group(casegroup).iloc[0]["case_name"])
+            print(f"Testing casegroup {casegroup}")
+
+
+    def loadBSCases(self, file_path):
+        """Loads all the bsengine cases, extracts case group, width, and length from the case name."""
+        cases = []
+        
+        with open(file_path, 'r') as file:
+            cases = file.readlines()
+
+        data = []
+        for case in cases:
+            case_name = case.strip()
+
+            # Extract the base filename without path
+            case_filename = os.path.basename(case_name)
+
+            # Removing the file extension and splitting by '-'
+            parts = case_filename.replace('.inp', '').split('-')
+
+            if len(parts) < 4:
+                print(f"Skipping invalid case format: {case_name}")
+                continue
+
+            # Extracting case group (e.g., "case_files\Case-normal1")
+            case_group = os.path.join(os.path.dirname(case_name), f"{parts[0]}-{parts[1]}")
+
+            try:
+                width = float(parts[2])
+                length = float(parts[3])
+            except ValueError:
+                print(f"Skipping case due to invalid width/length: {case_name}")
+                continue
+
+            data.append({"case_name": case_name, "case_group": case_group, "width": width, "length": length})
+
+        # Convert to DataFrame
+        df = pd.DataFrame(data)
+
+        # Separate the data into groups based on the extracted case name
+        groups = df.groupby('case_group')
+
+        self.print_data(groups)
+
+        for case in thresholds_normal.keys():
+            if case in groups.groups:
+                shortest_valid_result = self.find_shortest_valid_result(groups.get_group(case), case, groups)
+                print(f"Shortest valid result for {case}: {shortest_valid_result}\n")
+            else:
+                print(f"No cases found for {case}")
 
 
 def main():
