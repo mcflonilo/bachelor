@@ -9,6 +9,7 @@ import pandas as pd
 import re
 import subprocess
 import os
+from modules.reportScreen_module import ReportScreen
 
 thresholds_normal = {}
 thresholds_abnormal = {}
@@ -18,15 +19,11 @@ def switch_frame(frame):
     frame.tkraise()
 
 
-
-
-
-
-
-
 class AnalysisScreen:
     def __init__(self, root, prev_frame, data):
         self.root = root
+        self.prev_frame = prev_frame
+        self.data = data
 
         # Create a canvas and a scrollbar
         canvas = tk.Canvas(self.root)
@@ -62,10 +59,12 @@ class AnalysisScreen:
         # Display riser capacities
         riser_capacities = data.get("riser_capacities", {})
         self.display_riser_capacities(scrollable_frame, riser_capacities)
+        self.riser_capacities = riser_capacities
 
         # Display riser response
         riser_response = data.get("riser_response", {})
         self.display_riser_response(scrollable_frame, riser_response)
+        self.riser_response = riser_response
 
         # Display BS dimensions
         bs_dimensions = data.get("bs_dimension", {})
@@ -137,34 +136,37 @@ class AnalysisScreen:
         for i, value in enumerate(self.normal_max_curve):
             thresholds_normal[f"case_files\\Case-normal{i+1}"] = {"maximum_curvature": value}
         for i, value in enumerate(self.abnormal_max_curve):
-            thresholds_abnormal[f"case_files\\Case-normal{i+1}"] = {"maximum_curvature": value}
+            thresholds_abnormal[f"case_files\\Case-abnormal{i+1}"] = {"maximum_curvature": value}
 
-        print("thresholds: ", thresholds_normal, thresholds_abnormal)
-        print("thresholds: ", thresholds_normal.keys(), thresholds_abnormal.keys())
+        print("thresholds: ", thresholds_normal, thresholds_normal.keys())
+        print("thresholds: ", thresholds_abnormal, thresholds_abnormal.keys())
         
-        print("Length: ", self.length)
-        print("EA: ", self.EA)
-        print("EI: ", self.EI)
-        print("GT: ", self.GT)
-        print("m: ", self.m)
-        print("ID: ", self.ID)
-        print("SL: ", self.SL)
-        print("CL: ", self.CL)
-        print("OD: ", self.OD)
-        print("TL: ", self.TL)
-        print("TOD: ", self.TOD)
-        print("MAT: ", self.MAT)
-        print("MATID: ", self.MATID)
-        print("Normal max curve: ", self.normal_max_curve)
-        print("Abnormal max curve: ", self.abnormal_max_curve)
-        print("Min width: ", self.min_width)
-        print("Max width: ", self.max_width)
-        print("Min length: ", self.min_length)
-        print("Max length: ", self.max_length)
-        print("Width increment: ", self.width_increment)
-        print("Length increment: ", self.length_increment)
-        print("Normal cases: ", self.normal_cases)
-        print("Abnormal cases: ", self.abnormal_cases)
+        print("Length: ", self.length, "\n")
+        print("EA: ", self.EA,"\n")
+        print("EI: ", self.EI,"\n")
+        print("GT: ", self.GT,"\n")
+        print("m: ", self.m,"\n")
+        print("ID: ", self.ID,"\n")
+        print("SL: ", self.SL,"\n")
+        print("CL: ", self.CL,"\n")
+        print("OD: ", self.OD,"\n")
+        print("TL: ", self.TL,"\n")
+        print("TOD: ", self.TOD,"\n")
+        print("MAT: ", self.MAT,"\n")
+        print("MATID: ", self.MATID,"\n")
+        print("Normal max curve: ", self.normal_max_curve,"\n")
+        print("Abnormal max curve: ", self.abnormal_max_curve,"\n")
+        print("Min width: ", self.min_width,"\n")
+        print("Max width: ", self.max_width,"\n")
+        print("Min length: ", self.min_length,"\n")
+        print("Max length: ", self.max_length,"\n")
+        print("Width increment: ", self.width_increment,"\n")
+        print("Length increment: ", self.length_increment,"\n")
+        print("Normal cases: ", self.normal_cases,"\n")
+        print("Abnormal cases: ", self.abnormal_cases,"\n")
+
+        
+
 
     def make_case_arrays(self, riser_response):
         normal_cases = []
@@ -448,16 +450,18 @@ class AnalysisScreen:
             print(group)
 
     def save_search_log(self, case_group, log_data):
-        """Save the search log to a CSV file, appending to it if it already exists."""
-        file_name = f"optimized_search_log.csv"
-        df = pd.DataFrame(log_data, columns=["Case Group", "Width", "Length", "Curvature", "Status"])
-        
-        # Append to the file if it exists, otherwise create it
-        if os.path.isfile(file_name):
-            df.to_csv(file_name, mode='a', header=False, index=False)
-        else:
-            df.to_csv(file_name, index=False)
-        
+        """Save the search log to a CSV file, ensuring correct formatting and headers."""
+        file_name = "optimized_search_log.csv"
+
+        # Create DataFrame with correct column names
+        df = pd.DataFrame(
+            log_data, 
+            columns=["Case Group", "Width", "Length", "Case Name", "Curvature", "Status", "Reason"]
+        )
+
+        # Append to the file, ensuring the header is only written once
+        df.to_csv(file_name, mode='a', header=not os.path.isfile(file_name), index=False)
+
         print(f"Search log saved to {file_name}")
 
     def redefine_group_as_2d_array(self, group):
@@ -472,8 +476,25 @@ class AnalysisScreen:
         return width_length_dict
 
     def runBSEngine(self, case):
+            def checkIfCaseIsAlreadyChecked(case):
+                casename = case.replace('.inp', '_FEA.log')
+                if os.path.exists(casename):
+                    print(f"bs already checked for case: {casename}")
+                    return True
+                print(f"bs not checked for case: {casename}")
+                return False
             current_directory = os.getcwd()
+            
             print(f"Running case: {case}")
+
+            if checkIfCaseIsAlreadyChecked(case):
+                case_file = case.strip().replace('.inp', '.log')
+                result = self.extract_key_results(case_file)
+                if result is None:
+                    print(f"Error extracting key results for case: {case}")
+                else:
+                    result = float(result['maximum_curvature'])
+                    return result
             process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
             stdout, stderr = process.communicate()
             print(f"stdout: {stdout}")
@@ -486,30 +507,8 @@ class AnalysisScreen:
             result = float(result['maximum_curvature'])
             return result
 
-    def check_min_length_column(self,group, case_group, groups):
-        case_group_data = groups.get_group(case_group)
-        case_2d_array = self.redefine_group_as_2d_array(case_group_data)
-        threshold = thresholds_normal[case_group]['maximum_curvature']
-
-        current_width = self.min_width
-        current_length = self.min_length
-
-        while current_width <= self.max_width:
-            rounded_length = round(current_length, 5)
-
-            if self.min_width in case_2d_array and rounded_length in case_2d_array[self.min_width]:
-                curvature = self.runBSEngine(case_2d_array[self.min_width][rounded_length]["case_name"])
-
-                if curvature <= threshold:
-                    print("valid bs found in min length, case should be dismissed")
-                else:
-                    current_width += self.width_increment
-
-        # List to store checked values
-        search_log = []
-
     def find_shortest_valid_result(self, group, case_group, groups):
-        """Find the shortest valid result for each case group and log the search path."""
+        """Find the shortest valid result for each case group and log the search path with detailed information."""
         case_group_data = groups.get_group(case_group)
         case_2d_array = self.redefine_group_as_2d_array(case_group_data)
         threshold = thresholds_normal[case_group]['maximum_curvature']
@@ -520,39 +519,64 @@ class AnalysisScreen:
 
         # List to store checked values
         search_log = []
-        
+
+        def log_entry(width, length, case_name, curvature, status, reason):
+            """Helper function to log an entry with full details."""
+            search_log.append([case_group, width, length, case_name, curvature, status, reason])
 
         # Check top left corner
-        search_log.append([case_group, self.min_width, self.min_length, case_2d_array[self.min_width][self.min_length]['case_name'], "Checked"])
-        if self.runBSEngine(case_2d_array[self.min_width][self.min_length]['case_name']) <= threshold:
-            print("first result is valid (top left). case should be dismissed")
+        case_name = case_2d_array[self.min_width][self.min_length]['case_name']
+        curvature = self.runBSEngine(case_name)
+        log_entry(self.min_width, self.min_length, case_name, curvature, 
+                "Passed" if curvature <= threshold else "Failed", 
+                "Top-left corner check")
+        
+        if curvature <= threshold:
+            print("✅ First result is valid (top left). Case should be dismissed.")
             self.save_search_log(case_group, search_log)
-            return case_2d_array[self.min_width][self.min_length]
+            return pd.DataFrame()
+        print("curvature: ", curvature, "threshold: ", threshold)
 
         # Check bottom left corner
-        search_log.append([case_group, self.max_width, self.min_length, case_2d_array[self.max_width][self.min_length]['case_name'], "Checked"])
-        if self.runBSEngine(case_2d_array[self.max_width][self.min_length]['case_name']) <= threshold:
-            print("max width min length valid (bottom left). case should be dismissed")
+        case_name = case_2d_array[self.max_width][self.min_length]['case_name']
+        curvature = self.runBSEngine(case_name)
+        log_entry(self.max_width, self.min_length, case_name, curvature, 
+                "Passed" if curvature <= threshold else "Failed", 
+                "Bottom-left corner check")
+
+        if curvature <= threshold:
+            print("✅ Max width, min length valid (bottom left). Case should be dismissed.")
             self.save_search_log(case_group, search_log)
-            return case_2d_array[self.max_width][self.min_length]
+            return pd.DataFrame()
+        print("curvature: ", curvature, "threshold: ", threshold)
 
         # Check top right corner
-        search_log.append([case_group, self.max_width, self.max_length, case_2d_array[self.max_width][self.max_length]['case_name'], "Checked"])
-        if self.runBSEngine(case_2d_array[self.max_width][self.max_length]['case_name']) > threshold:
-            print("max width max length valid (top right). case should be dismissed")
-            self.save_search_log(case_group, search_log)
-            return None
-        
+        case_name = case_2d_array[self.min_width][self.max_length]['case_name']
+        curvature = self.runBSEngine(case_name)
+        log_entry(self.min_width, self.max_length, case_name, curvature, 
+                "Passed" if curvature <= threshold else "Failed", 
+                "Top-right corner check")
 
+        if curvature <= threshold:
+            print("✅ Min width, max length valid. (top right) Case should be dismissed.")
+            self.save_search_log(case_group, search_log)
+            return pd.DataFrame()
+        
+        print("curvature: ", curvature, "threshold: ", threshold)
+
+        # Iterative search for best result
         while current_width <= self.max_width and current_length >= self.min_length:
             rounded_width = round(current_width, 5)
             rounded_length = round(current_length, 5)
 
             if rounded_width in case_2d_array and rounded_length in case_2d_array[rounded_width]:
-                curvature = self.runBSEngine(case_2d_array[rounded_width][rounded_length]["case_name"])
-
-                # Log each checked entry
-                search_log.append([case_group, rounded_width, rounded_length, curvature, "Checked"])
+                case_name = case_2d_array[rounded_width][rounded_length]["case_name"]
+                curvature = self.runBSEngine(case_name)
+                print("curvature: ", curvature, "threshold: ", threshold)
+                
+                status = "Passed" if curvature <= threshold else "Failed"
+                reason = "Curvature within threshold" if status == "Passed" else "Curvature exceeded threshold"
+                log_entry(rounded_width, rounded_length, case_name, curvature, status, reason)
 
                 if curvature <= threshold:
                     best_result = case_2d_array[rounded_width][rounded_length]
@@ -560,69 +584,89 @@ class AnalysisScreen:
                 else:
                     current_width += self.width_increment
             else:
+                log_entry(rounded_width, rounded_length, "N/A", "N/A", "Skipped", "No valid case at this width/length")
                 current_width += self.width_increment
 
         self.save_search_log(case_group, search_log)
         return best_result
 
-    def test_BS_against_all_cases(casegroupname,width,length, groups):
-        for casegroup in groups:
-            if casegroup == casegroupname:
-                pass
-            else:
-                print(f"Testing casegroup {casegroup["case_group"]}-{width}-{length}")
-                #runBSEngine(groups.get_group(casegroup).iloc[0]["case_name"])
-            print(f"Testing casegroup {casegroup}")
-
-
     def loadBSCases(self, file_path):
+        findShortestBSForCase = self.findShortestBSForCase(file_path)
+        print("findShortestBSForCase: ", findShortestBSForCase)
+        self.checkBSAgainsAllCases(findShortestBSForCase, "abnormal", 1)
+        print("verifying result")
+        self.checkBSAgainsAllCases(findShortestBSForCase, "normal", 1)
+        # Create riserResponse frame
+        report_frame = tk.Frame(self.root)
+        report_frame.pack(fill="both", expand=True)
+        self.report_app = ReportScreen(self.root, self.prev_frame, lambda frame: frame.tkraise(), self.data['riser_capacities'], self.data['riser_response'],findShortestBSForCase["case_name"], self.data, thresholds_normal, thresholds_abnormal)
+
+    def findShortestBSForCase(self,file_path):
         """Loads all the bsengine cases, extracts case group, width, and length from the case name."""
         cases = []
-        
         with open(file_path, 'r') as file:
             cases = file.readlines()
-
         data = []
         for case in cases:
             case_name = case.strip()
-
             # Extract the base filename without path
             case_filename = os.path.basename(case_name)
-
             # Removing the file extension and splitting by '-'
             parts = case_filename.replace('.inp', '').split('-')
-
             if len(parts) < 4:
                 print(f"Skipping invalid case format: {case_name}")
                 continue
-
             # Extracting case group (e.g., "case_files\Case-normal1")
             case_group = os.path.join(os.path.dirname(case_name), f"{parts[0]}-{parts[1]}")
-
             try:
                 width = float(parts[2])
                 length = float(parts[3])
             except ValueError:
                 print(f"Skipping case due to invalid width/length: {case_name}")
                 continue
-
             data.append({"case_name": case_name, "case_group": case_group, "width": width, "length": length})
-
         # Convert to DataFrame
         df = pd.DataFrame(data)
-
         # Separate the data into groups based on the extracted case name
         groups = df.groupby('case_group')
 
         self.print_data(groups)
+        shortest_valid_result_array = []
+        check = False
+        i = 1
+        while not check:
+            shortest = self.find_shortest_valid_result(groups.get_group(f"case_files\\Case-normal{i}"), f"case_files\\Case-normal{i}", groups)
+            if shortest.empty:
+                i += 1
+                continue
 
-        for case in thresholds_normal.keys():
-            if case in groups.groups:
-                shortest_valid_result = self.find_shortest_valid_result(groups.get_group(case), case, groups)
-                print(f"Shortest valid result for {case}: {shortest_valid_result}\n")
+            shortest_valid_result_array.append(shortest)
+            print(f"Shortest valid result for {f'case_files\\Case-normal{i}'}: {shortest}\n")
+            check_result, i = self.checkBSAgainsAllCases(shortest, "normal",i)
+            print("checking bs against all cases")
+            if check_result:
+                print(f"bs {f'case_files\\Case-normal{i}'} passed in all cases")
+                return shortest
+
+    
+    
+    def checkBSAgainsAllCases(self, shortest,tag, i):
+        if tag == "normal":
+            thresholds = thresholds_normal
+        else:
+            thresholds = thresholds_abnormal
+        for case in thresholds.keys():
+            case = f"case_files\\Case-{tag}{i}-{shortest['width']}-{shortest['length']}-60D_30.inp"
+            result = self.runBSEngine(case)
+            if result <= thresholds[f"case_files\\Case-{tag}{i}"]['maximum_curvature']:
+                print(f"bs valid for {tag} case{i}")
             else:
-                print(f"No cases found for {case}")
-
+                print(f"bs invalid for {tag} case{i}")
+                return False, i
+            if i >= thresholds.__len__():
+                return True, i
+            i += 1
+        return True, None
 
 def main():
     root = tk.Tk()

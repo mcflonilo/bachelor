@@ -118,7 +118,7 @@
         "Input MAX root OD:": "2",
         "Input MIN overall length:": "10",
         "Input MAX overall length:": "13",
-        "Input clearance:": "10",
+        "Input clearance:": "0.010",
         "Input thidm(??):": "fse",
         "BS ID:": "101",
         "Increment Width:": "0.10",

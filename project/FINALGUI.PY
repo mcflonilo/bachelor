@@ -51,3 +51,5 @@ def main():
 
 # Run the application
 main()
+
+#TODO when checking a bs against all cases. it can ignore cases that are already checked

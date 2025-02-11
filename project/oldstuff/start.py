@@ -10,7 +10,7 @@ from openpyxl.styles import PatternFill
 from openpyxl import load_workbook, Workbook
 import tkinter as tk
 import logging
-from modules.maxcurve_module import DataPlotter
+#from modules.maxcurve_module import DataPlotter
 
 ######################################################
 # INPUT UMBILICAL DATA
@@ -632,8 +632,10 @@ def makeGui():
         # Add a new button to switch to the maxcurve_frame
         button5 = tk.Button(main_frame, text="Open MaxCurve GUI", command=lambda: switch_frame(maxcurve_frame))
         button5.grid(row=3, column=3, padx=10, pady=10)
+        button6 = tk.Button(maxcurve_frame, text="Return", command=lambda: run_threads())
+        button6.pack(pady=10)
 
-        maxcurve_app = DataPlotter(maxcurve_frame)
+        #maxcurve_app = DataPlotter(maxcurve_frame)
         # Add a return button to switch back to the main_frame
         return_button = tk.Button(maxcurve_frame, text="Return", command=lambda: switch_frame(main_frame))
         return_button.pack(pady=10)

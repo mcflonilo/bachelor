@@ -49,13 +49,13 @@ MAT = ['NOLIN  60D_30'] #250000'] #, 'LIN  162300', 'NOLIN  60D-15deg', 'NOLIN  
 MATID = ['60D_30'] #, '162300', '60D-15deg', '60D-30.8deg']
 
 thresholds = {
-        "case_files\\Case1": {"maximum_bs_curvature": 0.055835668, "maximum_curvature": 0.055835668},
-        "case_files\\Case2": {"maximum_bs_curvature": 0.051167134, "maximum_curvature": 0.051167134},
-        "case_files\\Case3": {"maximum_bs_curvature": 0.046473762, "maximum_curvature": 0.046473762},
-        "case_files\\Case4": {"maximum_bs_curvature": 0.041759232, "maximum_curvature": 0.041759232},
-        "case_files\\Case5": {"maximum_bs_curvature": 0.034737267, "maximum_curvature": 0.034737267},
-        "case_files\\Case6": {"maximum_bs_curvature": 0.032398017, "maximum_curvature": 0.032398017},
-        "case_files\\Case7": {"maximum_bs_curvature": 0.030050334, "maximum_curvature": 0.030050334},
+        "case_files\\Case-normal1": {"maximum_bs_curvature": 0.055835668, "maximum_curvature": 0.055835668},
+        "case_files\\Case-normal2": {"maximum_bs_curvature": 0.051167134, "maximum_curvature": 0.051167134},
+        "case_files\\Case-normal3": {"maximum_bs_curvature": 0.046473762, "maximum_curvature": 0.046473762},
+        "case_files\\Case-normal4": {"maximum_bs_curvature": 0.041759232, "maximum_curvature": 0.041759232},
+        "case_files\\Case-normal5": {"maximum_bs_curvature": 0.034737267, "maximum_curvature": 0.034737267},
+        "case_files\\Case-normal6": {"maximum_bs_curvature": 0.032398017, "maximum_curvature": 0.032398017},
+        "case_files\\Case-normal7": {"maximum_bs_curvature": 0.030050334, "maximum_curvature": 0.030050334},
     }
 
 #bslength = sl + cl + tl
@@ -144,7 +144,7 @@ def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, in
     return cl_array, od_array
     
 def createCaseQueue():
-    cases = open('bsengine-cases.txt', 'r').readlines()
+    cases = open('bsengine-cases-normal.txt', 'r').readlines()
     cases = [case.strip() for case in cases]
     case_queue = Queue()
     for case in cases:
@@ -242,11 +242,12 @@ def save_results_to_excel(csv_file, excel_file, thresholds):
         """
         Extract the base case name (e.g., "case_files\\Case1") and additional numerical values.
         """
-        match = re.match(r'(case_files\\Case\d+)-([\d.]+)-([\d.]+)-(.+)', case_name)
+        match = re.match(r'([^-\s]+-\w+)-([\d.]+)-([\d.]+)-(.+)', case_name)
         if match:
             base_name = match.group(1)  # "case_files\\CaseX"
             row_val = float(match.group(2))  # First number
             col_val = float(match.group(3))  # Second number
+            print(base_name, row_val, col_val)
             return base_name, row_val, col_val
         return None, None, None
     # Configure logging
@@ -612,7 +613,7 @@ def makeGui():
 
 
         def createResults():
-            createCSVResultFile('bsengine-cases.txt', 'bsengine-summary.csv')
+            createCSVResultFile('bsengine-cases-normal.txt', 'bsengine-summary.csv')
             save_results_to_excel('bsengine-summary.csv', 'bsengine-summary.xlsx', thresholds)
 
         def completeAnalysis():
@@ -625,7 +626,7 @@ def makeGui():
             CL, OD = cl_od_to_array(float(min_length_field.get()), float(max_length_field.get()), float(min_diameter_field.get()), float(max_diameter_field.get()), float(incrementSize_fieldLength.get()), float(incrementSize_fieldWidth.get()))
             generate_case_files(float(length_field.get()), float(ea_field.get()), float(ei_field.get()), float(gt_field.get()), float(m_field.get()),cases_field.get().split(', '), float(id_field.get()), float(sl_field.get()), OD,CL, float(tl_field.get()), float(tod_field.get()), mat_field.get().split(', '),matid_field.get().split(', '))
         # Create buttons
-        button1 = tk.Button(root, text="Run analysis", command=lambda: completeAnalysis())
+        button1 = tk.Button(root, text="Run analysis", command=lambda: run_threads())
         button1.grid(row=3, column=0, padx=10, pady=10)
         button3 = tk.Button(root, text="Check results without rerunning analysis", command=lambda: createResults()) 
         button3.grid(row=3, column=1, padx=10, pady=10)

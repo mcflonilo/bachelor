@@ -113,7 +113,7 @@ class BSMaterialWindow:
             self.section_entries[section]["elastic_modules"].insert(0, values["elastic_modules"])
 
         # Add OK button to switch frames
-        ok_button = tk.Button(self.root, text="OK", command=lambda: self.switch_frame(self.next_frame))
+        ok_button = tk.Button(self.root, text="OK", command=lambda: self.show_frame(self.next_frame))
         ok_button.grid(row=len(data) * 5 + 2, column=0, columnspan=3, pady=20)
 
 
