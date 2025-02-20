@@ -66,8 +66,7 @@
                 1596.0,
                 1676.0
             ]
-        ],
-        "interpolation": []
+        ]
     },
     "riser_response": {
         "normal": [
@@ -114,9 +113,9 @@
     "bs_dimension": {
         "Input root length:": "0.650",
         "Input tip length:": "0.150",
-        "Input MIN root OD:": "1",
+        "Input MIN root OD:": "1.4",
         "Input MAX root OD:": "2",
-        "Input MIN overall length:": "10",
+        "Input MIN overall length:": "12.25",
         "Input MAX overall length:": "13",
         "Input clearance:": "0.010",
         "Input thidm(??):": "fse",

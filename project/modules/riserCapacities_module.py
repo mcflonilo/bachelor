@@ -33,9 +33,6 @@ class riserCapacities:
         ttk.Button(self.input_frame, text="Add Row (Normal)", command=self.add_normal_row).grid(row=2, column=2, pady=5)
         ttk.Button(self.input_frame, text="Add Row (Abnormal)", command=self.add_abnormal_row).grid(row=102, column=2, pady=5)
 
-        # Autofill button
-        ttk.Button(self.input_frame, text="Autofill Data", command=self.autofill_data).grid(row=300, column=0, columnspan=3, pady=10)
-        
         # Plot button
         ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).grid(row=400, column=0, columnspan=3, pady=10)
 
@@ -108,30 +105,6 @@ class riserCapacities:
             row[1].delete(0, tk.END)
             row[1].insert(0, tension)
 
-    def autofill_data(self):
-        """Autofill the input fields with predefined data."""
-        normal_data = [
-            (0.08197, 0), (0.07752, 87), (0.07353, 174), (0.06944, 261), (0.06536, 348),
-            (0.05714, 522), (0.04902, 696), (0.04082, 870), (0.03268, 1044), (0.02451, 1218),
-            (0.02045, 1305), (0.01634, 1392), (0.01225, 1479), (0.00817, 1566), (0.00000, 1566)
-        ]
-
-        abnormal_data = [
-            (0.11765, 0), (0.11236, 133), (0.10753, 266), (0.10204, 399), (0.09709, 532),
-            (0.08696, 798), (0.07519, 1064), (0.06250, 1330), (0.05000, 1596), (0.03125, 1676), (0.00000, 1676)
-        ]
-
-        for row, (curvature, tension) in zip(self.normal_rows, normal_data):
-            row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
-            row[1].delete(0, tk.END)
-            row[1].insert(0, tension)
-
-        for row, (curvature, tension) in zip(self.abnormal_rows, abnormal_data):
-            row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
-            row[1].delete(0, tk.END)
-            row[1].insert(0, tension)
 
     def update_plot(self):
         """Update the plot with the entered data."""

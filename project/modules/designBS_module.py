@@ -88,7 +88,7 @@ class DesignWindow:
             "bs_dimension": self.bsDimension_app.get_data(),
             "bs_material": self.bsMaterial_app.get_data()
         }
-        print(data)
+        
         return data
     
     def show_frame(self, target_frame):
@@ -111,7 +111,7 @@ class DesignWindow:
             "bs_dimension": [
                 "Input root length:", "Input tip length:", "Input MIN root OD:",
                 "Input MAX root OD:", "Input MIN overall length:", "Input MAX overall length:",
-                "Input clearance:", "Input thidm(??):", "BS ID:",
+                "Input clearance:",
                 "Increment Width:", "Increment Length:"
             ],
             "bs_material": ["Section 1"],  # At least one section must exist
@@ -225,7 +225,7 @@ class DesignWindow:
         data = self.get_data()
         analysis_frame = tk.Frame(self.root)
         analysis_frame.grid(row=0, column=0, sticky="nsew")
-        analysis_app = AnalysisScreen(analysis_frame, self.frame, data)
+        analysis_app = AnalysisScreen(analysis_frame, self.frame, data, self.show_frame)
         self.show_frame(analysis_frame)
 
 def main():

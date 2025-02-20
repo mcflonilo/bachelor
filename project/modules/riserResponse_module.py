@@ -34,21 +34,6 @@ class RiserResponseWindow:
         ttk.Button(self.input_frame, text="Add Row (Normal)", command=self.add_normal_row).grid(row=2, column=2, pady=5)
         ttk.Button(self.input_frame, text="Add Row (Abnormal)", command=self.add_abnormal_row).grid(row=22, column=2, pady=5)
 
-        # Autofill button
-        ttk.Button(self.input_frame, text="Autofill Data", command=self.autofill_data).grid(row=40, column=0, columnspan=3, pady=10)
-
-        # Interpolation section
-        ttk.Label(self.input_frame, text="Interpolation").grid(row=50, column=0, columnspan=3, pady=10)
-        ttk.Label(self.input_frame, text="Input Tension [kN]").grid(row=51, column=0, padx=5)
-        self.interpolation_rows_frame = ttk.Frame(self.input_frame)
-        self.interpolation_rows_frame.grid(row=52, column=0, columnspan=3)
-
-        # Add initial interpolation field
-        self.add_interpolation_field()
-
-        ttk.Button(self.input_frame, text="Add Interpolation Field", command=self.add_interpolation_field).grid(row=53, column=0, columnspan=3, pady=5)
-        ttk.Button(self.input_frame, text="Interpolate & Plot", command=self.interpolate_and_plot).grid(row=54, column=0, columnspan=3, pady=5)
-
         # Plot button
         ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).grid(row=60, column=0, columnspan=3, pady=10)
 
@@ -87,14 +72,6 @@ class RiserResponseWindow:
         tension_entry.grid(row=row_index, column=1, padx=5, pady=2)
         self.abnormal_rows.append((curvature_entry, tension_entry))
 
-    def add_interpolation_field(self):
-        """Add a new input field for interpolation."""
-        frame = self.interpolation_rows_frame
-        row_index = len(self.interpolation_rows)
-        tension_entry = ttk.Entry(frame, width=10)
-        tension_entry.grid(row=row_index, column=0, padx=5, pady=2)
-        self.interpolation_rows.append(tension_entry)
-
     def get_data_from_entries(self, rows):
         """Extract data from entry rows."""
         curvature = []
@@ -109,43 +86,6 @@ class RiserResponseWindow:
                 continue
         return curvature, tension
 
-    def interpolate_and_plot(self):
-        """Interpolate curvature based on tension and plot the results."""
-        tensions = []
-        for entry in self.interpolation_rows:
-            try:
-                tensions.append(float(entry.get()))
-            except ValueError:
-                continue
-
-        curvature_normal, tension_normal = self.get_data_from_entries(self.normal_rows)
-        curvature_abnormal, tension_abnormal = self.get_data_from_entries(self.abnormal_rows)
-
-        self.ax.clear()
-        self.ax.set_title("Tension vs. Curvature")
-        self.ax.set_xlabel("Curvature [1/m]")
-        self.ax.set_ylabel("Tension [kN]")
-        self.ax.grid(True)
-
-        normal_sorted = sorted(zip(tension_normal, curvature_normal))
-        abnormal_sorted = sorted(zip(tension_abnormal, curvature_abnormal))
-
-        tension_normal, curvature_normal = zip(*normal_sorted) if normal_sorted else ([], [])
-        tension_abnormal, curvature_abnormal = zip(*abnormal_sorted) if abnormal_sorted else ([], [])
-
-        self.ax.plot(curvature_normal, tension_normal, label="Normal Operation", color='blue')
-        self.ax.plot(curvature_abnormal, tension_abnormal, label="Abnormal Operation", color='red')
-
-        for tension in tensions:
-            if tension_normal:
-                interpolated_normal = np.interp(tension, tension_normal, curvature_normal)
-                self.ax.scatter(interpolated_normal, tension, color='blue', zorder=5)
-            if tension_abnormal:
-                interpolated_abnormal = np.interp(tension, tension_abnormal, curvature_abnormal)
-                self.ax.scatter(interpolated_abnormal, tension, color='red', zorder=5)
-
-        self.ax.legend()
-        self.canvas.draw()
     def get_data(self):
         """Return all data from the input fields."""
         normal_data = self.get_data_from_entries(self.normal_rows)
@@ -171,29 +111,6 @@ class RiserResponseWindow:
         for row, angle, tension in zip(self.abnormal_rows, abnormal_angles, abnormal_tensions):
             row[0].delete(0, tk.END)
             row[0].insert(0, angle)
-            row[1].delete(0, tk.END)
-            row[1].insert(0, tension)
-
-    def autofill_data(self):
-        """Autofill the input fields with predefined data."""
-        normal_data = [
-            (4.0, 550), (18.0, 650), (23.0, 750), (23.0, 850), (16.0, 1000),
-            (10.0, 1050), (2.0, 1100)
-        ]
-        abnormal_data = [
-            (15.0, 470), (20.0, 490), (25.0, 700), (26.0, 800), (25.0, 930),
-            (20.0, 1020), (5.0, 1140)
-        ]
-
-        for row, (curvature, tension) in zip(self.normal_rows, normal_data):
-            row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
-            row[1].delete(0, tk.END)
-            row[1].insert(0, tension)
-
-        for row, (curvature, tension) in zip(self.abnormal_rows, abnormal_data):
-            row[0].delete(0, tk.END)
-            row[0].insert(0, curvature)
             row[1].delete(0, tk.END)
             row[1].insert(0, tension)
 

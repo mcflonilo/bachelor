@@ -10,6 +10,7 @@ import re
 import subprocess
 import os
 from modules.reportScreen_module import ReportScreen
+import sys
 
 thresholds_normal = {}
 thresholds_abnormal = {}
@@ -18,94 +19,20 @@ thresholds_abnormal = {}
 def switch_frame(frame):
     frame.tkraise()
 
-
 class AnalysisScreen:
-    def __init__(self, root, prev_frame, data):
+    def __init__(self, root, prev_frame, data, show_frame):
         self.root = root
         self.prev_frame = prev_frame
         self.data = data
-
-        # Create a canvas and a scrollbar
-        canvas = tk.Canvas(self.root)
-        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas)
-
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            )
-        )
-
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-
-        # Pack the canvas and scrollbar
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-
-        # Add title label
-        lbl_title = tk.Label(scrollable_frame, text="DISPLAY DATA", font=("Arial", 14))
-        lbl_title.pack(pady=10)
-
-        # Display project information
+        self.show_frame = show_frame
         project_info = data.get("project_info", {})
-        self.display_section(scrollable_frame, "Project Information", project_info)
-
-        # Display riser information
         riser_info = data.get("riser_info", {})
-        self.display_section(scrollable_frame, "Riser Information", riser_info)
-
-        # Display riser capacities
         riser_capacities = data.get("riser_capacities", {})
-        self.display_riser_capacities(scrollable_frame, riser_capacities)
-        self.riser_capacities = riser_capacities
-
-        # Display riser response
         riser_response = data.get("riser_response", {})
-        self.display_riser_response(scrollable_frame, riser_response)
-        self.riser_response = riser_response
-
-        # Display BS dimensions
         bs_dimensions = data.get("bs_dimension", {})
-        self.display_section(scrollable_frame, "BS Dimensions", bs_dimensions)
-
-        # Display BS materials
         bs_materials = data.get("bs_material", {})
-        self.display_bs_materials(scrollable_frame, bs_materials)
-
-        # Add a return button
-        btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: switch_frame(prev_frame))
-        btn_return.pack(pady=20)
-
-        def casesBtn():
-            print("length: ", self.length)
-            print("EA: ", self.EA)
-            print("EI: ", self.EI)
-            print("GT: ", self.GT)
-            print("m: ", self.m)
-            print("ID: ", self.ID)
-            print("SL: ", self.SL)
-            print("CL: ", self.CL)
-            print("OD: ", self.OD)
-            print("TL: ", self.TL)
-            print("TOD: ", self.TOD)
-            print("MAT: ", self.MAT)
-            print("MATID: ", self.MATID)
-
-            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.normal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "normal")
-            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.abnormal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "abnormal")
-
-        btn_create_case_files = tk.Button(scrollable_frame, text="generate cases", width=10, height=2, bg="#333333", fg="white", command=lambda: casesBtn())                                   
-
-        btn_create_case_files.pack(pady=20)
-
-        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: self.loadBSCases("bsengine-cases-normal.txt"))
-        btn_run_analysis.pack(pady=20)
 
         self.normal_max_curve, self.abnormal_max_curve = self.interpolate_max_curve(riser_capacities, riser_response)
-
-
         self.length = round(float(riser_info.get("Riser Length")), 3)
         self.EA = round(float(riser_info.get("Axial Stiffness")), 3)
         self.EI = round(float(riser_info.get("Bending Stiffness")), 3)
@@ -165,56 +92,108 @@ class AnalysisScreen:
         print("Normal cases: ", self.normal_cases,"\n")
         print("Abnormal cases: ", self.abnormal_cases,"\n")
 
-        
+        # Create a canvas and a scrollbar
+        canvas = tk.Canvas(self.root)
+        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+        # Display sections
+        project_rows = self.display_section(scrollable_frame, "Project Information", project_info, 1)
+        riser_rows = self.display_section(scrollable_frame, "Riser Information", riser_info, 1 + project_rows)
+        capacities_rows = self.display_riser_capacities(scrollable_frame, riser_capacities, 1 + project_rows + riser_rows)
+        response_rows = self.display_riser_response(scrollable_frame, riser_response, 1 + project_rows + riser_rows + capacities_rows)
+        dimensions_rows = self.display_section(scrollable_frame, "BS Dimensions", bs_dimensions, 1 + project_rows + riser_rows + capacities_rows + response_rows)
+        materials_rows = self.display_bs_materials(scrollable_frame, bs_materials, 1 + project_rows + riser_rows + capacities_rows + response_rows + dimensions_rows)
+
+        # Add buttons
+        btn_start_row = 1 + project_rows + riser_rows + capacities_rows + response_rows + dimensions_rows + materials_rows
+
+        btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: self.show_frame(prev_frame))
+        btn_return.grid(row=btn_start_row, column=0, pady=20, sticky="w")
+
+        btn_create_case_files = tk.Button(scrollable_frame, text="Generate Cases", width=10, height=2, bg="#333333", fg="white", command=lambda: casesBtn())
+        btn_create_case_files.grid(row=btn_start_row, column=1, pady=20, sticky="w")
+
+        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: self.loadBSCases("bsengine-cases-normal.txt"))
+        btn_run_analysis.grid(row=btn_start_row, column=2, pady=20, sticky="w")
+
+        def casesBtn():
+            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.normal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "normal")
+            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.abnormal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "abnormal")
 
 
-    def make_case_arrays(self, riser_response):
-        normal_cases = []
-        abnormal_cases = []
-        for key, values in riser_response.items():
-            for angle, tension in zip(values[0], values[1]):
-                if key == "normal":
-                    normal_cases.append((angle, tension))
-                elif key == "abnormal":
-                    abnormal_cases.append((angle, tension))
-        return normal_cases, abnormal_cases
+    def display_section(self, parent, title, section_data, start_row):
+        lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"))
+        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
+        row_count = 1
+        for i, (key, value) in enumerate(section_data.items()):
+            lbl = tk.Label(parent, text=f"{key}: {value}")
+            lbl.grid(row=start_row + i + 1, column=0, sticky="w", padx=40, pady=2)
+            row_count += 1
+        if title == "BS Dimensions":
+            lbl = tk.Label(parent, text=f"ID: {self.ID}")
+            lbl.grid(row=start_row + i + 2, column=0, sticky="w", padx=40, pady=2)
+            row_count += 1
 
-    def display_section(self, parent, title, section_data):
-        lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
-        lbl_section_title.pack(fill="x", padx=20, pady=5)
-        for key, value in section_data.items():
-            lbl = tk.Label(parent, text=f"{key}: {value}", anchor="w")
-            lbl.pack(fill="x", padx=40, pady=5)
+        return row_count
 
-    def display_riser_capacities(self, parent, capacities):
-        lbl_section_title = tk.Label(parent, text="Riser capacities", font=("Arial", 12, "bold"), anchor="w")
-        lbl_section_title.pack(fill="x", padx=20, pady=5)
+    def display_riser_capacities(self, parent, capacities, start_row):
+        lbl_section_title = tk.Label(parent, text="Riser Capacities", font=("Arial", 12, "bold"))
+        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
+        row_offset = 1
         for key, values in capacities.items():
-            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"), anchor="w")
-            lbl_key.pack(fill="x", padx=40, pady=5)
+            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
+            lbl_key.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            row_offset += 1
             for angle, tension in zip(values[0], values[1]):
-                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}", anchor="w")
-                lbl_value.pack(fill="x", padx=60, pady=2)
+                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}")
+                lbl_value.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                row_offset += 1
+        return row_offset
 
-    def display_riser_response(self, parent, response):
-        lbl_section_title = tk.Label(parent, text="Riser Response", font=("Arial", 12, "bold"), anchor="w")
-        lbl_section_title.pack(fill="x", padx=20, pady=5)
+    def display_riser_response(self, parent, response, start_row):
+        lbl_section_title = tk.Label(parent, text="Riser Response", font=("Arial", 12, "bold"))
+        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
+        row_offset = 1
         for key, values in response.items():
-            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"), anchor="w")
-            lbl_key.pack(fill="x", padx=40, pady=5)
+            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
+            lbl_key.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            row_offset += 1
             for angle, tension in zip(values[0], values[1]):
-                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}", anchor="w")
-                lbl_value.pack(fill="x", padx=60, pady=2)
+                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}")
+                lbl_value.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                row_offset += 1
+        return row_offset
 
-    def display_bs_materials(self, parent, materials):
-        lbl_section_title = tk.Label(parent, text="BS Materials", font=("Arial", 12, "bold"), anchor="w")
-        lbl_section_title.pack(fill="x", padx=20, pady=5)
+    def display_bs_materials(self, parent, materials, start_row):
+        lbl_section_title = tk.Label(parent, text="BS Materials", font=("Arial", 12, "bold"))
+        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
+        row_offset = 1
         for section, entries in materials.items():
-            lbl_section = tk.Label(parent, text=f"{section}:", font=("Arial", 10, "bold"), anchor="w")
-            lbl_section.pack(fill="x", padx=40, pady=5)
+            lbl_section = tk.Label(parent, text=f"{section}:", font=("Arial", 10, "bold"))
+            lbl_section.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            row_offset += 1
             for key, value in entries.items():
-                lbl = tk.Label(parent, text=f"{key}: {value}", anchor="w")
-                lbl.pack(fill="x", padx=60, pady=2)
+                lbl = tk.Label(parent, text=f"{key}: {value}")
+                lbl.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                row_offset += 1
+
+        return row_offset
+
 
     def interpolate_max_curve(self, capacities, response):
         normal_capacities = capacities.get("normal", [[], []])
@@ -246,7 +225,6 @@ class AnalysisScreen:
         x = 0 # Counter
         y = 0
         
-
         for i in cases:
             x = 0
             y = y + 1
@@ -476,12 +454,22 @@ class AnalysisScreen:
         return width_length_dict
 
     def runBSEngine(self, case):
+            def resource_path(relative_path):
+                """ Get the absolute path to the resource, works for dev and for PyInstaller """
+                try:
+                    # PyInstaller creates a temp folder and stores path in _MEIPASS
+                    base_path = sys._MEIPASS
+                except Exception:
+                    base_path = os.path.abspath(".")
+
+                return os.path.join(base_path, relative_path)
+
+            executable_path = resource_path('bsengine\\bsengine')
             def checkIfCaseIsAlreadyChecked(case):
                 casename = case.replace('.inp', '_FEA.log')
                 if os.path.exists(casename):
-                    print(f"bs already checked for case: {casename}")
+                    print(f"bs already checked for case: {casename}. skipping!")
                     return True
-                print(f"bs not checked for case: {casename}")
                 return False
             current_directory = os.getcwd()
             
@@ -495,7 +483,7 @@ class AnalysisScreen:
                 else:
                     result = float(result['maximum_curvature'])
                     return result
-            process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
+            process = subprocess.Popen(f"{executable_path} -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
             stdout, stderr = process.communicate()
             print(f"stdout: {stdout}")
             print(f"stderr: {stderr}")
@@ -598,9 +586,10 @@ class AnalysisScreen:
         self.checkBSAgainsAllCases(findShortestBSForCase, "normal", 1)
         # Create riserResponse frame
         report_frame = tk.Frame(self.root)
-        report_frame.pack(fill="both", expand=True)
-        self.report_app = ReportScreen(self.root, self.prev_frame, lambda frame: frame.tkraise(), self.data['riser_capacities'], self.data['riser_response'],findShortestBSForCase["case_name"], self.data, thresholds_normal, thresholds_abnormal)
-
+        report_frame.grid(row=0, column=0, sticky="nsew")
+        self.report_app = ReportScreen(report_frame, self.prev_frame, self.show_frame, self.data['riser_capacities'], self.data['riser_response'],findShortestBSForCase["case_name"], self.data, thresholds_normal, thresholds_abnormal)
+        self.show_frame(report_frame)
+    
     def findShortestBSForCase(self,file_path):
         """Loads all the bsengine cases, extracts case group, width, and length from the case name."""
         cases = []
@@ -648,8 +637,6 @@ class AnalysisScreen:
                 print(f"bs {f'case_files\\Case-normal{i}'} passed in all cases")
                 return shortest
 
-    
-    
     def checkBSAgainsAllCases(self, shortest,tag, i):
         if tag == "normal":
             thresholds = thresholds_normal
@@ -667,7 +654,17 @@ class AnalysisScreen:
                 return True, i
             i += 1
         return True, None
-
+    
+    def make_case_arrays(self, riser_response):
+            normal_cases = []
+            abnormal_cases = []
+            for key, values in riser_response.items():
+                for angle, tension in zip(values[0], values[1]):
+                    if key == "normal":
+                        normal_cases.append((angle, tension))
+                    elif key == "abnormal":
+                        abnormal_cases.append((angle, tension))
+            return normal_cases, abnormal_cases
 def main():
     root = tk.Tk()
     prev_frame = tk.Frame(root)

@@ -15,7 +15,7 @@ class BSDimensionWindow:
         labels = [
             "Input root length:", "Input tip length:", "Input MIN root OD:",
             "Input MAX root OD:", "Input MIN overall length:", "Input MAX overall length:",
-            "Input clearance:", "Input thidm(??):", "BS ID:", "Increment Width:", "Increment Length:"
+            "Input clearance:", "Increment Width:", "Increment Length:"
         ]
         self.entries = {}
 

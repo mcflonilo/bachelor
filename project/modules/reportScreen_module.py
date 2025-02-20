@@ -56,7 +56,7 @@ class ReportScreen:
         curvature_abnormal_resp = [float(curve["maximum_bs_curvature"]) for curve in self.abnormal_curves]
 
         self.ax.clear()
-        self.ax.set_title("BS Response at NO and AO Loads")
+        self.ax.set_title(f"BS Response at NO and AO Loads for case: {self.case}")
         self.ax.set_xlabel("Curvature [1/m]")
         self.ax.set_ylabel("Tension [kN]")
         self.ax.grid(True)
@@ -111,6 +111,20 @@ class ReportScreen:
         for section, material in data["bs_material"].items():
             material_data.append((section, material["material_characteristics"], material["elastic_modules"]))
         create_table(frame, "BS Material", ["Section", "Material", "Elastic Modules"], material_data)
+
+        case_data = []
+        i = 0
+        for threshold in self.threshold_normal.items():
+            case_data.append((i+1, round(self.response["normal"][1][i], 5), round(self.response["normal"][0][i], 5), round(threshold[1]["maximum_curvature"], 5), round(float(self.normal_curves[i]["maximum_curvature"]), 5)))
+            i += 1
+        create_table(frame, "Threshold Normal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], case_data)
+
+        case_data_abnormal = []
+        i = 0
+        for threshold in self.threshold_abnormal.items():
+            case_data_abnormal.append((i+1, round(self.response["abnormal"][1][i], 5), round(self.response["abnormal"][0][i], 5), round(threshold[1]["maximum_curvature"], 5), round(float(self.abnormal_curves[i]["maximum_curvature"]), 5)))
+            i += 1
+        create_table(frame, "Threshold Abnormal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], case_data_abnormal)
 
     def getCurves(self, case):
         noOfCases = len(self.response['normal'][0])

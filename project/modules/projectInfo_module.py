@@ -1,8 +1,5 @@
 import tkinter as tk
 
-def switch_frame(frame):
-    frame.tkraise()
-
 class ProjectInfoWindow:
     def __init__(self, root, prev_frame, show_frame):
         self.root = root
