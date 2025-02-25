@@ -76,6 +76,11 @@ class DesignWindow:
                                   bg="#333333", fg="white", command=self.load_data)
         btn_load_data.grid(row=1, column=3, pady=10)
 
+        # Add a button to return to the main screen
+        btn_return = tk.Button(self.frame, text="RETURN TO MAIN SCREEN", width=30, height=2,
+                               bg="#333333", fg="white", command=lambda: self.show_frame(self.main_frame))
+        btn_return.grid(row=10, column=0, pady=10)
+
         self.check_data()
 
         

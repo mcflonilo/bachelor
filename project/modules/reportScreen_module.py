@@ -44,6 +44,11 @@ class ReportScreen:
 
         self.update_plot()
 
+        #create a button to go back to the previous screen
+        self.back_button = tk.Button(self.main_frame, text="Back", command=lambda: self.show_frame(self.prev_frame), width=10, height=2, bg="#333333", fg="white")
+        self.back_button.pack(side="bottom", pady=10)
+
+
     def update_plot(self):
         """Update the plot with the entered data."""
         curvature_normal_cap, tension_normal_cap = self.capacities["normal"]
@@ -56,7 +61,7 @@ class ReportScreen:
         curvature_abnormal_resp = [float(curve["maximum_bs_curvature"]) for curve in self.abnormal_curves]
 
         self.ax.clear()
-        self.ax.set_title(f"BS Response at NO and AO Loads for case: {self.case}")
+        self.ax.set_title(f"BS Response at NO and AO Loads for case:\n {self.case}")
         self.ax.set_xlabel("Curvature [1/m]")
         self.ax.set_ylabel("Tension [kN]")
         self.ax.grid(True)
