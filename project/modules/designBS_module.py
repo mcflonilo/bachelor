@@ -228,6 +228,9 @@ class DesignWindow:
 
     def create_analysis_screen(self):
         data = self.get_data()
+        if not all(data.values()):
+            tk.messagebox.showerror("Error", "Some data fields are missing or invalid. Cannot create analysis screen.")
+            return
         analysis_frame = tk.Frame(self.root)
         analysis_frame.grid(row=0, column=0, sticky="nsew")
         analysis_app = AnalysisScreen(analysis_frame, self.frame, data, self.show_frame)
