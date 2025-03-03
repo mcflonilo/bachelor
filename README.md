@@ -4,3 +4,9 @@ filen som inneholder multithreeading kode ligger i test.py som også er i oldstu
 
 for å bygge prosjektet:
 pyinstaller --onefile --add-data "bsengine/bsengine.exe;bsengine" --add-data "bsengine/bsengine.lic;bsengine" --add-data "bsengine/._bsengine.lic;bsengine" --icon=ultrabend_proposed_logo.ico FINALGUI.PY
+
+
+Ting som må installeres for å kjøre programmet/ting for requirements.txt
+- matplotlib
+- scipy
+- pandas
