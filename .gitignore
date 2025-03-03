@@ -160,5 +160,4 @@ cython_debug/
 #.idea/
 
 # to avoid junk uploads
-.case_files/
-.project/case_files/
+case_files/
