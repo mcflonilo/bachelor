@@ -161,3 +161,5 @@ cython_debug/
 
 # to avoid junk uploads
 case_files/
+bsengine-cases-abnormal.txt
+bsengine-cases-normal.txt
