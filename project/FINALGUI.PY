@@ -5,9 +5,12 @@ from modules.projectInfo_module import ProjectInfoWindow
 from modules.riserInfo_module import RiserInfoWindow
 from modules.bsMaterialScreen_module import BSMaterialWindow
 from modules.bsDimensionScreen_module import BSDimensionWindow
+from modules.deletefiles import delete_unpaired_files
 
 def switch_frame(frame):
     frame.tkraise()
+def clean_files():
+    print("cleaning files")
 
 def create_main_screen(frame, designBS_frame):
     
@@ -22,6 +25,10 @@ def create_main_screen(frame, designBS_frame):
     btn_run_cases = tk.Button(frame, text="RUN LOAD CASES ON EXISTING BS", width=100, height=2, 
                           bg="#333333", fg="white", command=switch_frame)
     btn_run_cases.pack(pady=30)  # Vertical spacing
+
+    btn_clean_files = tk.Button(frame, text="CLEAN FILES", width=100, height=2,
+                            bg="#333333", fg="white", command=lambda:delete_unpaired_files("case_files"))
+    btn_clean_files.pack(pady=30)  # Vertical spacing
     return frame
 
 

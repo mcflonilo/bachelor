@@ -56,7 +56,7 @@ class DesignWindow:
         # Create bsMaterial frame
         bsMaterial_frame = tk.Frame(root)
         bsMaterial_frame.grid(row=0, column=0, sticky="nsew")
-        self.bsMaterial_app = BSMaterialWindow(bsMaterial_frame, bsDimension_frame, self.show_frame)
+        self.bsMaterial_app = BSMaterialWindow(bsMaterial_frame, bsDimension_frame, self.show_frame, self.frame)
         self.btn_bs_material = tk.Button(self.frame, text="INPUT BS MATERIAL", width=30, height=2,
                                     bg="#333333", fg="white", command=lambda: self.show_frame(bsMaterial_frame))
         self.btn_bs_material.grid(row=6, column=0, pady=10)

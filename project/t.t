@@ -3,7 +3,7 @@
 
  Directory of C:\Users\lmoph\OneDrive\Skrivebord\git_repos\bachelor\project
 
-03/03/2025  12:02 PM    <DIR>          case_files
+03/03/2025  12:30 PM    <DIR>          case_files
 03/03/2025  11:40 AM    <DIR>          projectFiles
 03/03/2025  11:40 AM    <DIR>          modules
 03/03/2025  11:40 AM    <DIR>          oldstuff
@@ -11,4 +11,4 @@
 03/03/2025  11:40 AM    <DIR>          .
 03/03/2025  11:40 AM    <DIR>          ..
                0 File(s)              0 bytes
-               7 Dir(s)  322,705,305,600 bytes free
+               7 Dir(s)  322,611,613,696 bytes free

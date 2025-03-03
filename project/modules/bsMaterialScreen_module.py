@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class BSMaterialWindow:
-    def __init__(self, root, next_frame, show_frame):
+    def __init__(self, root, next_frame, show_frame, prev_frame):
         self.root = root
         self.next_frame = next_frame
         self.show_frame = show_frame
@@ -16,6 +16,11 @@ class BSMaterialWindow:
         # Add button to create sections
         create_sections_button = tk.Button(self.root, text="Create Sections", command=self.create_sections)
         create_sections_button.grid(row=0, column=2, padx=10, pady=10)
+
+        #add return button
+        return_button = tk.Button(self.root, text="Return", command=lambda: prev_frame.tkraise())
+        return_button.grid(row=0, column=3, padx=10, pady=10)
+
 
         # Dictionary to store section entries
         self.section_entries = {}
