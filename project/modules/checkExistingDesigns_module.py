@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import json
 import os
-from modules.analysisScreen_module import AnalysisScreen
+from modules.analysisScreen_module_copy import AnalysisScreen
 from modules.riserResponse_module import RiserResponseWindow
 from modules.riserCapacities_module import riserCapacities
 from modules.projectInfo_module import ProjectInfoWindow
@@ -81,6 +81,10 @@ class CheckExistingDesignsWindow:
                                bg="#333333", fg="white", command=lambda: self.show_frame(self.main_frame))
         btn_return.grid(row=10, column=0, pady=10)
 
+        btn_print_data = tk.Button(self.frame, text="PRINT DATA", width=30, height=2,
+                                  bg="#333333", fg="white", command=self.get_data)
+        btn_print_data.grid(row=3, column=3, pady=10)
+
         self.check_data()
 
         
@@ -93,6 +97,7 @@ class CheckExistingDesignsWindow:
             "bs_dimension": self.bsDimension_app.get_data(),
             "bs_material": self.bsMaterial_app.get_data()
         }
+        print(data)
         
         return data
     

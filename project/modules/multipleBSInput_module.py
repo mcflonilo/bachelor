@@ -119,11 +119,7 @@ class MultipleBSDimensionWindow:
         self.show_frame(self.prev_frame)  # Switch to the previous screen
 
     def get_data(self):
-        """Return all data from the input fields."""
-        data = {}
-        for label, entry in self.entries.items():
-            data[label] = entry.get()
-        return data
+        return self.BS_data
 
 
 def switch_frame(frame):
