@@ -1,14 +1,17 @@
- Volume in drive C is OS
- Volume Serial Number is 124E-4587
+ Volume in drive C is System
+ Volume Serial Number is 628E-E8C1
 
- Directory of C:\Users\lmoph\OneDrive\Skrivebord\git_repos\bachelor\project
+ Directory of C:\Users\lmoph\Desktop\github\bachelor\project
 
-03/03/2025  12:30 PM    <DIR>          case_files
-03/03/2025  11:40 AM    <DIR>          projectFiles
-03/03/2025  11:40 AM    <DIR>          modules
-03/03/2025  11:40 AM    <DIR>          oldstuff
-03/03/2025  11:40 AM    <DIR>          bsengine
-03/03/2025  11:40 AM    <DIR>          .
-03/03/2025  11:40 AM    <DIR>          ..
+04.03.2025  12:48    <DIR>          case_files
+17.02.2025  13:10    <DIR>          bsengine
+17.02.2025  13:02    <DIR>          build
+17.02.2025  13:02    <DIR>          dist
+03.02.2025  13:57    <DIR>          modules
+03.02.2025  13:56    <DIR>          oldstuff
+27.01.2025  11:46    <DIR>          projectFiles
+17.01.2025  14:21    <DIR>          __pycache__
+16.01.2025  10:13    <DIR>          .
+16.01.2025  10:13    <DIR>          ..
                0 File(s)              0 bytes
-               7 Dir(s)  322,611,613,696 bytes free
+              10 Dir(s)  497ÿ250ÿ463ÿ744 bytes free

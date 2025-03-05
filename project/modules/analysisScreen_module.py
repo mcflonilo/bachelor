@@ -92,107 +92,114 @@ class AnalysisScreen:
         print("Normal cases: ", self.normal_cases,"\n")
         print("Abnormal cases: ", self.abnormal_cases,"\n")
 
+        # Create a frame inside the root that expands
+        container = tk.Frame(self.root)
+        container.pack(fill=tk.BOTH, expand=True)
+
         # Create a canvas and a scrollbar
-        canvas = tk.Canvas(self.root)
-        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        canvas = tk.Canvas(container)
+        scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        h_scrollbar = tk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+
         scrollable_frame = tk.Frame(canvas)
 
+        # Ensure the frame resizes properly
         scrollable_frame.bind(
             "<Configure>",
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.configure(yscrollcommand=scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        # Use grid to fill the screen
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
         canvas.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
 
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        project_frame = self.display_section(scrollable_frame, "Project Information", project_info)
+        project_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        # Display sections
-        project_rows = self.display_section(scrollable_frame, "Project Information", project_info, 1)
-        riser_rows = self.display_section(scrollable_frame, "Riser Information", riser_info, 1 + project_rows)
-        capacities_rows = self.display_riser_capacities(scrollable_frame, riser_capacities, 1 + project_rows + riser_rows)
-        response_rows = self.display_riser_response(scrollable_frame, riser_response, 1 + project_rows + riser_rows + capacities_rows)
-        dimensions_rows = self.display_section(scrollable_frame, "BS Dimensions", bs_dimensions, 1 + project_rows + riser_rows + capacities_rows + response_rows)
-        materials_rows = self.display_bs_materials(scrollable_frame, bs_materials, 1 + project_rows + riser_rows + capacities_rows + response_rows + dimensions_rows)
+        riser_frame = self.display_section(scrollable_frame, "Riser Information", riser_info)
+        riser_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
-        # Add buttons
-        btn_start_row = 1 + project_rows + riser_rows + capacities_rows + response_rows + dimensions_rows + materials_rows
+        capacities_frame = self.display_riser_capacities(scrollable_frame, riser_capacities)
+        capacities_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-        btn_return = tk.Button(scrollable_frame, text="Return", width=10, height=2, bg="#333333", fg="white", command=lambda: self.show_frame(prev_frame))
-        btn_return.grid(row=btn_start_row, column=0, pady=20, sticky="w")
+        response_frame = self.display_riser_response(scrollable_frame, riser_response)
+        response_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
-        btn_create_case_files = tk.Button(scrollable_frame, text="Generate Cases", width=10, height=2, bg="#333333", fg="white", command=lambda: casesBtn())
-        btn_create_case_files.grid(row=btn_start_row, column=1, pady=20, sticky="w")
+        dimensions_frame = self.display_section(scrollable_frame, "BS Dimensions", bs_dimensions)
+        dimensions_frame.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
 
-        btn_run_analysis = tk.Button(scrollable_frame, text="Run Analysis", width=10, height=2, bg="#333333", fg="white", command=lambda: self.loadBSCases("bsengine-cases-normal.txt"))
-        btn_run_analysis.grid(row=btn_start_row, column=2, pady=20, sticky="w")
+        materials_frame = self.display_bs_materials(scrollable_frame, bs_materials)
+        materials_frame.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
 
-        def casesBtn():
-            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.normal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "normal")
-            self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.abnormal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "abnormal")
+        # Add buttons at the bottom
+        btn_frame = tk.Frame(scrollable_frame)
+        btn_frame.grid(row=0, column=3, columnspan=2, pady=10, padx=10, sticky="ew")
+        
+        btn_return = tk.Button(btn_frame, text="Return", width=15, bg="#333", fg="white",
+                               command=lambda: show_frame(prev_frame))
+        btn_return.grid(row=0, column=0, pady=10)
+
+        btn_create_case_files = tk.Button(btn_frame, text="Generate Cases", width=15, bg="#333", fg="white",
+                                          command=self.casesBtn)
+        btn_create_case_files.grid(row=1, column=0, pady=10)
+
+        btn_run_analysis = tk.Button(btn_frame, text="Run Analysis", width=15, bg="#333", fg="white",
+                                     command=lambda: self.loadBSCases("bsengine-cases-normal.txt"))
+        btn_run_analysis.grid(row=2, column=0, pady=10)
 
 
-    def display_section(self, parent, title, section_data, start_row):
-        lbl_section_title = tk.Label(parent, text=title, font=("Arial", 12, "bold"))
-        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
-        row_count = 1
+    def display_section(self, parent, title, section_data):
+        noOfRows = len(section_data)
+        frame = tk.LabelFrame(parent, text=title, font=("Arial", 12, "bold"), padx=10, pady=10)
         for i, (key, value) in enumerate(section_data.items()):
-            lbl = tk.Label(parent, text=f"{key}: {value}")
-            lbl.grid(row=start_row + i + 1, column=0, sticky="w", padx=40, pady=2)
-            row_count += 1
-        if title == "BS Dimensions":
-            lbl = tk.Label(parent, text=f"ID: {self.ID}")
-            lbl.grid(row=start_row + i + 2, column=0, sticky="w", padx=40, pady=2)
-            row_count += 1
-
-        return row_count
-
-    def display_riser_capacities(self, parent, capacities, start_row):
-        lbl_section_title = tk.Label(parent, text="Riser Capacities", font=("Arial", 12, "bold"))
-        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
-        row_offset = 1
+            lbl = tk.Label(frame, text=f"{key}: {value}")
+            lbl.grid(row=i, column=0, sticky="w", padx=10, pady=2)
+        return frame
+    def display_riser_capacities(self, parent, capacities):
+        frame = tk.LabelFrame(parent, text="Riser Capacities", font=("Arial", 12, "bold"), padx=10, pady=10)
+        row_offset = 0
         for key, values in capacities.items():
-            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
-            lbl_key.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            lbl_key = tk.Label(frame, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
+            lbl_key.grid(row=row_offset, column=0, sticky="w", padx=10, pady=5)
             row_offset += 1
             for angle, tension in zip(values[0], values[1]):
-                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}")
-                lbl_value.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                lbl_value = tk.Label(frame, text=f"Angle: {angle}, Tension: {tension}")
+                lbl_value.grid(row=row_offset, column=0, sticky="w", padx=20, pady=2)
                 row_offset += 1
-        return row_offset
+        return frame
 
-    def display_riser_response(self, parent, response, start_row):
-        lbl_section_title = tk.Label(parent, text="Riser Response", font=("Arial", 12, "bold"))
-        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
-        row_offset = 1
+    def display_riser_response(self, parent, response):
+        frame = tk.LabelFrame(parent, text="Riser Response", font=("Arial", 12, "bold"), padx=10, pady=10)
+        row_offset = 0
         for key, values in response.items():
-            lbl_key = tk.Label(parent, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
-            lbl_key.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            lbl_key = tk.Label(frame, text=f"{key.capitalize()} Operation:", font=("Arial", 10, "bold"))
+            lbl_key.grid(row=row_offset, column=0, sticky="w", padx=10, pady=5)
             row_offset += 1
             for angle, tension in zip(values[0], values[1]):
-                lbl_value = tk.Label(parent, text=f"Angle: {angle}, Tension: {tension}")
-                lbl_value.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                lbl_value = tk.Label(frame, text=f"Angle: {angle}, Tension: {tension}")
+                lbl_value.grid(row=row_offset, column=0, sticky="w", padx=20, pady=2)
                 row_offset += 1
-        return row_offset
+        return frame
 
-    def display_bs_materials(self, parent, materials, start_row):
-        lbl_section_title = tk.Label(parent, text="BS Materials", font=("Arial", 12, "bold"))
-        lbl_section_title.grid(row=start_row, column=0, sticky="w", padx=20, pady=5)
-        row_offset = 1
+    def display_bs_materials(self, parent, materials):
+        frame = tk.LabelFrame(parent, text="BS Materials", font=("Arial", 12, "bold"), padx=10, pady=10)
+        row_offset = 0
         for section, entries in materials.items():
-            lbl_section = tk.Label(parent, text=f"{section}:", font=("Arial", 10, "bold"))
-            lbl_section.grid(row=start_row + row_offset, column=0, sticky="w", padx=40, pady=5)
+            lbl_section = tk.Label(frame, text=f"{section}:", font=("Arial", 10, "bold"))
+            lbl_section.grid(row=row_offset, column=0, sticky="w", padx=10, pady=5)
             row_offset += 1
             for key, value in entries.items():
-                lbl = tk.Label(parent, text=f"{key}: {value}")
-                lbl.grid(row=start_row + row_offset, column=0, sticky="w", padx=60, pady=2)
+                lbl = tk.Label(frame, text=f"{key}: {value}")
+                lbl.grid(row=row_offset, column=0, sticky="w", padx=20, pady=2)
                 row_offset += 1
-
-        return row_offset
+        return frame
 
 
     def interpolate_max_curve(self, capacities, response):
@@ -218,7 +225,11 @@ class AnalysisScreen:
         new_curvatures_linear_abnormal = f_linear_abnormal(abnormal_response_tensions)
 
         return new_curvatures_linear_normal, new_curvatures_linear_abnormal
-    
+    def casesBtn(self):
+        casetotal = 0
+        casetotal += self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.normal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "normal")
+        casetotal += self.generate_case_files(self.length, self.EA, self.EI, self.GT, self.m, self.abnormal_cases, self.ID, self.SL, self.OD, self.CL, self.TL, self.TOD, self.MAT, self.MATID, "abnormal")
+        tk.messagebox.showinfo("Case Files", f"generated {casetotal} cases.")
     def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, label):
         # Create a text file to store the case filenames
         inp1 = open(f'bsengine-cases-{label}.txt', 'w')
@@ -372,9 +383,13 @@ class AnalysisScreen:
                         inp.write("end"+'\n')
                         inp.write("'mandatory data group"+'\n')
                         inp.write("'---------------------------------------------"+'\n')
+        def count_lines(filename):
+            with open(filename, 'r') as file:
+                return sum(1 for line in file)
 
         inp.close()
         inp1.close()
+        return count_lines(f'bsengine-cases-{label}.txt')
     
     def extract_key_results(self, case_file):
         try:
