@@ -48,7 +48,7 @@ TL = 0.150 #tip length
 TOD = ID+0.04 #tip outer diameter
 MAT = ['NOLIN  60D_30'] #250000'] #, 'LIN  162300', 'NOLIN  60D-15deg', 'NOLIN  60D-30.8deg']
 MATID = ['60D_30'] #, '162300', '60D-15deg', '60D-30.8deg']
-
+print(ID)
 thresholds = {
         "case_files\\Case1": {"maximum_bs_curvature": 0.055835668, "maximum_curvature": 0.055835668},
         "case_files\\Case2": {"maximum_bs_curvature": 0.051167134, "maximum_curvature": 0.051167134},
@@ -118,15 +118,6 @@ class RiserParams:
 def switch_frame(frame):
     frame.tkraise()
 
-def runBSEngine(case, case_queue):
-        current_directory = os.getcwd()
-        process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
-        stdout, stderr = process.communicate()
-        print(f"stdout: {stdout}")
-        print(f"stderr: {stderr}")
-        if process.returncode != 0:
-            print(f"Error encountered with case: {case}. Re-queuing the case.")
-            case_queue.put(case)
 
 def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, incrementSize_fieldWidth):
     cl = min_cl
@@ -145,6 +136,16 @@ def cl_od_to_array(min_cl, max_cl, min_od, max_od, incrementSize_fieldLength, in
 
     return cl_array, od_array
     
+def runBSEngine(case, case_queue):
+        current_directory = os.getcwd()
+        process = subprocess.Popen(f".\\bsengine -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
+        stdout, stderr = process.communicate()
+        print(f"stdout: {stdout}")
+        print(f"stderr: {stderr}")
+        if process.returncode != 0:
+            print(f"Error encountered with case: {case}. Re-queuing the case.")
+            case_queue.put(case)
+
 def createCaseQueue():
     cases = open('bsengine-cases.txt', 'r').readlines()
     cases = [case.strip() for case in cases]

@@ -3,7 +3,7 @@
 
  Directory of C:\Users\lmoph\Desktop\github\bachelor\project
 
-12.03.2025  14:26    <DIR>          case_files
+18.03.2025  14:50    <DIR>          case_files
 17.02.2025  13:10    <DIR>          bsengine
 17.02.2025  13:02    <DIR>          build
 17.02.2025  13:02    <DIR>          dist
@@ -14,4 +14,4 @@
 16.01.2025  10:13    <DIR>          .
 16.01.2025  10:13    <DIR>          ..
                0 File(s)              0 bytes
-              10 Dir(s)  486ÿ740ÿ008ÿ960 bytes free
+              10 Dir(s)  448ÿ600ÿ928ÿ256 bytes free

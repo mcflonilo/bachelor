@@ -15,6 +15,12 @@ import threading
 import time
 import numpy as np
 import tkinter.messagebox as messagebox
+from queue import Queue
+import logging
+from collections import defaultdict
+
+
+logging.basicConfig(filename="bs_analysis.log", level=logging.INFO, format="%(asctime)s - %(message)s")
 
 # Singleton DataStore class
 @dataclass
@@ -170,64 +176,169 @@ class DataProcessor:
         casetotal += self.generate_case_files(length, EA, EI, GT, m, abnormal_cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, "abnormal")
         tk.messagebox.showinfo("Case Files", f"generated {casetotal} cases.")
 
-    def generateCasesForMultipleBs(self):
-        """Generates cases for each BS defined in `bs_dimension_multi`, storing them in separate directories."""
-        bs_list = self.data.get_parameter("bs_dimension_multi")  # List of all BS dimensions
+    def generate_case_files_multi_BS_btn(self):
+        length = round(float(self.data.get_parameter("riser_info")["riser length"]), 3)
+        EA = round(float(self.data.get_parameter("riser_info")["axial stiffness"]), 3)
+        EI = round(float(self.data.get_parameter("riser_info")["bending stiffness"]), 3)
+        GT = round(float(self.data.get_parameter("riser_info")["torsial stiffness"]), 3)
+        m = round(float(self.data.get_parameter("riser_info")["mass per unit length"]), 3)
+        normal_cases, abnormal_cases = self.make_case_arrays(self.data.get_parameter("riser_response"))
+        MAT = ["NOLIN 60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
+        MATID = ["60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
+        bs_dimension_multi = self.data.get_parameter("bs_dimension_multi")
 
-        if not bs_list or len(bs_list) == 0:
-            messagebox.showerror("Error", "No BS dimensions found!")
-            return
+        casetotal = 0
+        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,normal_cases,bs_dimension_multi,MAT,MATID,"normal", "case_files")
+        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,abnormal_cases,bs_dimension_multi,MAT,MATID,"abnormal", "case_files")
+        tk.messagebox.showinfo("Case Files", f"generated {casetotal} cases.")
 
-        total_cases = 0  # Counter for total cases generated
+    def generate_case_files_multi_BS(self, length, EA, EI, GT, m, cases, bs_dimension_multi, MAT, MATID, label, output_dir):
+        """Generates case files for each case in `cases` for all BS dimensions in `bs_dimension_multi`."""
 
-        for i, bs in enumerate(bs_list):
-            # Create a directory for each BS
-            bs_dir = f"bs_cases/BS_{i+1}"
-            os.makedirs(bs_dir, exist_ok=True)
+        # Create the case list file
+        case_list_filename = os.path.join(output_dir, f'bsengine-cases-{label}.txt')
+        with open(case_list_filename, 'w') as case_list_file:
+            total_cases = 0  # Track case count
 
-            # Extract BS parameters
-            min_length = round(float(bs["Min Overall Length"]), 3)
-            max_length = round(float(bs["Max Overall Length"]), 3)
-            min_od = round(float(bs["Min Root Outer Diameter"]), 3)
-            max_od = round(float(bs["Max Root Outer Diameter"]), 3)
-            inc_length = round(float(bs["Increment Length"]), 3)
-            inc_width = round(float(bs["Increment Width"]), 3)
-            TL = round(float(bs["Tip Length"]), 3)
-            clearance = round(float(bs["Clearance"]), 3)
+            for bs in bs_dimension_multi:  # Loop through each BS configuration
+                ID = round(float(bs["ID"]), 3)
+                OD = round(float(bs["Root Outer Diameter"]), 3)
+                CL = round(float(bs["Cone Length"]), 3)
+                TL = round(float(bs["Tip Length"]), 3)
+                TOD = round(float(bs["Tip Outer Diameter"]), 3)
 
-            # Extract Riser parameters
-            length = round(float(self.data.get_parameter("riser_info")["riser length"]), 3)
-            EA = round(float(self.data.get_parameter("riser_info")["axial stiffness"]), 3)
-            EI = round(float(self.data.get_parameter("riser_info")["bending stiffness"]), 3)
-            GT = round(float(self.data.get_parameter("riser_info")["torsial stiffness"]), 3)
-            m = round(float(self.data.get_parameter("riser_info")["mass per unit length"]), 3)
+                for case_id, case_data in enumerate(cases):
+                    case_filename = f"Case-{label}-{case_id+1}-ID{ID}-OD{OD}-CL{CL}-TL{TL}-TOD{TOD}.inp"
+                    case_filepath = os.path.join(output_dir, case_filename)
 
-            # Calculate ID with clearance
-            ID = round(float(self.data.get_parameter("riser_info")["outer diameter"]) +
-                    (2 * (float(self.data.get_parameter("riser_info")["outer diameter tolerance"]) + clearance)), 3)
-            SL = round(0.700, 3)  # Default SL value
+                    # Write case file
+                    with open(case_filepath, 'w') as inp:
+                        inp.write('BEND STIFFENER DATA\n')
+                        inp.write("' ID   NSEG\n")
+                        inp.write("' inner diameter      Number of linear segments\n")
+                        inp.write(f"{ID}   3\n")
+                        inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID\n")
+                        inp.write(f"0.7  50  {OD}  {OD}  2000  LIN  10000.E06\n")
+                        inp.write(f"{CL}  100  {OD}  {TOD}  1150  {MAT[0]}\n")
+                        inp.write(f"{TL}  50  {TOD}  {TOD}  1150  {MAT[0]}\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("RISER DATA\n")
+                        inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass\n")
+                        inp.write("' (m)         kNm^2  kN              kg/m\n")
+                        inp.write(f"{length}  100  {EI}  {EA}  {GT}  {m}\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("ELEMENT PRINT\n")
+                        inp.write("'NSPEC\n")
+                        inp.write("3\n")
+                        inp.write("'IEL1    IEL2\n")
+                        inp.write("1         9\n")
+                        inp.write("10        30\n")
+                        inp.write("70        80\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("FE SYSTEM DATA TEST PRINT\n")
+                        inp.write("'IFSPRI 1/2\n")
+                        inp.write("1\n")
+                        inp.write("'2\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("FE ANALYSIS PARAMETERS\n")
+                        inp.write("'  finite element analysis parameters\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("'TOLNOR  MAXIT\n")
+                        inp.write("1.E-07  30\n")
+                        inp.write("'DSINC,DSMIN,DSMAX,\n")
+                        inp.write("0.01  0.001  0.1\n")
+                        inp.write("'3.0  0.01 10.\n")
+                        inp.write("'5.  0.1 10.\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("CURVATURE RANGE\n")
+                        inp.write("'CURMAX  - Maximum curvature\n")
+                        inp.write("'NCURV   - Number of curvature levels\n")
+                        inp.write("'CURMAX (1/m),NCURV\n")
+                        inp.write("'0.5       30\n")
+                        inp.write("0.2       100\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("FORCE\n")
+                        inp.write("'Relang  tension\n")
+                        inp.write("'(deg)   (kN)\n")
+                        inp.write(f"{case_data[0]}   {case_data[1]}\n")
+                        inp.write("'8.00   400.0\n")
+                        inp.write("'16.5   500.0\n")
+                        inp.write("'19.0   550.0\n")
+                        inp.write("'19.1   600.0\n")
+                        inp.write("'18.6   650.0\n")
+                        inp.write("'17.5   700.0\n")
+                        inp.write("'14.0   775.0\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("MATERIAL DATA\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("' Material identifier\n")
+                        inp.write("60D_15\n")
+                        inp.write("'NMAT - Number of points in stress/strain table for BS material\n")
+                        inp.write("21\n")
+                        inp.write("' strain   stress (kPa)    - Nmat input lines\n")
+                        inp.write("0.0 0.0\n")
+                        inp.write("0.005   1.40E+03\n")
+                        inp.write("0.010   2.57E+03\n")
+                        inp.write("0.015   3.61E+03\n")
+                        inp.write("0.020   4.55E+03\n")
+                        inp.write("0.025   5.36E+03\n")
+                        inp.write("0.030   6.03E+03\n")
+                        inp.write("0.035   6.59E+03\n")
+                        inp.write("0.040   7.02E+03\n")
+                        inp.write("0.045   7.37E+03\n")
+                        inp.write("0.050   7.67E+03\n")
+                        inp.write("0.055   7.92E+03\n")
+                        inp.write("0.060   8.13E+03\n")
+                        inp.write("0.065   8.31E+03\n")
+                        inp.write("0.070   8.47E+03\n")
+                        inp.write("0.075   8.61E+03\n")
+                        inp.write("0.080   8.74E+03\n")
+                        inp.write("0.085   8.86E+03\n")
+                        inp.write("0.090   8.96E+03\n")
+                        inp.write("0.095   9.06E+03\n")
+                        inp.write("0.100   9.10E+03\n")
+                        inp.write("'---------------------------------------------------\n")
+                        inp.write("MATERIAL DATA\n")
+                        inp.write("' Material identifier\n")
+                        inp.write("60D_30\n")
+                        inp.write("'NMAT - Number of points in stress/strain table for BS material\n")
+                        inp.write("21\n")
+                        inp.write("' strain   stress (kPa)    - Nmat input lines\n")
+                        inp.write("0.000   0.0\n")
+                        inp.write("0.005   1100.0\n")
+                        inp.write("0.010   2060.0\n")
+                        inp.write("0.015   2910.0\n")
+                        inp.write("0.020   3690.0\n")
+                        inp.write("0.025   4370.0\n")
+                        inp.write("0.030   4950.0\n")
+                        inp.write("0.035   5420.0\n")
+                        inp.write("0.040   5810.0\n")
+                        inp.write("0.045   6120.0\n")
+                        inp.write("0.050   6400.0\n")
+                        inp.write("0.055   6640.0\n")
+                        inp.write("0.060   6840.0\n")
+                        inp.write("0.065   7030.0\n")
+                        inp.write("0.070   7180.0\n")
+                        inp.write("0.075   7330.0\n")
+                        inp.write("0.080   7470.0\n")
+                        inp.write("0.085   7590.0\n")
+                        inp.write("0.090   7710.0\n")
+                        inp.write("0.095   7810.0\n")
+                        inp.write("0.100   7920.0"+'\n')
+                        inp.write("'"+'\n')
+                        inp.write("'EXPORT MATERIAL DATA"+'\n')
+                        inp.write("'--------------------------------------------------"+'\n')
+                        inp.write("' IMEX   = 1 : tabular  =2 riflex format"+'\n')
+                        inp.write("'  1"+'\n')
+                        inp.write("'---------------------------------------------"+'\n')
+                        inp.write("end"+'\n')
+                        inp.write("'mandatory data group"+'\n')
+                        inp.write("'---------------------------------------------"+'\n')
+                    # Append case filename to the case list file
+                    case_list_file.write(case_filepath + '\n')
+                    total_cases += 1
 
-            # Generate CL and OD arrays
-            CL, OD = self.cl_od_to_array(min_length, max_length, min_od, max_od, inc_length, inc_width)
-
-            # Calculate TOD
-            TOD = round(ID + 0.04, 3)  # Placeholder, needs confirmation
-
-            # Material placeholders
-            MAT = ["NOLIN 60D_30"]  
-            MATID = ["60D_30"]
-
-            # Get normal and abnormal cases
-            normal_cases, abnormal_cases = self.make_case_arrays(self.data.get_parameter("riser_response"))
-
-            # Generate cases inside the directory
-            total_cases += self.generate_case_files(length, EA, EI, GT, m, normal_cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, "normal", bs_dir)
-            total_cases += self.generate_case_files(length, EA, EI, GT, m, abnormal_cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, "abnormal", bs_dir)
-
-        # Show success message
-        messagebox.showinfo("Case Files", f"Generated {total_cases} cases across {len(bs_list)} BS configurations.")
-
-            
+        return total_cases
 
     def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, label):
         # Create a text file to store the case filenames
@@ -460,17 +571,17 @@ class DataProcessor:
 
                 return os.path.join(base_path, relative_path)
 
-            executable_path = resource_path('bsengine\\bsengine')
             def checkIfCaseIsAlreadyChecked(case):
                 casename = case.replace('.inp', '_FEA.log')
                 if os.path.exists(casename):
                     print(f"bs already checked for case: {casename}. skipping!")
                     return True
                 return False
+            
+            executable_path = resource_path('bsengine\\bsengine')
+            
             current_directory = os.getcwd()
             
-            print(f"Running case: {case}")
-
             if checkIfCaseIsAlreadyChecked(case):
                 case_file = case.strip().replace('.inp', '.log')
                 result = self.extract_key_results(case_file)
@@ -479,6 +590,7 @@ class DataProcessor:
                 else:
                     result = float(result['maximum_curvature'])
                     return result
+            print(f"Running case: {case}")
             process = subprocess.Popen(f"{executable_path} -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
             stdout, stderr = process.communicate()
             print(f"stdout: {stdout}")
@@ -649,6 +761,217 @@ class DataProcessor:
                 return True, i
             i += 1
         return True, None
+
+    def multithreadedAnalysis(self):
+        def runBSEngineMultiThread(case, case_queue):
+            def resource_path(relative_path):
+                """ Get the absolute path to the resource, works for dev and for PyInstaller """
+                try:
+                    # PyInstaller creates a temp folder and stores path in _MEIPASS
+                    base_path = sys._MEIPASS
+                except Exception:
+                    base_path = os.path.abspath(".")
+
+                return os.path.join(base_path, relative_path)
+            def checkIfCaseIsAlreadyChecked(case):
+                casename = case.replace('.inp', '_FEA.log')
+                if os.path.exists(casename):
+                    print(f"bs already checked for case: {casename}. skipping!")
+                    return True
+                return False
+            
+            executable_path = resource_path('bsengine\\bsengine')
+            current_directory = os.getcwd()
+
+            if checkIfCaseIsAlreadyChecked(case):
+                case_file = case.strip().replace('.inp', '.log')
+                result = self.extract_key_results(case_file)
+                if result is None:
+                    print(f"Error extracting key results for case: {case}")
+                else:
+                    result = float(result['maximum_curvature'])
+                    return result
+            
+            print(f"Running case: {case}")
+            process = subprocess.Popen(f"{executable_path} -b {case}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=current_directory)
+            stdout, stderr = process.communicate()
+            print(f"stdout: {stdout}")
+            print(f"stderr: {stderr}")
+            if process.returncode != 0:
+                print(f"Error encountered with case: {case}. Re-queuing the case.")
+                case_queue.put(case)
+            case_file = case.strip().replace('.inp', '.log')
+            result = self.extract_key_results(case_file)
+            result = float(result['maximum_curvature'])
+            return result
+
+        def createCaseQueue():
+            cases = open('bsengine-cases-normal.txt', 'r').readlines()
+            cases += open('bsengine-cases-abnormal.txt', 'r').readlines()
+            cases = [case.strip() for case in cases]
+            case_queue = Queue()
+            for case in cases:
+                case_queue.put(case)
+            return case_queue
+
+        def run_threads():
+            def checkIfCaseIsAlreadyChecked(case):
+                casename = case.replace('.inp', '_FEA.log')
+                if os.path.exists(casename):
+                    print(f"bs already checked for case: {casename}. skipping!")
+                    return True
+                return False
+            case_queue = Queue()
+            case_queue = createCaseQueue()
+            print(f"Number of cases: {case_queue.qsize()}.")
+            max_threads = os.cpu_count() - 1
+            print(f"Max threads: {max_threads}.")
+            threads = []
+
+            while not case_queue.empty():
+                while threading.active_count() > max_threads:
+                    time.sleep(1)
+                case = case_queue.get()
+
+                if checkIfCaseIsAlreadyChecked(case):
+                    continue
+
+                print(f"Running case: {case}.")
+                thread = threading.Thread(target=runBSEngineMultiThread, args=(case,case_queue))
+                time.sleep(1)
+                thread.start()
+                threads.append(thread)
+                print(f"Active threads: {threading.active_count()}.")
+
+            for thread in threads:
+                thread.join()
+            print("All cases have been processed.")
+
+        def check_results():
+            """Checks the results of the analysis and determines which BS configurations pass all cases."""
+
+            # Step 1: Load Data
+            self.interpolate_max_curve(self.data.get_parameter("riser_capacities"), self.data.get_parameter("riser_response"))
+
+            # Step 2: Read Normal & Abnormal Case Filenames
+            normal_cases = open('bsengine-cases-normal.txt', 'r').readlines()
+            abnormal_cases = open('bsengine-cases-abnormal.txt', 'r').readlines()
+
+            # Convert filenames to corresponding log files (ONLY `.log`, not `_FEA.log`)
+            normal_logs = [case.strip().replace('.inp', '.log') for case in normal_cases]
+            abnormal_logs = [case.strip().replace('.inp', '.log') for case in abnormal_cases]
+
+            # Step 3: Extract Results from Log Files
+            normal_results = {log: self.extract_key_results(log) for log in normal_logs}
+            abnormal_results = {log: self.extract_key_results(log) for log in abnormal_logs}
+
+            # Step 4: Load Thresholds from DataStore
+            thresholds_normal = self.data.get_parameter("thresholds_normal")
+            thresholds_abnormal = self.data.get_parameter("thresholds_abnormal")
+
+            bs_cases = defaultdict(lambda: {"normal": [], "abnormal": []})  # Store results grouped by BS
+
+            # Step 5: Process Results - Group Cases by BS Configuration
+            for case_name in normal_cases + abnormal_cases:
+                case_name = case_name.strip()
+
+                # **Extract BS Parameters from Case Name using Regex**
+                match = re.search(r'Case-(normal|abnormal)-(\d+)-ID([\d.]+)-OD([\d.]+)-CL([\d.]+)-TL([\d.]+)-TOD([\d.]+)', case_name)
+                if not match:
+                    logging.warning(f"⚠️ Unable to extract BS parameters from: {case_name}. Skipping...")
+                    continue
+
+                case_type, case_number, bs_id, od, cl, tl, tod = match.groups()
+                case_number = int(case_number)  # Convert to integer
+                bs_key = f"ID{bs_id}-OD{od}-CL{cl}-TL{tl}-TOD{tod}"  # Unique BS Identifier
+
+                if case_type == "normal":
+                    bs_cases[bs_key]["normal"].append(case_number)
+                else:
+                    bs_cases[bs_key]["abnormal"].append(case_number)
+
+            successful_bs = []
+
+            # Step 6: Check Each BS Against All Cases
+            for bs_key, cases in bs_cases.items():
+                normal_passed = True
+                abnormal_passed = True
+
+                # **Check Normal Cases**
+                for case_num in cases["normal"]:
+                    log_file = f"case_files\\Case-normal-{case_num}-{bs_key}log"
+                    norm_result = normal_results.get(log_file, None)
+
+                    if norm_result is None:
+                        logging.warning(f"Skipping {bs_key} due to missing normal case result: {log_file}")
+                        normal_passed = False
+                        break
+
+
+                    print(thresholds_normal)
+
+                    norm_curvature = float(norm_result["maximum_curvature"])
+                    threshold_norm = thresholds_normal.get(f"case_files\\Case-normal{case_num}")
+                    print(threshold_norm)
+                    print(threshold_norm["maximum_curvature"])
+
+                    if threshold_norm is None:
+                        logging.warning(f"Missing normal threshold for case {case_num}. Skipping BS: {bs_key}.")
+                        normal_passed = False
+                        break
+
+                    if norm_curvature > threshold_norm["maximum_curvature"]:
+                        logging.info(f"❌ BS {bs_key} FAILED normal case {case_num}. Threshold: {threshold_norm["maximum_curvature"]}, Achieved: {norm_curvature}")
+                        normal_passed = False
+                        break  # Stop checking if one case fails
+
+                # **Check Abnormal Cases (only if normal passed)**
+                if normal_passed:
+                    for case_num in cases["abnormal"]:
+                        log_file = f"case_files\\Case-abnormal-{case_num}-{bs_key}log"
+                        abnorm_result = abnormal_results.get(log_file, None)
+
+                        if abnorm_result is None:
+                            logging.warning(f"Skipping {bs_key} due to missing abnormal case result: {log_file}")
+                            abnormal_passed = False
+                            break
+
+                        abnorm_curvature = float(abnorm_result["maximum_curvature"])
+                        threshold_abnorm = thresholds_abnormal.get(f"case_files\\Case-abnormal{case_num}")
+
+                        if threshold_abnorm is None:
+                            logging.warning(f"Missing abnormal threshold for case {case_num}. Skipping BS: {bs_key}.")
+                            abnormal_passed = False
+                            break
+
+                        if abnorm_curvature > threshold_abnorm["maximum_curvature"]:
+                            logging.info(f"❌ BS {bs_key} FAILED abnormal case {case_num}. Threshold: {threshold_abnorm["maximum_curvature"]}, Achieved: {abnorm_curvature}")
+                            abnormal_passed = False
+                            break  # Stop checking if one case fails
+
+                # If both normal & abnormal cases pass, BS is successful
+                if normal_passed and abnormal_passed:
+                    successful_bs.append(bs_key)
+                    logging.info(f"✅ BS {bs_key} PASSED all cases.")
+
+            # Step 7: Display Results
+            if successful_bs:
+                logging.info(f"✅ Successful BS Configurations: {', '.join(successful_bs)}")
+                print(f"✅ Successful BS Configurations: {', '.join(successful_bs)}")
+            else:
+                logging.info("❌ No BS configurations met the required criteria.")
+                print("❌ No BS configurations met the required criteria.")
+
+            return successful_bs
+
+
+
+
+            
+
+        run_threads()
+        check_results()
+
 
     
 
@@ -872,7 +1195,8 @@ class BSDimensionsFrameMulti(BaseFrame):
         tk.Button(self, text="Save Data", command=self.save_data).pack(pady=5)
         tk.Button(self, text="Back", command=lambda: self.switch_to("FindOptimalBsNavFrame")).pack(pady=5)
 
-        tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generateCasesForMultipleBs()).pack(pady=5)
+        tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn()).pack(pady=5)
+        tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis()).pack(pady=5)
         
 
     def generate_fields(self):
@@ -883,8 +1207,8 @@ class BSDimensionsFrameMulti(BaseFrame):
         self.entries = []  # Reset stored entries
 
         num_bs = self.num_bs.get()
-        fields = ["Root Length", "Tip Length", "Min Root Outer Diameter", "Max Root Outer Diameter",
-                  "Min Overall Length", "Max Overall Length", "Clearance", "Increment Width", "Increment Length"]
+        fields = ["Root Length", "Cone Length", "Tip Length", "Root Outer Diameter",
+                  "Tip Outer Diameter", "ID"]
 
         for i in range(num_bs):
             tk.Label(self.input_frame, text=f"BS {i+1}", font=("Arial", 12, "bold")).pack(pady=5)
@@ -931,7 +1255,7 @@ class RunAnalysisFrame(BaseFrame):
         self.progress.pack(pady=10)
 
         # Buttons
-        tk.Button(self, text="Go Back", command=lambda: self.switch_to("FindOptimalBsNavFrame")).pack(pady=5)
+        tk.Button(self, text="Go Back", command=lambda: self.switch_to("NavigationFrame")).pack(pady=5)
         tk.Button(self, text="Refresh", command=self.update_labels).pack(pady=5)
         tk.Button(self, text="Generate Cases", command=self.data_processor.casesBtn).pack(pady=5)
         tk.Button(self, text="Run Analysis", command=self.run_analysis).pack(pady=5)
