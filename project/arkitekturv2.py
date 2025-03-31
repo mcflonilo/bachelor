@@ -14,7 +14,7 @@ from scipy.interpolate import interp1d
 import threading
 import time
 import numpy as np
-import tkinter.messagebox as messagebox
+from tkinter import messagebox, Toplevel, ttk, Canvas, Frame, Scrollbar
 from queue import Queue
 import logging
 from collections import defaultdict
@@ -998,6 +998,7 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
         tk.Button(self, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
         tk.Button(self, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
+        tk.Button(self, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame")).pack()
 
         tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
 
@@ -1175,6 +1176,138 @@ class BSDimensionsFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["root length", "tip length", "min root outer diameter", "max root outer diameter", "min overall length", "max overall length", "clearance ", "increment width", "increment length"]
         super().__init__(parent, controller, fields, "BSDimensionsFrame", "FindOptimalBsNavFrame", "bs_dimension")
+class SelectMaterialFrame(tk.Frame):
+    def __init__(self, parent, data_store):
+        super().__init__(parent)
+        self.data_store = data_store
+
+        tk.Label(self, text="Select Material").pack(pady=10)
+        self.materials = self.load_materials()
+        self.selected_material = tk.StringVar()
+
+        self.dropdown = ttk.Combobox(self, textvariable=self.selected_material, values=list(self.materials.keys()))
+        self.dropdown.pack(pady=5)
+
+        tk.Button(self, text="Load Material", command=self.load_selected_material).pack(pady=10)
+        tk.Button(self, text="Create New Material", command=self.create_new_material).pack(pady=10)
+
+    def create_new_material(self):
+        new_material_window = createNewMaterialFrame(self)
+    def load_materials(self):
+        db_path = "material_database.json"
+        if os.path.exists(db_path):
+            with open(db_path, "r") as file:
+                return json.load(file)
+        return {}
+
+    def load_selected_material(self):
+        material_name = self.selected_material.get()
+        if material_name in self.materials:
+            self.data_store.set_parameter("selected_material", self.materials[material_name])
+            messagebox.showinfo("Material Loaded", f"Material '{material_name}' loaded into analysis.")
+        else:
+            messagebox.showerror("Error", "Please select a valid material.")
+
+class createNewMaterialFrame:
+    def __init__(self, parent):
+        self.top = Toplevel(parent)
+        self.top.title("Create New Material")
+        self.top.geometry("500x800")
+
+        self.entries = {}
+        self.dynamic_entries = []
+
+        tk.Label(self.top, text="Material identifier").pack(pady=5)
+        self.entries["Material identifier "] = tk.Entry(self.top)
+        self.entries["Material identifier "] .pack(pady=5)
+
+        tk.Label(self.top, text="Number of datapoints in stress/strain table").pack(pady=5)
+        self.entries["number of datapoints in stress/strain table"] = tk.Entry(self.top)
+        self.entries["number of datapoints in stress/strain table"].pack(pady=5)
+
+        self.generate_button = tk.Button(self.top, text="Generate Fields", command=self.generate_datapoint_fields)
+        self.generate_button.pack(pady=10)
+
+        # Scrollable canvas for dynamic entry fields
+        self.canvas = Canvas(self.top, height=300)
+        self.scrollable_frame = Frame(self.canvas)
+        self.scrollbar = Scrollbar(self.top, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.scrollable_frame.bind(
+            "<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+
+        self.submit_button = tk.Button(self.top, text="Submit", command=self.collect_material_data)
+        self.submit_button.pack(pady=10)
+
+    def generate_datapoint_fields(self):
+        for entry in self.dynamic_entries:
+            entry[0].destroy()
+            entry[1].destroy()
+        self.dynamic_entries.clear()
+
+        try:
+            num_points = int(self.entries["number of datapoints in stress/strain table"].get())
+        except ValueError:
+            messagebox.showerror("Invalid input", "Please enter a valid number of datapoints")
+            return
+
+        for i in range(num_points):
+            row = Frame(self.scrollable_frame)
+            row.pack(pady=2, padx=5, fill="x")
+
+            tk.Label(row, text=f"Strain {i+1}", width=10, anchor="w").pack(side="left")
+            strain_entry = tk.Entry(row, width=10)
+            strain_entry.pack(side="left", padx=(0, 10))
+
+            tk.Label(row, text=f"Stress {i+1}", width=10, anchor="w").pack(side="left")
+            stress_entry = tk.Entry(row, width=10)
+            stress_entry.pack(side="left")
+
+            self.dynamic_entries.append((strain_entry, stress_entry))
+
+    def collect_material_data(self):
+        material_id = self.entries["Material identifier "] .get()
+        num_points = self.entries["number of datapoints in stress/strain table"].get()
+
+        try:
+            num_points = int(num_points)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid number of datapoints")
+            return
+
+        datapoints = []
+        for strain_entry, stress_entry in self.dynamic_entries:
+            try:
+                strain = float(strain_entry.get())
+                stress = float(stress_entry.get())
+                datapoints.append({"strain": strain, "stress": stress})
+            except ValueError:
+                messagebox.showerror("Error", "Please enter valid numbers for all datapoints")
+                return
+
+        db_path = "material_database.json"
+        if os.path.exists(db_path):
+            with open(db_path, "r") as file:
+                material_db = json.load(file)
+        else:
+            material_db = {}
+
+        material_db[material_id] = {
+            "NMAT": num_points,
+            "data": datapoints
+        }
+
+        with open(db_path, "w") as file:
+            json.dump(material_db, file, indent=4)
+
+        messagebox.showinfo("Success", f"Material '{material_id}' saved to database!")
+        self.top.destroy()
 
 class BSDimensionsFrameMulti(BaseFrame):
     def __init__(self, parent, controller):
@@ -1497,7 +1630,7 @@ class App(tk.Tk):
         "RiserResponseFrame", "RiserCapacitiesFrame", 
         "RunAnalysisFrame", "NavigationFrame", 
         "CheckExistingBSNavFrame", "RunLoadCaseOnBSNavFrame",
-        "BSDimensionsFrameMulti"]:
+        "BSDimensionsFrameMulti", "SelectMaterialFrame"]:
             frame = globals()[frame_name](self.container, self)
             self.frames[frame_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
