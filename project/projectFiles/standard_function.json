@@ -1,0 +1,231 @@
+{
+    "project_info": {
+        "Project Name": "episkb\u00f8ystiver",
+        "client": "knut ivar",
+        "designer name": "lars opheim"
+    },
+    "riser_info": {
+        "riser identification": "riser1",
+        "outer diameter": "0.22",
+        "outer diameter tolerance": "0.003",
+        "mass per unit length": "88.4",
+        "axial stiffness": "1040000",
+        "bending stiffness": "185",
+        "torsial stiffness": "143",
+        "riser length": "5"
+    },
+    "riser_capacities": {
+        "normal": [
+            [
+                0.08197,
+                0.07752,
+                0.07353,
+                0.06944,
+                0.06536,
+                0.05714,
+                0.04902,
+                0.04082,
+                0.03268,
+                0.02451
+            ],
+            [
+                0.0,
+                87.0,
+                174.0,
+                261.0,
+                348.0,
+                522.0,
+                696.0,
+                870.0,
+                1044.0,
+                1218.0
+            ]
+        ],
+        "abnormal": [
+            [
+                0.11765,
+                0.11236,
+                0.10753,
+                0.10204,
+                0.09709,
+                0.08696,
+                0.07519,
+                0.0625,
+                0.05,
+                0.03125
+            ],
+            [
+                0.0,
+                133.0,
+                266.0,
+                399.0,
+                532.0,
+                798.0,
+                1064.0,
+                1330.0,
+                1596.0,
+                1676.0
+            ]
+        ]
+    },
+    "riser_response": {
+        "normal": [
+            [
+                4.0,
+                18.0,
+                23.0,
+                23.0,
+                16.0,
+                10.0,
+                2.0
+            ],
+            [
+                550.0,
+                650.0,
+                750.0,
+                850.0,
+                1000.0,
+                1050.0,
+                1100.0
+            ]
+        ],
+        "abnormal": [
+            [
+                15.0,
+                20.0,
+                25.0,
+                26.0,
+                25.0,
+                20.0,
+                5.0
+            ],
+            [
+                470.0,
+                490.0,
+                700.0,
+                800.0,
+                930.0,
+                1020.0,
+                1140.0
+            ]
+        ]
+    },
+    "bs_dimension": {
+        "Input root length": "0.650",
+        "tip length": "0.150",
+        "min root outer diameter": "1.4",
+        "max root outer diameter": "2",
+        "min overall length": "12.25",
+        "max overall length": "13",
+        "clearance": "0.010",
+        "Input thidm(??)": "fse",
+        "BS ID": "101",
+        "increment width": "0.10",
+        "increment length": "0.250"
+    },
+    "bs_material": {
+        "Section 1": {
+            "material_characteristics": "Silicon",
+            "elastic_modules": "1"
+        },
+        "Section 2": {
+            "material_characteristics": "Titanium",
+            "elastic_modules": "23"
+        },
+        "Section 3": {
+            "material_characteristics": "Copper",
+            "elastic_modules": "3"
+        }
+    },
+    "material_text_block": "MATERIAL DATA\n' Material identifier\n60D_30\n'NMAT - Number of points in stress/strain table for BS material\n21\n' strain   stress (kPa)    - Nmat input lines\n0.000   0.0\n0.005   1100.0\n0.010   2060.0\n0.015   2910.0\n0.020   3690.0\n0.025   4370.0\n0.030   4950.0\n0.035   5420.0\n0.040   5810.0\n0.045   6120.0\n0.050   6400.0\n0.055   6640.0\n0.060   6840.0\n0.065   7030.0\n0.070   7180.0\n0.075   7330.0\n0.080   7470.0\n0.085   7590.0\n0.090   7710.0\n0.095   7810.0\n0.100   7920.0",
+    "selected_material": {
+        "NMAT": 21,
+        "data": [
+            {
+                "strain": 0.0,
+                "stress": 0.0
+            },
+            {
+                "strain": 0.005,
+                "stress": 1100.0
+            },
+            {
+                "strain": 0.01,
+                "stress": 2060.0
+            },
+            {
+                "strain": 0.015,
+                "stress": 2910.0
+            },
+            {
+                "strain": 0.02,
+                "stress": 3690.0
+            },
+            {
+                "strain": 0.025,
+                "stress": 4370.0
+            },
+            {
+                "strain": 0.03,
+                "stress": 4950.0
+            },
+            {
+                "strain": 0.035,
+                "stress": 5420.0
+            },
+            {
+                "strain": 0.04,
+                "stress": 5810.0
+            },
+            {
+                "strain": 0.045,
+                "stress": 6120.0
+            },
+            {
+                "strain": 0.05,
+                "stress": 6400.0
+            },
+            {
+                "strain": 0.055,
+                "stress": 6640.0
+            },
+            {
+                "strain": 0.06,
+                "stress": 6840.0
+            },
+            {
+                "strain": 0.065,
+                "stress": 7030.0
+            },
+            {
+                "strain": 0.07,
+                "stress": 7180.0
+            },
+            {
+                "strain": 0.075,
+                "stress": 7330.0
+            },
+            {
+                "strain": 0.08,
+                "stress": 7470.0
+            },
+            {
+                "strain": 0.085,
+                "stress": 7590.0
+            },
+            {
+                "strain": 0.09,
+                "stress": 7710.0
+            },
+            {
+                "strain": 0.095,
+                "stress": 7810.0
+            },
+            {
+                "strain": 0.1,
+                "stress": 7920.0
+            }
+        ]
+    },
+    "material_identifier": "60D_30"
+}
