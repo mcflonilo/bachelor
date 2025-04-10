@@ -978,14 +978,14 @@ class DataProcessor:
 # Base Frame for all screens
 class BaseFrame(tk.Frame):
     def __init__(self, parent, controller):
-        super().__init__(parent)
+        super().__init__(parent, bg="#E3DFCF")
         self.controller = controller
         self.data_store = DataStore()  # All frames share this instance
 
     def switch_to(self, frame_name):
         self.controller.show_frame(frame_name)
 
-# Navigation Frame
+# Navigation Frame - design optimal BS frame
 class FindOptimalBsNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -1033,15 +1033,29 @@ class RunLoadCaseOnBSNavFrame(BaseFrame):
         # back button
         tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
 
+# start frame
 class NavigationFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         
-        tk.Label(self, text="Navigation").pack()
-        
-        tk.Button(self, text="design optimal bs", command=lambda: self.switch_to("FindOptimalBsNavFrame")).pack()
-        tk.Button(self, text="check if existing BS designs are suitable", command=lambda: self.switch_to("CheckExistingBSNavFrame")).pack()
-        tk.Button(self, text="run load cases on existing BS", command=lambda: self.switch_to("RunLoadCaseOnBSNavFrame")).pack()
+        tk.Label(self, text="Navigation", bg="#ECECEC", font=("Arial", 14, "bold")).pack(pady=(10, 20))
+
+        button_style = {
+            "bg": "#E3C376",         # soft gold
+            "fg": "black",           # text color
+            "width": 30,
+            "height": 2,
+            "bd": 1,
+            "relief": "solid",
+            "highlightbackground": "black",
+            "font": ("Arial", 10, "bold"),
+            "activebackground": "#d2b660"
+        }
+
+        tk.Button(self, text="Design Optimal BS", command=lambda: self.switch_to("FindOptimalBsNavFrame"), **button_style).pack(pady=5)
+        tk.Button(self, text="Check Existing BS Designs", command=lambda: self.switch_to("CheckExistingBSNavFrame"), **button_style).pack(pady=5)
+        tk.Button(self, text="Run Load Cases on Existing BS", command=lambda: self.switch_to("RunLoadCaseOnBSNavFrame"), **button_style).pack(pady=5)
+
 
 # Generic Input Frame
 class InputFrame(BaseFrame):
@@ -1614,23 +1628,122 @@ class ReportFrame(BaseFrame):
         except FileNotFoundError:
             print(f"File not found: {case_file}")
         return None
+    
+
+def create_banner(parent, controller=None, go_back_callback=None, menu_callback=None):
+    banner_color = "#1D6F6E"
+    banner = tk.Frame(parent, height=37, bg=banner_color)
+    banner.pack(side="top", fill="x")
+    banner.pack_propagate(False)
+
+    # Bottom border only
+    bottom_border = tk.Frame(banner, bg="black", height=2)
+    bottom_border.pack(side="bottom", fill="x")
+
+    # Logo as image (PNG)
+    try:
+        logo_image = tk.PhotoImage(file="logo.png")  # <-- update path if needed
+        logo = tk.Label(banner, image=logo_image, bg=banner_color)
+        logo.image = logo_image  # prevent garbage collection
+    except Exception as e:
+        print(f"Failed to load logo: {e}")
+        logo = tk.Label(banner, text="LOGO", fg="white", bg=banner_color)
+
+    logo.place(x=5, y=5)
+
+    # MENU button
+    menu_btn = tk.Button(banner, text="MENU", bg="#E3C376", fg="black",
+                         bd=1, relief="solid", highlightbackground="black",
+                         command=menu_callback or (lambda: print("Menu")))
+    menu_btn.place(x=40, y=5, width=87, height=26)
+
+    # BACK button
+    back_btn = tk.Button(banner, text="BACK", bg="black", fg="white",
+                         bd=1, relief="solid", highlightbackground="black",
+                         command=go_back_callback or (lambda: print("Back")))
+    back_btn.place(x=135, y=5, width=87, height=26)
+
+    # OK button
+    ok_btn = tk.Button(banner, text="OK", bg="white", fg="black",
+                       bd=1, relief="solid", highlightbackground="black",
+                       command=lambda: print("OK"))
+    ok_btn.place(x=230, y=5, width=87, height=26)
+
+    # Divider
+    divider = tk.Frame(banner, bg="black", width=2, height=28)
+    divider.place(x=327 + 10, y=5)
+
+    # Entry fields with placeholders
+    entries = {}
+    labels = ["Project Name", "Client", "Designer"]
+    start_x = 337 + 10
+    spacing = 222
+
+    for i, label_text in enumerate(labels):
+        x = start_x + i * spacing
+
+        entry = tk.Entry(banner, bg="black", insertbackground="white",
+                         relief="flat", highlightthickness=1, highlightbackground="white")
+        entry.place(x=x, y=5, width=212, height=26)
+        add_placeholder(entry, label_text)
+
+        entries[label_text.lower()] = entry
+
+    return banner, entries
+
+def add_placeholder(entry_widget, placeholder_text, color="gray"):
+    def on_focus_in(event):
+        if entry_widget.get() == placeholder_text:
+            entry_widget.delete(0, "end")
+            entry_widget.config(fg="white")
+
+    def on_focus_out(event):
+        if not entry_widget.get():
+            entry_widget.insert(0, placeholder_text)
+            entry_widget.config(fg=color)
+
+    entry_widget.insert(0, placeholder_text)
+    entry_widget.config(fg=color)
+
+    entry_widget.bind("<FocusIn>", on_focus_in)
+    entry_widget.bind("<FocusOut>", on_focus_out)
+
 
 # Main App Controller
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("UltraBS")
+        self.title("BS Ultradeep")
+        self.geometry("1080x720")
+        self.iconbitmap("ultrabend_proposed_logo.ico")
         self.protocol("WM_DELETE_WINDOW", self.quit)
-        self.container = tk.Frame(self)
+
+        # NEW master layout frame
+        self.main_frame = tk.Frame(self)
+        self.main_frame.pack(fill="both", expand=True)
+
+        # Banner goes at the top of main_frame
+        self.banner, self.banner_entries = create_banner(
+            self.main_frame,
+            self,
+            go_back_callback=lambda: self.show_frame("PreviousFrameName"),
+            menu_callback=lambda: self.show_frame("NavigationFrame")
+        )
+
+        # Container for the pages (goes below the banner)
+        self.container = tk.Frame(self.main_frame, width=1080, height=720, bg="#E3DFCF")
         self.container.pack(fill="both", expand=True)
+
         self.frames = {}
 
-        for frame_name in ["FindOptimalBsNavFrame", "ProjectInfoFrame", 
-        "RiserInfoFrame", "BSDimensionsFrame", 
-        "RiserResponseFrame", "RiserCapacitiesFrame", 
-        "RunAnalysisFrame", "NavigationFrame", 
-        "CheckExistingBSNavFrame", "RunLoadCaseOnBSNavFrame",
-        "BSDimensionsFrameMulti", "SelectMaterialFrame"]:
+        for frame_name in [
+            "FindOptimalBsNavFrame", "ProjectInfoFrame", 
+            "RiserInfoFrame", "BSDimensionsFrame", 
+            "RiserResponseFrame", "RiserCapacitiesFrame", 
+            "RunAnalysisFrame", "NavigationFrame", 
+            "CheckExistingBSNavFrame", "RunLoadCaseOnBSNavFrame",
+            "BSDimensionsFrameMulti", "SelectMaterialFrame"
+        ]:
             frame = globals()[frame_name](self.container, self)
             self.frames[frame_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
