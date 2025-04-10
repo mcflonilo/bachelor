@@ -1,0 +1,216 @@
+{
+    "60D_30": {
+        "NMAT": 21,
+        "data": [
+            {
+                "strain": 0.0,
+                "stress": 0.0
+            },
+            {
+                "strain": 0.005,
+                "stress": 1100.0
+            },
+            {
+                "strain": 0.01,
+                "stress": 2060.0
+            },
+            {
+                "strain": 0.015,
+                "stress": 2910.0
+            },
+            {
+                "strain": 0.02,
+                "stress": 3690.0
+            },
+            {
+                "strain": 0.025,
+                "stress": 4370.0
+            },
+            {
+                "strain": 0.03,
+                "stress": 4950.0
+            },
+            {
+                "strain": 0.035,
+                "stress": 5420.0
+            },
+            {
+                "strain": 0.04,
+                "stress": 5810.0
+            },
+            {
+                "strain": 0.045,
+                "stress": 6120.0
+            },
+            {
+                "strain": 0.05,
+                "stress": 6400.0
+            },
+            {
+                "strain": 0.055,
+                "stress": 6640.0
+            },
+            {
+                "strain": 0.06,
+                "stress": 6840.0
+            },
+            {
+                "strain": 0.065,
+                "stress": 7030.0
+            },
+            {
+                "strain": 0.07,
+                "stress": 7180.0
+            },
+            {
+                "strain": 0.075,
+                "stress": 7330.0
+            },
+            {
+                "strain": 0.08,
+                "stress": 7470.0
+            },
+            {
+                "strain": 0.085,
+                "stress": 7590.0
+            },
+            {
+                "strain": 0.09,
+                "stress": 7710.0
+            },
+            {
+                "strain": 0.095,
+                "stress": 7810.0
+            },
+            {
+                "strain": 0.1,
+                "stress": 7920.0
+            }
+        ]
+    },
+    "60D_15": {
+        "NMAT": 21,
+        "data": [
+            {
+                "strain": 0.0,
+                "stress": 0.0
+            },
+            {
+                "strain": 0.005,
+                "stress": 1400.0
+            },
+            {
+                "strain": 0.01,
+                "stress": 2570.0
+            },
+            {
+                "strain": 0.015,
+                "stress": 3610.0
+            },
+            {
+                "strain": 0.02,
+                "stress": 4550.0
+            },
+            {
+                "strain": 0.025,
+                "stress": 5360.0
+            },
+            {
+                "strain": 0.03,
+                "stress": 6030.0
+            },
+            {
+                "strain": 0.035,
+                "stress": 6590.0
+            },
+            {
+                "strain": 0.04,
+                "stress": 7020.0
+            },
+            {
+                "strain": 0.045,
+                "stress": 7370.0
+            },
+            {
+                "strain": 0.05,
+                "stress": 7670.0
+            },
+            {
+                "strain": 0.055,
+                "stress": 7920.0
+            },
+            {
+                "strain": 0.06,
+                "stress": 8130.0
+            },
+            {
+                "strain": 0.065,
+                "stress": 8310.0
+            },
+            {
+                "strain": 0.07,
+                "stress": 8470.0
+            },
+            {
+                "strain": 0.075,
+                "stress": 8610.0
+            },
+            {
+                "strain": 0.08,
+                "stress": 8740.0
+            },
+            {
+                "strain": 0.085,
+                "stress": 8860.0
+            },
+            {
+                "strain": 0.09,
+                "stress": 8960.0
+            },
+            {
+                "strain": 0.095,
+                "stress": 9060.0
+            },
+            {
+                "strain": 0.1,
+                "stress": 9100.0
+            }
+        ]
+    },
+    "gay test": {
+        "NMAT": 1,
+        "data": [
+            {
+                "strain": 0.0,
+                "stress": 0.0
+            }
+        ]
+    },
+    "wdwd": {
+        "NMAT": 1,
+        "data": [
+            {
+                "strain": 0.0,
+                "stress": 0.0
+            }
+        ]
+    },
+    "test": {
+        "NMAT": 1,
+        "data": [
+            {
+                "strain": 2.0,
+                "stress": 2.0
+            }
+        ]
+    },
+    "2": {
+        "NMAT": 1,
+        "data": [
+            {
+                "strain": 1.0,
+                "stress": 1.0
+            }
+        ]
+    }
+}

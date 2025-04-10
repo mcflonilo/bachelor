@@ -3,15 +3,16 @@
 
  Directory of C:\Users\lmoph\Desktop\github\bachelor\project
 
-18.03.2025  14:50    <DIR>          case_files
-17.02.2025  13:10    <DIR>          bsengine
-17.02.2025  13:02    <DIR>          build
-17.02.2025  13:02    <DIR>          dist
-03.02.2025  13:57    <DIR>          modules
-03.02.2025  13:56    <DIR>          oldstuff
-27.01.2025  11:46    <DIR>          projectFiles
-17.01.2025  14:21    <DIR>          __pycache__
-16.01.2025  10:13    <DIR>          .
-16.01.2025  10:13    <DIR>          ..
+04.04.2025  13:35    <DIR>          case_files
+03.04.2025  13:43    <DIR>          materials
+17.02.2025  14:10    <DIR>          bsengine
+17.02.2025  14:02    <DIR>          build
+17.02.2025  14:02    <DIR>          dist
+03.02.2025  14:57    <DIR>          modules
+03.02.2025  14:56    <DIR>          oldstuff
+27.01.2025  12:46    <DIR>          projectFiles
+17.01.2025  15:21    <DIR>          __pycache__
+16.01.2025  11:13    <DIR>          .
+16.01.2025  11:13    <DIR>          ..
                0 File(s)              0 bytes
-              10 Dir(s)  448ÿ600ÿ928ÿ256 bytes free
+              11 Dir(s)  429ÿ922ÿ758ÿ656 bytes free

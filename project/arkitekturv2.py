@@ -2,8 +2,6 @@ import tkinter as tk
 from dataclasses import dataclass, field
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import ttk
-from tkinter import filedialog
 import json
 import os
 import re
@@ -14,7 +12,7 @@ from scipy.interpolate import interp1d
 import threading
 import time
 import numpy as np
-from tkinter import messagebox, Toplevel, ttk, Canvas, Frame, Scrollbar
+from tkinter import messagebox, Toplevel, ttk, Canvas, Frame, Scrollbar,filedialog
 from queue import Queue
 import logging
 from collections import defaultdict
@@ -150,31 +148,41 @@ class DataProcessor:
             return normal_cases, abnormal_cases
     
     def casesBtn(self):
-        length = round(float(self.data.get_parameter("riser_info")["riser length"]), 3)
-        EA = round(float(self.data.get_parameter("riser_info")["axial stiffness"]), 3)
-        EI = round(float(self.data.get_parameter("riser_info")["bending stiffness"]), 3)
-        GT = round(float(self.data.get_parameter("riser_info")["torsial stiffness"]), 3)
-        m = round(float(self.data.get_parameter("riser_info")["mass per unit length"]), 3)
-        ID = round(float(self.data.get_parameter("riser_info")["outer diameter"]) + (2 * (float(self.data.get_parameter("riser_info")["outer diameter tolerance"]) + float(self.data.get_parameter("bs_dimension")["clearance"]))), 3)
+        riser_info = self.data.get_parameter("riser_info")
+        bs_dim = self.data.get_parameter("bs_dimension")
+        material_text_block = self.data.get_parameter("material_text_block")
+        material_identifier = self.data.get_parameter("material_identifier")
+
+        length = round(float(riser_info["riser length"]), 3)
+        EA = round(float(riser_info["axial stiffness"]), 3)
+        EI = round(float(riser_info["bending stiffness"]), 3)
+        GT = round(float(riser_info["torsial stiffness"]), 3)
+        m = round(float(riser_info["mass per unit length"]), 3)
+
+        ID = round(float(riser_info["outer diameter"]) + 
+                (2 * (float(riser_info["outer diameter tolerance"]) + float(bs_dim["clearance"]))), 3)
         SL = round(0.700, 3)
+
         CL, OD = self.cl_od_to_array(
-            round(float(self.data.get_parameter("bs_dimension")["min overall length"]), 3), 
-            round(float(self.data.get_parameter("bs_dimension")["max overall length"]), 3), 
-            round(float(self.data.get_parameter("bs_dimension")["min root outer diameter"]), 3), 
-            round(float(self.data.get_parameter("bs_dimension")["max root outer diameter"]), 3), 
-            round(float(self.data.get_parameter("bs_dimension")["increment length"]), 3), 
-            round(float(self.data.get_parameter("bs_dimension")["increment width"]), 3)
+            round(float(bs_dim["min overall length"]), 3), 
+            round(float(bs_dim["max overall length"]), 3), 
+            round(float(bs_dim["min root outer diameter"]), 3), 
+            round(float(bs_dim["max root outer diameter"]), 3), 
+            round(float(bs_dim["increment length"]), 3), 
+            round(float(bs_dim["increment width"]), 3)
         )
-        TL = round(float(self.data.get_parameter("bs_dimension")["tip length"]), 3)
-        TOD = round(ID + 0.04, 3)  # DETTE ER IKKE SIKKERT OG MAN MÅ SPØRRE KNUT IVAR
-        MAT = ["NOLIN 60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
-        MATID = ["60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
+
+        TL = round(float(bs_dim["tip length"]), 3)
+        TOD = round(ID + 0.04, 3)  # TEMPORARY VALUE
+
         normal_cases, abnormal_cases = self.make_case_arrays(self.data.get_parameter("riser_response"))
 
         casetotal = 0
-        casetotal += self.generate_case_files(length, EA, EI, GT, m, normal_cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, "normal")
-        casetotal += self.generate_case_files(length, EA, EI, GT, m, abnormal_cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, "abnormal")
-        tk.messagebox.showinfo("Case Files", f"generated {casetotal} cases.")
+        casetotal += self.generate_case_files(length, EA, EI, GT, m, normal_cases, ID, SL, OD, CL, TL, TOD, material_text_block, material_identifier, "normal")
+        casetotal += self.generate_case_files(length, EA, EI, GT, m, abnormal_cases, ID, SL, OD, CL, TL, TOD, material_text_block, material_identifier, "abnormal")
+
+        tk.messagebox.showinfo("Case Files", f"Generated {casetotal} cases.")
+
 
     def generate_case_files_multi_BS_btn(self):
         length = round(float(self.data.get_parameter("riser_info")["riser length"]), 3)
@@ -183,24 +191,26 @@ class DataProcessor:
         GT = round(float(self.data.get_parameter("riser_info")["torsial stiffness"]), 3)
         m = round(float(self.data.get_parameter("riser_info")["mass per unit length"]), 3)
         normal_cases, abnormal_cases = self.make_case_arrays(self.data.get_parameter("riser_response"))
-        MAT = ["NOLIN 60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
-        MATID = ["60D_30"]  # PLACEHOLDER TIL JEG VET BEDRE
+        MATID = self.data.get_parameter("material_identifier")
         bs_dimension_multi = self.data.get_parameter("bs_dimension_multi")
+        bs_mat_text_block = self.data.get_parameter("material_text_block")
 
         casetotal = 0
-        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,normal_cases,bs_dimension_multi,MAT,MATID,"normal", "case_files")
-        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,abnormal_cases,bs_dimension_multi,MAT,MATID,"abnormal", "case_files")
+        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,normal_cases,bs_dimension_multi,bs_mat_text_block,MATID,"normal", "case_files")
+        casetotal +=self.generate_case_files_multi_BS(length,EA,EI,GT,m,abnormal_cases,bs_dimension_multi,bs_mat_text_block,MATID,"abnormal", "case_files")
         tk.messagebox.showinfo("Case Files", f"generated {casetotal} cases.")
 
-    def generate_case_files_multi_BS(self, length, EA, EI, GT, m, cases, bs_dimension_multi, MAT, MATID, label, output_dir):
+    def generate_case_files_multi_BS(self, length, EA, EI, GT, m, cases, bs_dimension_multi, material_text_block, matID, label, output_dir):
+        print(bs_dimension_multi)
         """Generates case files for each case in `cases` for all BS dimensions in `bs_dimension_multi`."""
 
-        # Create the case list file
-        case_list_filename = os.path.join(output_dir, f'bsengine-cases-{label}.txt')
-        with open(case_list_filename, 'w') as case_list_file:
-            total_cases = 0  # Track case count
+        os.makedirs(output_dir, exist_ok=True)
+        case_list_filename = os.path.join(os.path.dirname(output_dir), f'bsengine-cases-{label}.txt')
 
-            for bs in bs_dimension_multi:  # Loop through each BS configuration
+        with open(case_list_filename, 'w') as case_list_file:
+            total_cases = 0
+
+            for bs in bs_dimension_multi:
                 ID = round(float(bs["ID"]), 3)
                 OD = round(float(bs["Root Outer Diameter"]), 3)
                 CL = round(float(bs["Cone Length"]), 3)
@@ -210,8 +220,8 @@ class DataProcessor:
                 for case_id, case_data in enumerate(cases):
                     case_filename = f"Case-{label}-{case_id+1}-ID{ID}-OD{OD}-CL{CL}-TL{TL}-TOD{TOD}.inp"
                     case_filepath = os.path.join(output_dir, case_filename)
+                    case_list_file.write(case_filepath + '\n')
 
-                    # Write case file
                     with open(case_filepath, 'w') as inp:
                         inp.write('BEND STIFFENER DATA\n')
                         inp.write("' ID   NSEG\n")
@@ -219,288 +229,94 @@ class DataProcessor:
                         inp.write(f"{ID}   3\n")
                         inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID\n")
                         inp.write(f"0.7  50  {OD}  {OD}  2000  LIN  10000.E06\n")
-                        inp.write(f"{CL}  100  {OD}  {TOD}  1150  {MAT[0]}\n")
-                        inp.write(f"{TL}  50  {TOD}  {TOD}  1150  {MAT[0]}\n")
-                        inp.write("'---------------------------------------------------\n")
+                        inp.write(f"{CL}  100  {OD}  {TOD}  1150  NOLIN {matID}\n")
+                        inp.write(f"{TL}  50  {TOD}  {TOD}  1150  NOLIN {matID}\n")
+                        inp.write("'-----------------------------------------------------------------------\n\n")
+
                         inp.write("RISER DATA\n")
                         inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass\n")
                         inp.write("' (m)         kNm^2  kN              kg/m\n")
-                        inp.write(f"{length}  100  {EI}  {EA}  {GT}  {m}\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("ELEMENT PRINT\n")
-                        inp.write("'NSPEC\n")
-                        inp.write("3\n")
-                        inp.write("'IEL1    IEL2\n")
-                        inp.write("1         9\n")
-                        inp.write("10        30\n")
-                        inp.write("70        80\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("FE SYSTEM DATA TEST PRINT\n")
-                        inp.write("'IFSPRI 1/2\n")
-                        inp.write("1\n")
-                        inp.write("'2\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("FE ANALYSIS PARAMETERS\n")
-                        inp.write("'  finite element analysis parameters\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("'TOLNOR  MAXIT\n")
-                        inp.write("1.E-07  30\n")
-                        inp.write("'DSINC,DSMIN,DSMAX,\n")
-                        inp.write("0.01  0.001  0.1\n")
-                        inp.write("'3.0  0.01 10.\n")
-                        inp.write("'5.  0.1 10.\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("CURVATURE RANGE\n")
-                        inp.write("'CURMAX  - Maximum curvature\n")
-                        inp.write("'NCURV   - Number of curvature levels\n")
-                        inp.write("'CURMAX (1/m),NCURV\n")
-                        inp.write("'0.5       30\n")
-                        inp.write("0.2       100\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("FORCE\n")
-                        inp.write("'Relang  tension\n")
-                        inp.write("'(deg)   (kN)\n")
-                        inp.write(f"{case_data[0]}   {case_data[1]}\n")
-                        inp.write("'8.00   400.0\n")
-                        inp.write("'16.5   500.0\n")
-                        inp.write("'19.0   550.0\n")
-                        inp.write("'19.1   600.0\n")
-                        inp.write("'18.6   650.0\n")
-                        inp.write("'17.5   700.0\n")
-                        inp.write("'14.0   775.0\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("MATERIAL DATA\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("' Material identifier\n")
-                        inp.write("60D_15\n")
-                        inp.write("'NMAT - Number of points in stress/strain table for BS material\n")
-                        inp.write("21\n")
-                        inp.write("' strain   stress (kPa)    - Nmat input lines\n")
-                        inp.write("0.0 0.0\n")
-                        inp.write("0.005   1.40E+03\n")
-                        inp.write("0.010   2.57E+03\n")
-                        inp.write("0.015   3.61E+03\n")
-                        inp.write("0.020   4.55E+03\n")
-                        inp.write("0.025   5.36E+03\n")
-                        inp.write("0.030   6.03E+03\n")
-                        inp.write("0.035   6.59E+03\n")
-                        inp.write("0.040   7.02E+03\n")
-                        inp.write("0.045   7.37E+03\n")
-                        inp.write("0.050   7.67E+03\n")
-                        inp.write("0.055   7.92E+03\n")
-                        inp.write("0.060   8.13E+03\n")
-                        inp.write("0.065   8.31E+03\n")
-                        inp.write("0.070   8.47E+03\n")
-                        inp.write("0.075   8.61E+03\n")
-                        inp.write("0.080   8.74E+03\n")
-                        inp.write("0.085   8.86E+03\n")
-                        inp.write("0.090   8.96E+03\n")
-                        inp.write("0.095   9.06E+03\n")
-                        inp.write("0.100   9.10E+03\n")
-                        inp.write("'---------------------------------------------------\n")
-                        inp.write("MATERIAL DATA\n")
-                        inp.write("' Material identifier\n")
-                        inp.write("60D_30\n")
-                        inp.write("'NMAT - Number of points in stress/strain table for BS material\n")
-                        inp.write("21\n")
-                        inp.write("' strain   stress (kPa)    - Nmat input lines\n")
-                        inp.write("0.000   0.0\n")
-                        inp.write("0.005   1100.0\n")
-                        inp.write("0.010   2060.0\n")
-                        inp.write("0.015   2910.0\n")
-                        inp.write("0.020   3690.0\n")
-                        inp.write("0.025   4370.0\n")
-                        inp.write("0.030   4950.0\n")
-                        inp.write("0.035   5420.0\n")
-                        inp.write("0.040   5810.0\n")
-                        inp.write("0.045   6120.0\n")
-                        inp.write("0.050   6400.0\n")
-                        inp.write("0.055   6640.0\n")
-                        inp.write("0.060   6840.0\n")
-                        inp.write("0.065   7030.0\n")
-                        inp.write("0.070   7180.0\n")
-                        inp.write("0.075   7330.0\n")
-                        inp.write("0.080   7470.0\n")
-                        inp.write("0.085   7590.0\n")
-                        inp.write("0.090   7710.0\n")
-                        inp.write("0.095   7810.0\n")
-                        inp.write("0.100   7920.0"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'EXPORT MATERIAL DATA"+'\n')
-                        inp.write("'--------------------------------------------------"+'\n')
-                        inp.write("' IMEX   = 1 : tabular  =2 riflex format"+'\n')
-                        inp.write("'  1"+'\n')
-                        inp.write("'---------------------------------------------"+'\n')
-                        inp.write("end"+'\n')
-                        inp.write("'mandatory data group"+'\n')
-                        inp.write("'---------------------------------------------"+'\n')
-                    # Append case filename to the case list file
-                    case_list_file.write(case_filepath + '\n')
+                        inp.write(f"{length}  100  {EI}  {EA}  {GT}  {m}\n\n")
+
+                        inp.write("ELEMENT PRINT\n'NSPEC\n3\n'IEL1    IEL2\n1         9\n10        30\n70        80\n")
+                        inp.write("FE SYSTEM DATA TEST PRINT\n'IFSPRI 1/2\n1\n'2\n")
+                        inp.write("FE ANALYSIS PARAMETERS\n'TOLNOR  MAXIT\n1.E-07  30\n")
+                        inp.write("'DSINC,DSMIN,DSMAX,\n0.01  0.001  0.1\n'3.0  0.01 10.\n'5.  0.1 10.\n")
+                        inp.write("CURVATURE RANGE\n'CURMAX  - Maximum curvature\n'NCURV   - Number of curvature levels\n")
+                        inp.write("'CURMAX (1/m),NCURV\n'0.5       30\n0.2       100\n")
+                        inp.write("FORCE\n'Relang  tension\n'(deg)   (kN)\n")
+                        inp.write(f"{case_data[0]}  {case_data[1]}\n")
+                        inp.write("'8.00   400.0\n'16.5   500.0\n'19.0   550.0\n")
+                        inp.write("'19.1   600.0\n'18.6   650.0\n'17.5   700.0\n'14.0   775.0\n")
+
+                        # Inject material block (already formatted)
+                        inp.write(material_text_block + '\n')
+
+                        inp.write("'EXPORT MATERIAL DATA\n'--------------------------------------------------\n")
+                        inp.write("' IMEX   = 1 : tabular  =2 riflex format\n'  1\n")
+                        inp.write("'---------------------------------------------\n")
+                        inp.write("end\n")
+
                     total_cases += 1
 
         return total_cases
 
-    def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, MAT, MATID, label):
-        # Create a text file to store the case filenames
-        
+
+    def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, material_text_block, matID, label):
+
         inp1 = open(f'bsengine-cases-{label}.txt', 'w')
-        x = 0 # Counter
-        y = 0
-        
+        y = 0  # Case counter
+
         for i in cases:
-            x = 0
-            y = y + 1
+            y += 1
             for j in OD:
-                x = 0
                 for k in CL:
-                    x = 0
-                    for l in MAT:
-                        x = 0
-                        q = MATID[x]
-                        x = x + 1
-                        # Create a directory for the case files if it doesn't exist
-                        if not os.path.exists('case_files'):
-                            os.makedirs('case_files')
+                    os.makedirs('case_files', exist_ok=True)
 
-                        inp = open(os.path.join(f'case_files', "Case-"+label + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp"), 'w')
-                        inp1.write(os.path.join('case_files', "Case-"+label + str(y) + '-' + str(j) + '-' + str(k) + '-' + str(q) + ".inp") + '\n')
+                    filename = f"Case-{label}{y}-{j}-{k}-{matID}.inp"
+                    filepath = os.path.join('case_files', filename)
 
-                        inp.write('BEND STIFFENER DATA'+'\n')
-                        inp.write("' ID   NSEG"+'\n')
-                        inp.write("' inner diameter      Number of linear segments"+'\n')
-                        inp.write(str(ID) + "   3"+'\n')
-                        inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID"+'\n')
-                        inp.write(str(SL) + "  50  " + str(j) + "  " + str(j) + "  2000  LIN  10000.E06"+'\n')
-                        inp.write(str(k) + "  100  " + str(j) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
-                        inp.write(str(TL) + "  50  " + str(TOD) + "  " + str(TOD) + "  1150  " + str(l)+'\n')
-                        inp.write("'-----------------------------------------------------------------------"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("RISER DATA"+'\n')
-                        inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass"+'\n')
-                        inp.write("' (m)         kNm^2  kN              kg/m"+'\n')
-                        inp.write(str(length) + "  100  " + str(EI) + "  " + str(EA) + "  " + str(GT) + "  " + str(m) +'\n')
-                        inp.write("'"+'\n')
-                        inp.write("' mandatory data group"+'\n')
-                        inp.write("' -------------------------------------------------"+'\n')
-                        inp.write("ELEMENT PRINT"+'\n')
-                        inp.write("'NSPEC"+'\n')
-                        inp.write("3"+'\n')
-                        inp.write("'IEL1    IEL2"+'\n')
-                        inp.write("1         9"+'\n')
-                        inp.write("10        30"+'\n')
-                        inp.write("70        80"+'\n')
-                        inp.write("' -------------------------------------------------"+'\n')
-                        inp.write("FE SYSTEM DATA TEST PRINT"+'\n')
-                        inp.write("'IFSPRI 1/2"+'\n')
-                        inp.write("1"+'\n')
-                        inp.write("'2"+'\n')
-                        inp.write("' -------------------------------------------------"+'\n')
-                        inp.write("FE ANALYSIS PARAMETERS"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'  finite element analysis parameters"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'TOLNOR  MAXIT"+'\n')
-                        inp.write("1.E-07  30"+'\n')
-                        inp.write("'DSINC,DSMIN,DSMAX,"+'\n')
-                        inp.write("0.01  0.001  0.1"+'\n')
-                        inp.write("'3.0  0.01 10."+'\n')
-                        inp.write("'5.  0.1 10."+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'----------------------------------------------"+'\n')
-                        inp.write("CURVATURE RANGE"+'\n')
-                        inp.write("'----------------------------------------------"+'\n')
-                        inp.write("'CURMAX  - Maximum curvature"+'\n')
-                        inp.write("'NCURV   - Number of curvature levels"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'CURMAX (1/m),NCURV"+'\n')
-                        inp.write("'0.5       30"+'\n')
-                        inp.write("0.2       100"+'\n')
-                        inp.write("'---------------------------------------------------"+'\n')
-                        inp.write("FORCE"+'\n')
-                        inp.write("'Relang  tension"+'\n')
-                        inp.write("'(deg)   (kN)"+'\n')
-                        inp.write(str(i[0]) +"  "+ str(i[1]) + '\n')
-                        inp.write("'8.00   400.0"+'\n')
-                        inp.write("'16.5   500.0"+'\n')
-                        inp.write("'19.0   550.0"+'\n')
-                        inp.write("'19.1   600.0"+'\n')
-                        inp.write("'18.6   650.0"+'\n')
-                        inp.write("'17.5   700.0"+'\n')
-                        inp.write("'14.0   775.0"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'----------------------------------------------------"+'\n')
-                        inp.write("MATERIAL DATA"+'\n')
-                        inp.write("'----------------------------------------------------"+'\n')
-                        inp.write("' Material identifier"+'\n')
-                        inp.write("60D_15"+'\n')
-                        inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
-                        inp.write("21"+'\n')
-                        inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
-                        inp.write("0.0 0.0"+'\n')
-                        inp.write("0.005   1.40E+03"+'\n')
-                        inp.write("0.010   2.57E+03"+'\n')
-                        inp.write("0.015   3.61E+03"+'\n')
-                        inp.write("0.020   4.55E+03"+'\n')
-                        inp.write("0.025   5.36E+03"+'\n')
-                        inp.write("0.030   6.03E+03"+'\n')
-                        inp.write("0.035   6.59E+03"+'\n')
-                        inp.write("0.040   7.02E+03"+'\n')
-                        inp.write("0.045   7.37E+03"+'\n')
-                        inp.write("0.050   7.67E+03"+'\n')
-                        inp.write("0.055   7.92E+03"+'\n')
-                        inp.write("0.060   8.13E+03"+'\n')
-                        inp.write("0.065   8.31E+03"+'\n')
-                        inp.write("0.070   8.47E+03"+'\n')
-                        inp.write("0.075   8.61E+03"+'\n')
-                        inp.write("0.080   8.74E+03"+'\n')
-                        inp.write("0.085   8.86E+03"+'\n')
-                        inp.write("0.090   8.96E+03"+'\n')
-                        inp.write("0.095   9.06E+03"+'\n')
-                        inp.write("0.100   9.10E+03"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("MATERIAL DATA"+'\n')
-                        inp.write("' Material identifier"+'\n')
-                        inp.write("60D_30"+'\n')
-                        inp.write("'NMAT - Number of points in stress/strain table for BS material"+'\n')
-                        inp.write("21"+'\n')
-                        inp.write("' strain   stress (kPa)    - Nmat input lines"+'\n')
-                        inp.write("0.000   0.0"+'\n')
-                        inp.write("0.005   1100.0"+'\n')
-                        inp.write("0.010   2060.0"+'\n')
-                        inp.write("0.015   2910.0"+'\n')
-                        inp.write("0.020   3690.0"+'\n')
-                        inp.write("0.025   4370.0"+'\n')
-                        inp.write("0.030   4950.0"+'\n')
-                        inp.write("0.035   5420.0"+'\n')
-                        inp.write("0.040   5810.0"+'\n')
-                        inp.write("0.045   6120.0"+'\n')
-                        inp.write("0.050   6400.0"+'\n')
-                        inp.write("0.055   6640.0"+'\n')
-                        inp.write("0.060   6840.0"+'\n')
-                        inp.write("0.065   7030.0"+'\n')
-                        inp.write("0.070   7180.0"+'\n')
-                        inp.write("0.075   7330.0"+'\n')
-                        inp.write("0.080   7470.0"+'\n')
-                        inp.write("0.085   7590.0"+'\n')
-                        inp.write("0.090   7710.0"+'\n')
-                        inp.write("0.095   7810.0"+'\n')
-                        inp.write("0.100   7920.0"+'\n')
-                        inp.write("'"+'\n')
-                        inp.write("'EXPORT MATERIAL DATA"+'\n')
-                        inp.write("'--------------------------------------------------"+'\n')
-                        inp.write("' IMEX   = 1 : tabular  =2 riflex format"+'\n')
-                        inp.write("'  1"+'\n')
-                        inp.write("'---------------------------------------------"+'\n')
-                        inp.write("end"+'\n')
-                        inp.write("'mandatory data group"+'\n')
-                        inp.write("'---------------------------------------------"+'\n')
-        def count_lines(filename):
-            with open(filename, 'r') as file:
-                return sum(1 for line in file)
+                    with open(filepath, 'w') as inp:
+                        inp1.write(filepath + '\n')
 
-        inp.close()
+                        # Write fixed BSENGINE inputs...
+                        inp.write('BEND STIFFENER DATA\n')
+                        inp.write("' ID   NSEG\n")
+                        inp.write("' inner diameter      Number of linear segments\n")
+                        inp.write(f"{ID}   3\n")
+                        inp.write("' LENGTH   NEL   OD1    OD2  DENSITY LIN/NOLIN        EMOD/MAT-ID\n")
+                        inp.write(f"{SL}  50  {j}  {j}  2000  LIN  10000.E06\n")
+                        inp.write(f"{k}  100  {j}  {TOD}  1150  NOLIN {matID}\n")
+                        inp.write(f"{TL}  50  {TOD}  {TOD}  1150  NOLIN {matID}\n")
+                        inp.write("'-----------------------------------------------------------------------\n\n")
+
+                        # Riser section...
+                        inp.write("RISER DATA\n")
+                        inp.write("'SRIS,  NEL   EI,    EA,      GT     Mass\n")
+                        inp.write("' (m)         kNm^2  kN              kg/m\n")
+                        inp.write(f"{length}  100  {EI}  {EA}  {GT}  {m}\n\n")
+
+                        # Standard config sections...
+                        inp.write("ELEMENT PRINT\n'NSPEC\n3\n'IEL1    IEL2\n1         9\n10        30\n70        80\n")
+                        inp.write("FE SYSTEM DATA TEST PRINT\n'IFSPRI 1/2\n1\n'2\n")
+                        inp.write("FE ANALYSIS PARAMETERS\n'TOLNOR  MAXIT\n1.E-07  30\n")
+                        inp.write("'DSINC,DSMIN,DSMAX,\n0.01  0.001  0.1\n'3.0  0.01 10.\n'5.  0.1 10.\n")
+                        inp.write("CURVATURE RANGE\n'CURMAX  - Maximum curvature\n'NCURV   - Number of curvature levels\n")
+                        inp.write("'CURMAX (1/m),NCURV\n'0.5       30\n0.2       100\n")
+                        inp.write("FORCE\n'Relang  tension\n'(deg)   (kN)\n")
+                        inp.write(f"{i[0]}  {i[1]}\n'8.00   400.0\n'16.5   500.0\n'19.0   550.0\n")
+                        inp.write("'19.1   600.0\n'18.6   650.0\n'17.5   700.0\n'14.0   775.0\n")
+
+                        # Insert dynamic material block
+                        inp.write(material_text_block + '\n')
+
+                        inp.write("'EXPORT MATERIAL DATA\n'--------------------------------------------------\n")
+                        inp.write("' IMEX   = 1 : tabular  =2 riflex format\n'  1\n")
+                        inp.write("'---------------------------------------------\n")
+                        inp.write("end\n")
+
         inp1.close()
-        return count_lines(f'bsengine-cases-{label}.txt')
+        return sum(1 for _ in open(f'bsengine-cases-{label}.txt'))
 
     def extract_key_results(self, case_file):
         try:
@@ -750,7 +566,7 @@ class DataProcessor:
         else:
             thresholds = self.data.get_parameter("thresholds_abnormal")
         for case in thresholds.keys():
-            case = f"case_files\\Case-{tag}{i}-{shortest['width']}-{shortest['length']}-60D_30.inp"
+            case = f"case_files\\Case-{tag}{i}-{shortest['width']}-{shortest['length']}-{self.data.get_parameter("material_identifier")}.inp"
             result = self.runBSEngine(case)
             if result <= thresholds[f"case_files\\Case-{tag}{i}"]['maximum_curvature']:
                 print(f"bs valid for {tag} case{i}")
@@ -802,6 +618,7 @@ class DataProcessor:
                 case_queue.put(case)
             case_file = case.strip().replace('.inp', '.log')
             result = self.extract_key_results(case_file)
+            print (f"Extracted result: {result}")
             result = float(result['maximum_curvature'])
             return result
 
@@ -848,121 +665,97 @@ class DataProcessor:
             print("All cases have been processed.")
 
         def check_results():
-            """Checks the results of the analysis and determines which BS configurations pass all cases."""
+            """Checks the results of the analysis and prints a status for all BS configurations (PASSED/FAILED)."""
 
-            # Step 1: Load Data
-            self.interpolate_max_curve(self.data.get_parameter("riser_capacities"), self.data.get_parameter("riser_response"))
+            # Step 1: Interpolate max curvature
+            self.interpolate_max_curve(
+                self.data.get_parameter("riser_capacities"),
+                self.data.get_parameter("riser_response")
+            )
 
-            # Step 2: Read Normal & Abnormal Case Filenames
+            # Step 2: Read case filenames
             normal_cases = open('bsengine-cases-normal.txt', 'r').readlines()
             abnormal_cases = open('bsengine-cases-abnormal.txt', 'r').readlines()
 
-            # Convert filenames to corresponding log files (ONLY `.log`, not `_FEA.log`)
+            # Step 3: Extract log paths
             normal_logs = [case.strip().replace('.inp', '.log') for case in normal_cases]
             abnormal_logs = [case.strip().replace('.inp', '.log') for case in abnormal_cases]
 
-            # Step 3: Extract Results from Log Files
+            # Step 4: Get results
             normal_results = {log: self.extract_key_results(log) for log in normal_logs}
             abnormal_results = {log: self.extract_key_results(log) for log in abnormal_logs}
 
-            # Step 4: Load Thresholds from DataStore
             thresholds_normal = self.data.get_parameter("thresholds_normal")
             thresholds_abnormal = self.data.get_parameter("thresholds_abnormal")
 
-            bs_cases = defaultdict(lambda: {"normal": [], "abnormal": []})  # Store results grouped by BS
+            bs_cases = defaultdict(lambda: {"normal": [], "abnormal": []})
 
-            # Step 5: Process Results - Group Cases by BS Configuration
+            # Group cases
             for case_name in normal_cases + abnormal_cases:
                 case_name = case_name.strip()
-
-                # **Extract BS Parameters from Case Name using Regex**
                 match = re.search(r'Case-(normal|abnormal)-(\d+)-ID([\d.]+)-OD([\d.]+)-CL([\d.]+)-TL([\d.]+)-TOD([\d.]+)', case_name)
                 if not match:
-                    logging.warning(f"⚠️ Unable to extract BS parameters from: {case_name}. Skipping...")
+                    logging.warning(f"⚠️ Could not parse case name: {case_name}")
                     continue
 
-                case_type, case_number, bs_id, od, cl, tl, tod = match.groups()
-                case_number = int(case_number)  # Convert to integer
-                bs_key = f"ID{bs_id}-OD{od}-CL{cl}-TL{tl}-TOD{tod}"  # Unique BS Identifier
+                case_type, case_num, bs_id, od, cl, tl, tod = match.groups()
+                case_num = int(case_num)
+                bs_key = f"ID{bs_id}-OD{od}-CL{cl}-TL{tl}-TOD{tod}"
+                bs_cases[bs_key][case_type].append(case_num)
 
-                if case_type == "normal":
-                    bs_cases[bs_key]["normal"].append(case_number)
-                else:
-                    bs_cases[bs_key]["abnormal"].append(case_number)
+            all_bs_status = {}
 
-            successful_bs = []
-
-            # Step 6: Check Each BS Against All Cases
-            for bs_key, cases in bs_cases.items():
+            # Evaluate each BS
+            for bs_key, case_dict in bs_cases.items():
                 normal_passed = True
                 abnormal_passed = True
+                failure_reason = None
 
-                # **Check Normal Cases**
-                for case_num in cases["normal"]:
+                for case_num in case_dict["normal"]:
                     log_file = f"case_files\\Case-normal-{case_num}-{bs_key}log"
-                    norm_result = normal_results.get(log_file, None)
+                    result = normal_results.get(log_file)
+                    threshold = thresholds_normal.get(f"case_files\\Case-normal{case_num}")
 
-                    if norm_result is None:
-                        logging.warning(f"Skipping {bs_key} due to missing normal case result: {log_file}")
+                    if result is None or threshold is None:
                         normal_passed = False
+                        failure_reason = f"Missing result or threshold for normal case {case_num}"
                         break
 
-
-                    print(thresholds_normal)
-
-                    norm_curvature = float(norm_result["maximum_curvature"])
-                    threshold_norm = thresholds_normal.get(f"case_files\\Case-normal{case_num}")
-                    print(threshold_norm)
-                    print(threshold_norm["maximum_curvature"])
-
-                    if threshold_norm is None:
-                        logging.warning(f"Missing normal threshold for case {case_num}. Skipping BS: {bs_key}.")
+                    curvature = float(result["maximum_curvature"])
+                    if curvature > threshold["maximum_curvature"]:
                         normal_passed = False
+                        failure_reason = f"Normal case {case_num} exceeded threshold ({curvature} > {threshold['maximum_curvature']})"
                         break
 
-                    if norm_curvature > threshold_norm["maximum_curvature"]:
-                        logging.info(f"❌ BS {bs_key} FAILED normal case {case_num}. Threshold: {threshold_norm["maximum_curvature"]}, Achieved: {norm_curvature}")
-                        normal_passed = False
-                        break  # Stop checking if one case fails
-
-                # **Check Abnormal Cases (only if normal passed)**
                 if normal_passed:
-                    for case_num in cases["abnormal"]:
+                    for case_num in case_dict["abnormal"]:
                         log_file = f"case_files\\Case-abnormal-{case_num}-{bs_key}log"
-                        abnorm_result = abnormal_results.get(log_file, None)
+                        result = abnormal_results.get(log_file)
+                        threshold = thresholds_abnormal.get(f"case_files\\Case-abnormal{case_num}")
 
-                        if abnorm_result is None:
-                            logging.warning(f"Skipping {bs_key} due to missing abnormal case result: {log_file}")
+                        if result is None or threshold is None:
                             abnormal_passed = False
+                            failure_reason = f"Missing result or threshold for abnormal case {case_num}"
                             break
 
-                        abnorm_curvature = float(abnorm_result["maximum_curvature"])
-                        threshold_abnorm = thresholds_abnormal.get(f"case_files\\Case-abnormal{case_num}")
-
-                        if threshold_abnorm is None:
-                            logging.warning(f"Missing abnormal threshold for case {case_num}. Skipping BS: {bs_key}.")
+                        curvature = float(result["maximum_curvature"])
+                        if curvature > threshold["maximum_curvature"]:
                             abnormal_passed = False
+                            failure_reason = f"Abnormal case {case_num} exceeded threshold ({curvature} > {threshold['maximum_curvature']})"
                             break
 
-                        if abnorm_curvature > threshold_abnorm["maximum_curvature"]:
-                            logging.info(f"❌ BS {bs_key} FAILED abnormal case {case_num}. Threshold: {threshold_abnorm["maximum_curvature"]}, Achieved: {abnorm_curvature}")
-                            abnormal_passed = False
-                            break  # Stop checking if one case fails
-
-                # If both normal & abnormal cases pass, BS is successful
                 if normal_passed and abnormal_passed:
-                    successful_bs.append(bs_key)
-                    logging.info(f"✅ BS {bs_key} PASSED all cases.")
+                    all_bs_status[bs_key] = "✅ PASSED"
+                else:
+                    all_bs_status[bs_key] = f"❌ FAILED – {failure_reason}"
 
-            # Step 7: Display Results
-            if successful_bs:
-                logging.info(f"✅ Successful BS Configurations: {', '.join(successful_bs)}")
-                print(f"✅ Successful BS Configurations: {', '.join(successful_bs)}")
-            else:
-                logging.info("❌ No BS configurations met the required criteria.")
-                print("❌ No BS configurations met the required criteria.")
+            # Print summary
+            print("\n=== BS Configuration Results ===")
+            for bs_key, status in all_bs_status.items():
+                print(f"{bs_key}: {status}")
 
-            return successful_bs
+            return [bs for bs, status in all_bs_status.items() if status.startswith("✅")]
+
 
 
 
@@ -982,6 +775,13 @@ class BaseFrame(tk.Frame):
         self.controller = controller
         self.data_store = DataStore()  # All frames share this instance
 
+    def set_previous_frame(self, frame_name):
+        self.previous_frame = frame_name
+
+    def go_back(self):
+        if self.previous_frame:
+            self.controller.show_frame(self.previous_frame)
+
     def switch_to(self, frame_name):
         self.controller.show_frame(frame_name)
 
@@ -997,8 +797,8 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame")).pack()
         tk.Button(self, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
         tk.Button(self, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
-        tk.Button(self, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
         tk.Button(self, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame")).pack()
+        tk.Button(self, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
 
         tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
 
@@ -1012,10 +812,11 @@ class CheckExistingBSNavFrame(BaseFrame):
         tk.Button(self, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame")).pack()
         tk.Button(self, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
         tk.Button(self, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
+        tk.Button(self, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame")).pack()
         tk.Button(self, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti")).pack()
         tk.Button(self, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
 
-        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack() 
+        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -1033,6 +834,7 @@ class RunLoadCaseOnBSNavFrame(BaseFrame):
         # back button
         tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
 
+
 class NavigationFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -1045,7 +847,7 @@ class NavigationFrame(BaseFrame):
 
 # Generic Input Frame
 class InputFrame(BaseFrame):
-    def __init__(self, parent, controller, fields, frame_name, back_frame, data_group_name):
+    def __init__(self, parent, controller, fields, frame_name, data_group_name):
         super().__init__(parent, controller)
         self.fields = fields
         self.frame_name = frame_name
@@ -1059,12 +861,12 @@ class InputFrame(BaseFrame):
             self.entries[field] = entry
 
         tk.Button(self, text="Save data", command=self.save_data).pack()
-        tk.Button(self, text="Back", command=lambda: self.switch_to(back_frame)).pack()
+        tk.Button(self, text="Back", command=self.go_back).pack()
 
     def save_data(self):
         grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
         self.data_store.parameters[self.data_group_name] = grouped_data  # Store under group
-        self.switch_to("FindOptimalBsNavFrame")
+        self.go_back()  # Go back to previous frame
 
 # Updated PlotFrame to handle normal and abnormal data
 class PlotFrame(BaseFrame):
@@ -1093,8 +895,7 @@ class PlotFrame(BaseFrame):
         ttk.Button(self.abnormal_section, text="Add Row (Abnormal)", command=self.add_abnormal_row).pack()
 
         ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).pack(pady=10)
-        ttk.Button(self.input_frame, text="Back", command=lambda: self.switch_to("FindOptimalBsNavFrame")).pack(pady=10)
-
+        tk.Button(self, text="Back", command=self.go_back).pack()
         self.figure, self.ax = plt.subplots(figsize=(6, 4))
         self.ax.set_title(title)
         self.ax.set_xlabel("Curvature [1/m]")
@@ -1167,52 +968,21 @@ class RiserCapacitiesFrame(PlotFrame):
 class ProjectInfoFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["Project Name", "client", "designer name"]
-        super().__init__(parent, controller, fields, "ProjectInfoFrame", "FindOptimalBsNavFrame", "project_info")
+        super().__init__(parent, controller, fields, "ProjectInfoFrame", "project_info")
 class RiserInfoFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["riser identification", "outer diameter", "outer diameter tolerance", "mass per unit length", "axial stiffness", "bending stiffness", "torsial stiffness", "riser length"]
-        super().__init__(parent, controller, fields, "RiserInfoFrame", "FindOptimalBsNavFrame", "riser_info")
+        super().__init__(parent, controller, fields, "RiserInfoFrame", "riser_info")
 class BSDimensionsFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["root length", "tip length", "min root outer diameter", "max root outer diameter", "min overall length", "max overall length", "clearance ", "increment width", "increment length"]
-        super().__init__(parent, controller, fields, "BSDimensionsFrame", "FindOptimalBsNavFrame", "bs_dimension")
-class SelectMaterialFrame(tk.Frame):
-    def __init__(self, parent, data_store):
-        super().__init__(parent)
-        self.data_store = data_store
-
-        tk.Label(self, text="Select Material").pack(pady=10)
-        self.materials = self.load_materials()
-        self.selected_material = tk.StringVar()
-
-        self.dropdown = ttk.Combobox(self, textvariable=self.selected_material, values=list(self.materials.keys()))
-        self.dropdown.pack(pady=5)
-
-        tk.Button(self, text="Load Material", command=self.load_selected_material).pack(pady=10)
-        tk.Button(self, text="Create New Material", command=self.create_new_material).pack(pady=10)
-
-    def create_new_material(self):
-        new_material_window = createNewMaterialFrame(self)
-    def load_materials(self):
-        db_path = "material_database.json"
-        if os.path.exists(db_path):
-            with open(db_path, "r") as file:
-                return json.load(file)
-        return {}
-
-    def load_selected_material(self):
-        material_name = self.selected_material.get()
-        if material_name in self.materials:
-            self.data_store.set_parameter("selected_material", self.materials[material_name])
-            messagebox.showinfo("Material Loaded", f"Material '{material_name}' loaded into analysis.")
-        else:
-            messagebox.showerror("Error", "Please select a valid material.")
-
+        super().__init__(parent, controller, fields, "BSDimensionsFrame", "bs_dimension")
 class createNewMaterialFrame:
-    def __init__(self, parent):
+    def __init__(self, parent, on_save=None):
         self.top = Toplevel(parent)
         self.top.title("Create New Material")
-        self.top.geometry("500x800")
+        self.top.geometry("500x600")
+        self.on_save = on_save
 
         self.entries = {}
         self.dynamic_entries = []
@@ -1307,7 +1077,84 @@ class createNewMaterialFrame:
             json.dump(material_db, file, indent=4)
 
         messagebox.showinfo("Success", f"Material '{material_id}' saved to database!")
+        if self.on_save:
+            self.on_save()
         self.top.destroy()
+
+class SelectMaterialFrame(BaseFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
+
+        tk.Label(self, text="Select Material").pack(pady=10)
+        self.materials = self.load_materials()
+        self.selected_material = tk.StringVar()
+        self.controller = controller
+
+        self.dropdown = ttk.Combobox(self, textvariable=self.selected_material, values=list(self.materials.keys()))
+        self.dropdown.pack(pady=5)
+
+        tk.Button(self, text="Load Material", command=self.load_selected_material).pack(pady=10)
+        tk.Button(self, text="Create New Material", command=self.create_new_material).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back).pack()
+
+
+    def create_new_material(self):
+        """Opens a new window to create a new material."""
+        self.new_material_window = createNewMaterialFrame(self, on_save=self.refresh_dropdown)
+
+    def load_materials(self):
+        db_path = "materials/material_database.json"
+        if os.path.exists(db_path):
+            with open(db_path, "r") as file:
+                return json.load(file)
+        else:
+            messagebox.showerror("Error", "Material database not found.")
+            return {}
+        return {}
+
+    def refresh_dropdown(self):
+        self.materials = self.load_materials()
+        self.dropdown['values'] = list(self.materials.keys())
+
+    def load_selected_material(self):
+        self.generate_material_text_block()
+        material_name = self.selected_material.get()
+        if material_name in self.materials:
+            self.data_store.set_parameter("selected_material", self.materials[material_name])
+            self.data_store.set_parameter("material_identifier", material_name)
+            messagebox.showinfo("Success", f"Material '{material_name}' loaded successfully!")
+        else:
+            messagebox.showerror("Error", "Please select a valid material.")
+
+    def generate_material_text_block(self):
+        material_name = self.selected_material.get()
+        if material_name not in self.materials:
+            messagebox.showerror("Error", "Please select a valid material.")
+            return
+
+        material = self.materials[material_name]
+        nmat = material["NMAT"]
+        data = material["data"]
+
+        lines = []
+        lines.append("MATERIAL DATA")
+        lines.append("' Material identifier")
+        lines.append(material_name)
+        lines.append("'NMAT - Number of points in stress/strain table for BS material")
+        lines.append(str(nmat))
+        lines.append("' strain   stress (kPa)    - Nmat input lines")
+
+        for pair in data:
+            strain = f"{pair['strain']:.3f}"
+            stress = f"{pair['stress']:.1f}"
+            lines.append(f"{strain}   {stress}")
+
+        material_text = "\n".join(lines)
+
+        # Store the formatted text in the DataStore for input file generation
+        self.data_store.set_parameter("material_text_block", material_text)
+        messagebox.showinfo("Material Block Generated", "Formatted material block saved in DataStore.")
+
 
 class BSDimensionsFrameMulti(BaseFrame):
     def __init__(self, parent, controller):
@@ -1326,7 +1173,7 @@ class BSDimensionsFrameMulti(BaseFrame):
         self.input_frame.pack(pady=10)
 
         tk.Button(self, text="Save Data", command=self.save_data).pack(pady=5)
-        tk.Button(self, text="Back", command=lambda: self.switch_to("FindOptimalBsNavFrame")).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back).pack()
 
         tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn()).pack(pady=5)
         tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis()).pack(pady=5)
@@ -1388,7 +1235,8 @@ class RunAnalysisFrame(BaseFrame):
         self.progress.pack(pady=10)
 
         # Buttons
-        tk.Button(self, text="Go Back", command=lambda: self.switch_to("NavigationFrame")).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back).pack()
+
         tk.Button(self, text="Refresh", command=self.update_labels).pack(pady=5)
         tk.Button(self, text="Generate Cases", command=self.data_processor.casesBtn).pack(pady=5)
         tk.Button(self, text="Run Analysis", command=self.run_analysis).pack(pady=5)
@@ -1498,8 +1346,8 @@ class ReportFrame(BaseFrame):
         self.update_plot()
 
         # Back Button
-        self.back_button = tk.Button(self.main_frame, text="Back", command=lambda: self.switch_to("FindOptimalBsNavFrame"), width=10, height=2, bg="#333333", fg="white")
-        self.back_button.pack(side="bottom", pady=10)
+        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
+
 
         if(self.analysis_data.get("bs_dimension_multi")):
             self.generateCasesForMultipleBs()
@@ -1624,6 +1472,7 @@ class App(tk.Tk):
         self.container = tk.Frame(self)
         self.container.pack(fill="both", expand=True)
         self.frames = {}
+        self.current_frame = None
 
         for frame_name in ["FindOptimalBsNavFrame", "ProjectInfoFrame", 
         "RiserInfoFrame", "BSDimensionsFrame", 
@@ -1638,7 +1487,10 @@ class App(tk.Tk):
         self.show_frame("NavigationFrame")
 
     def show_frame(self, frame_name):
+        if self.current_frame:
+            self.frames[frame_name].set_previous_frame(self.current_frame)
         self.frames[frame_name].tkraise()
+        self.current_frame = frame_name
 
 if __name__ == "__main__":
     app = App()
