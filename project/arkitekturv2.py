@@ -782,6 +782,14 @@ class BaseFrame(tk.Frame):
             "font": ("Arial", 10, "bold"),
             "activebackground": "#d2b660"
         }
+        self.back_button_style = {
+            "bg": "#000000", "fg": "white",
+            "width": 30, "height": 2,
+            "bd": 1, "relief": "solid",
+            "highlightbackground": "black",
+            "font": ("Arial", 10, "bold"),
+            "activebackground": "#d2b660"
+        }
 
         self.center_frame = tk.Frame(self, bg=self["bg"])
         self.center_frame.place(relx=0.5, rely=0.30, anchor="center")
@@ -808,7 +816,7 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -821,7 +829,7 @@ class CheckExistingBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -833,7 +841,7 @@ class RunLoadCaseOnBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 # start frame
 class NavigationFrame(BaseFrame):
