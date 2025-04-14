@@ -790,6 +790,30 @@ class BaseFrame(tk.Frame):
             "font": ("Arial", 10, "bold"),
             "activebackground": "#d2b660"
         }
+        self.title_style = {
+            "bg": "#E3DFCF",
+            "fg": "black",
+            "font": ("Arial", 20, "bold"),
+            "anchor": "w",
+            "padx": 5,
+            "pady": 2
+        }
+        self.label_style = {
+            "bg": "#E3DFCF",
+            "fg": "black",
+            "font": ("Arial", 15, "bold"),
+            "anchor": "w",
+            "padx": 5,
+            "pady": 2
+        }
+        self.inputFrame_style = {
+            "bg": "#E3DFCF",
+            "fg": "black",
+            "font": ("Arial", 10, "bold"),
+            "anchor": "w",
+            "padx": 5,
+            "pady": 2
+        }
 
         self.center_frame = tk.Frame(self, bg=self["bg"])
         self.center_frame.place(relx=0.5, rely=0.30, anchor="center")
@@ -808,7 +832,7 @@ class BaseFrame(tk.Frame):
 class FindOptimalBsNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
         tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
@@ -816,12 +840,12 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
         tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
@@ -829,19 +853,19 @@ class CheckExistingBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
         tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
         tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
 
 # start frame
 class NavigationFrame(BaseFrame):
@@ -849,7 +873,7 @@ class NavigationFrame(BaseFrame):
         super().__init__(parent, controller)
         center_frame = tk.Frame(self, bg=self["bg"])
         center_frame.place(relx=0.5, rely=0.30, anchor="center")
-        tk.Label(center_frame, text="Navigation", bg="#ECECEC", font=("Arial", 14, "bold")).pack(pady=(10, 20))
+        tk.Label(center_frame, text="Navigation", **self.title_style).pack(pady=(10, 20))
 
         button_style = {
             "bg": "#E3C376", "fg": "black",
@@ -875,18 +899,23 @@ class InputFrame(BaseFrame):
         self.entries = {}
         
         for field in fields:
-            tk.Label(self, text=f"Enter {field}:").pack()
+            tk.Label(self, text=f"Enter {field}:", **self.inputFrame_style).pack()
             entry = tk.Entry(self)
             entry.pack()
             self.entries[field] = entry
 
-        tk.Button(self, text="Save data", command=self.save_data).pack()
-        tk.Button(self, text="Back", command=self.go_back).pack()
+        tk.Button(self, text="Save data", command=self.save_data, **self.button_style).pack()
+        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
 
     def save_data(self):
         grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
         self.data_store.parameters[self.data_group_name] = grouped_data  # Store under group
         self.go_back()  # Go back to previous frame
+        if self.frame_name == "ProjectInfoFrame":
+            banner_labels = self.controller.banner_entries
+            for key in grouped_data:
+                if key.lower() in banner_labels:
+                    banner_labels[key.lower()].config(text=grouped_data[key])
 
 # Updated PlotFrame to handle normal and abnormal data
 class PlotFrame(BaseFrame):
@@ -894,28 +923,27 @@ class PlotFrame(BaseFrame):
         super().__init__(parent, controller)
         self.data_key = data_key  # Unique key for storing data in DataStore
         
-        self.input_frame = ttk.Frame(self)
+        self.input_frame = tk.Frame(self)
         self.input_frame.pack(side="left", padx=10, pady=10)
-        self.plot_frame = ttk.Frame(self)
+        self.plot_frame = tk.Frame(self)
         self.plot_frame.pack(side="right", padx=10, pady=10)
 
         self.normal_rows = []
         self.abnormal_rows = []
 
         # Normal Operation Section
-        self.normal_section = ttk.Frame(self.input_frame)
+        self.normal_section = tk.Frame(self.input_frame)
         self.normal_section.pack(pady=10)
-        ttk.Label(self.normal_section, text="Normal Operation").pack()
-        ttk.Button(self.normal_section, text="Add Row (Normal)", command=self.add_normal_row).pack()
+        tk.Label(self.normal_section, text="Normal Operation", **self.label_style).pack()
+        tk.Button(self.normal_section, text="Add Row (Normal)", command=self.add_normal_row, **self.button_style).pack()
 
         # Abnormal Operation Section
-        self.abnormal_section = ttk.Frame(self.input_frame)
+        self.abnormal_section = tk.Frame(self.input_frame)
         self.abnormal_section.pack(pady=10)
-        ttk.Label(self.abnormal_section, text="Abnormal Operation").pack()
-        ttk.Button(self.abnormal_section, text="Add Row (Abnormal)", command=self.add_abnormal_row).pack()
-
-        ttk.Button(self.input_frame, text="Plot Data", command=self.update_plot).pack(pady=10)
-        tk.Button(self, text="Back", command=self.go_back).pack()
+        tk.Label(self.abnormal_section, text="Abnormal Operation", **self.label_style).pack()
+        tk.Button(self.abnormal_section, text="Add Row (Abnormal)", command=self.add_abnormal_row, **self.button_style).pack()
+        tk.Button(self.input_frame, text="Plot Data", command=self.update_plot, **self.button_style).pack(pady=10)
+        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
         self.figure, self.ax = plt.subplots(figsize=(6, 4))
         self.ax.set_title(title)
         self.ax.set_xlabel("Curvature [1/m]")
@@ -925,19 +953,19 @@ class PlotFrame(BaseFrame):
         self.canvas.get_tk_widget().pack()
 
     def add_normal_row(self):
-        frame = ttk.Frame(self.normal_section)
+        frame = tk.Frame(self.normal_section)
         frame.pack()
-        curvature_entry = ttk.Entry(frame, width=10)
-        tension_entry = ttk.Entry(frame, width=10)
+        curvature_entry = tk.Entry(frame, width=10)
+        tension_entry = tk.Entry(frame, width=10)
         curvature_entry.pack(side="left")
         tension_entry.pack(side="left")
         self.normal_rows.append((curvature_entry, tension_entry))
 
     def add_abnormal_row(self):
-        frame = ttk.Frame(self.abnormal_section)
+        frame = tk.Frame(self.abnormal_section)
         frame.pack()
-        curvature_entry = ttk.Entry(frame, width=10)
-        tension_entry = ttk.Entry(frame, width=10)
+        curvature_entry = tk.Entry(frame, width=10)
+        tension_entry = tk.Entry(frame, width=10)
         curvature_entry.pack(side="left")
         tension_entry.pack(side="left")
         self.abnormal_rows.append((curvature_entry, tension_entry))
@@ -1015,7 +1043,7 @@ class createNewMaterialFrame:
         self.entries["number of datapoints in stress/strain table"] = tk.Entry(self.top)
         self.entries["number of datapoints in stress/strain table"].pack(pady=5)
 
-        self.generate_button = tk.Button(self.top, text="Generate Fields", command=self.generate_datapoint_fields)
+        self.generate_button = tk.Button(self.top, text="Generate Fields", command=self.generate_datapoint_fields, **self.button_style)
         self.generate_button.pack(pady=10)
 
         # Scrollable canvas for dynamic entry fields
@@ -1032,7 +1060,7 @@ class createNewMaterialFrame:
             "<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
 
-        self.submit_button = tk.Button(self.top, text="Submit", command=self.collect_material_data)
+        self.submit_button = tk.Button(self.top, text="Submit", command=self.collect_material_data, **self.button_style)
         self.submit_button.pack(pady=10)
 
     def generate_datapoint_fields(self):
@@ -1105,7 +1133,7 @@ class SelectMaterialFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        tk.Label(self, text="Select Material").pack(pady=10)
+        tk.Label(self, text="Select Material", **self.title_style).pack(pady=10)
         self.materials = self.load_materials()
         self.selected_material = tk.StringVar()
         self.controller = controller
@@ -1113,9 +1141,9 @@ class SelectMaterialFrame(BaseFrame):
         self.dropdown = ttk.Combobox(self, textvariable=self.selected_material, values=list(self.materials.keys()))
         self.dropdown.pack(pady=5)
 
-        tk.Button(self, text="Load Material", command=self.load_selected_material).pack(pady=10)
-        tk.Button(self, text="Create New Material", command=self.create_new_material).pack(pady=5)
-        tk.Button(self, text="Back", command=self.go_back).pack()
+        tk.Button(self, text="Load Material", command=self.load_selected_material, **self.button_style).pack(pady=10)
+        tk.Button(self, text="Create New Material", command=self.create_new_material, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
 
 
     def create_new_material(self):
@@ -1187,16 +1215,16 @@ class BSDimensionsFrameMulti(BaseFrame):
         tk.Label(self, text="Enter number of BS:").pack(pady=5)
         tk.Entry(self, textvariable=self.num_bs, width=5).pack(pady=5)
 
-        tk.Button(self, text="Generate Fields", command=self.generate_fields).pack(pady=5)
+        tk.Button(self, text="Generate Fields", command=self.generate_fields, **self.button_style).pack(pady=5)
 
         self.input_frame = tk.Frame(self)
         self.input_frame.pack(pady=10)
 
-        tk.Button(self, text="Save Data", command=self.save_data).pack(pady=5)
-        tk.Button(self, text="Back", command=self.go_back).pack()
+        tk.Button(self, text="Save Data", command=self.save_data, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
 
-        tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn()).pack(pady=5)
-        tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis()).pack(pady=5)
+        tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn(),**self.button_style).pack(pady=5)
+        tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis(), **self.button_style).pack(pady=5)
         
 
     def generate_fields(self):
@@ -1248,21 +1276,19 @@ class RunAnalysisFrame(BaseFrame):
         self.data_store = DataStore()  # Singleton instance for data storage
 
         # Title
-        tk.Label(self, text="Run Analysis", font=("Arial", 14, "bold")).pack(pady=10)
+        tk.Label(self, text="Run Analysis", **self.title_style).pack(pady=10)
 
         # Progress Bar
         self.progress = ttk.Progressbar(self, orient="horizontal", length=300, mode="determinate")
         self.progress.pack(pady=10)
 
         # Buttons
-        tk.Button(self, text="Back", command=self.go_back).pack()
-
-        tk.Button(self, text="Refresh", command=self.update_labels).pack(pady=5)
-        tk.Button(self, text="Generate Cases", command=self.data_processor.casesBtn).pack(pady=5)
-        tk.Button(self, text="Run Analysis", command=self.run_analysis).pack(pady=5)
-        tk.Button(self, text="Save Data", command=self.data_store.save_data).pack(pady=5)
-        tk.Button(self, text="Load Data", command=self.load_data).pack(pady=5)
-
+        tk.Button(self, text="Refresh", command=self.update_labels, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Generate Cases", command=self.data_processor.casesBtn, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Run Analysis", command=self.run_analysis, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Save Data", command=self.data_store.save_data, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
         self.update_labels()
 
     def run_analysis(self):
@@ -1345,12 +1371,12 @@ class ReportFrame(BaseFrame):
         self.main_frame.pack(fill="both", expand=True)
 
         # Table Frame
-        self.table_frame = ttk.Frame(self.main_frame)
+        self.table_frame = tk.Frame(self.main_frame)
         self.table_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
         self.create_tkinter_table(self.table_frame)
 
         # Plot Frame
-        self.plot_frame = ttk.Frame(self.main_frame)
+        self.plot_frame = tk.Frame(self.main_frame)
         self.plot_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Matplotlib Figure
@@ -1366,7 +1392,7 @@ class ReportFrame(BaseFrame):
         self.update_plot()
 
         # Back Button
-        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
+        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack()
 
 
         if(self.analysis_data.get("bs_dimension_multi")):
@@ -1529,19 +1555,17 @@ def create_banner(parent, controller=None, go_back_callback=None, menu_callback=
 
     # Entry fields with placeholders
     entries = {}
-    labels = ["Project Name", "Client", "Designer"]
+    labels = ["Project Name", "client", "designer name"]
     start_x = 337 + 10
     spacing = 222
 
     for i, label_text in enumerate(labels):
         x = start_x + i * spacing
 
-        entry = tk.Entry(banner, bg="black", insertbackground="white",
-                         relief="flat", highlightthickness=1, highlightbackground="white")
-        entry.place(x=x, y=5, width=212, height=26)
-        add_placeholder(entry, label_text)
-
-        entries[label_text.lower()] = entry
+        label = tk.Label(banner, text="", bg="black", fg="white",
+                 relief="flat", anchor="w", padx=5)
+        label.place(x=x, y=5, width=212, height=26)
+        entries[label_text.lower()] = label
 
     return banner, entries
 
@@ -1580,7 +1604,7 @@ class App(tk.Tk):
         self.banner, self.banner_entries = create_banner(
             self.main_frame,
             self,
-            go_back_callback=lambda: self.show_frame("PreviousFrameName"),
+            go_back_callback=lambda: self.show_frame("go_back"),
             menu_callback=lambda: self.show_frame("NavigationFrame")
         )
 
