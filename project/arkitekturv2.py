@@ -775,12 +775,9 @@ class BaseFrame(tk.Frame):
         self.controller = controller
         self.data_store = DataStore()  # All frames share this instance
         self.button_style = {
-            "bg": "#E3C376",
-            "fg": "black",
-            "width": 30,
-            "height": 2,
-            "bd": 1,
-            "relief": "solid",
+            "bg": "#E3C376", "fg": "black",
+            "width": 30, "height": 2,
+            "bd": 1, "relief": "solid",
             "highlightbackground": "black",
             "font": ("Arial", 10, "bold"),
             "activebackground": "#d2b660"
@@ -804,39 +801,39 @@ class FindOptimalBsNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame")).pack()
-        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
-        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame")).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
-        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame")).pack()
-        tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti")).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         tk.Label(self.center_frame, text="Navigation", font=("Arial", 14, "bold")).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame")).pack()
-        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame")).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame")).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame")).pack()
-        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame")).pack()
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
+        tk.Button(self.center_frame, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.button_style).pack()
 
 # start frame
 class NavigationFrame(BaseFrame):
