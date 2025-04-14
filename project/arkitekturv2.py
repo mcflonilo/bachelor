@@ -42,6 +42,35 @@ class DataStore:
         """Save stored data to a JSON file."""
         project_name = self.parameters.get("project_info", {}).get("project_name", "default_project")
         default_filename = f"{project_name}_saved_data.json"
+        grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
+        self.data_store.parameters[self.data_group_name] = grouped_data
+
+        if hasattr(self.controller, "update_banner_info"):
+            self.controller.update_banner_info()
+        self.go_back()
+
+    def update_banner_info(self):
+        project_info = DataStore().get_parameter("project_info")
+
+    # Map keys in project_info to their respective label prefixes
+        key_to_prefix = {
+            "project name": "Project Name: ",
+            "client": "Client: ",
+            "designer name": "Designer: "
+        }
+
+    # Loop through the mapping and update labels safely
+        for key, prefix in key_to_prefix.items():
+        # Normalize keys to lowercase when accessing banner_entries
+            entry_key = key.lower()
+
+            if entry_key in self.banner_entries:
+                value = project_info.get(key, "")
+                label_widget = self.banner_entries[entry_key]
+
+            # Only update label if value is non-empty
+                if value:
+                    label_widget.config(text=f"{prefix}{value}")
 
         filename = filedialog.asksaveasfilename(
             initialfile=default_filename,
@@ -1015,7 +1044,7 @@ class RiserCapacitiesFrame(PlotFrame):
         super().__init__(parent, controller, "Riser Capacities", "riser_capacities_data")
 class ProjectInfoFrame(InputFrame):
     def __init__(self, parent, controller):
-        fields = ["Project Name", "client", "designer name"]
+        fields = ["Project name", "client", "designer name"]
         super().__init__(parent, controller, fields, "ProjectInfoFrame", "project_info")
 class RiserInfoFrame(InputFrame):
     def __init__(self, parent, controller):
@@ -1555,17 +1584,16 @@ def create_banner(parent, controller=None, go_back_callback=None, menu_callback=
 
     # Entry fields with placeholders
     entries = {}
-    labels = ["Project Name", "client", "designer name"]
+    labels = ["project name", "client", "designer name"]
     start_x = 337 + 10
     spacing = 222
 
-    for i, label_text in enumerate(labels):
+    for i, key in enumerate(labels):
         x = start_x + i * spacing
-
-        label = tk.Label(banner, text="", bg="black", fg="white",
-                 relief="flat", anchor="w", padx=5)
-        label.place(x=x, y=5, width=212, height=26)
-        entries[label_text.lower()] = label
+        entry = tk.Label(banner, bg="black", fg="white",
+                        text=f"{key.title()}: ", anchor="w", font=("Arial", 9))
+        entry.place(x=x, y=5, width=212, height=26)
+        entries[key] = entry
 
     return banner, entries
 
@@ -1608,6 +1636,12 @@ class App(tk.Tk):
             menu_callback=lambda: self.show_frame("NavigationFrame")
         )
 
+        self.banner_prefixes = {
+            "project name": "Project Name: ",
+            "client": "Client: ",
+            "designer": "Designer: "
+        }
+
         # Container for the pages (goes below the banner)
         self.container = tk.Frame(self.main_frame, width=1080, height=720, bg="#E3DFCF")
         self.container.pack(fill="both", expand=True)
@@ -1631,6 +1665,21 @@ class App(tk.Tk):
 
 
         self.show_frame("NavigationFrame")
+        def update_banner_info(self):
+            project_info = DataStore().get_parameter("project_info")
+
+            if "project name" in self.banner_entries:
+                self.banner_entries["project name"].config(
+                    text=f"Project Name: {project_info.get('Project Name', '')}"
+                )
+            if "client" in self.banner_entries:
+                self.banner_entries["client"].config(
+                    text=f"Client: {project_info.get('client', '')}"
+                )
+            if "designer" in self.banner_entries:
+                self.banner_entries["designer"].config(
+                    text=f"Designer: {project_info.get('designer name', '')}"
+                )
 
     def show_frame(self, frame_name):
         if self.current_frame:
