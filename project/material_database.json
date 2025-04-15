@@ -1,0 +1,15 @@
+{
+    "Penispumpe": {
+        "NMAT": 2,
+        "data": [
+            {
+                "strain": 1.0,
+                "stress": 2.0
+            },
+            {
+                "strain": 3.0,
+                "stress": 4.0
+            }
+        ]
+    }
+}

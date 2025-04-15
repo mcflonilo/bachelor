@@ -1060,25 +1060,46 @@ class createNewMaterialFrame:
         self.top = Toplevel(parent)
         self.top.title("Create New Material")
         self.top.geometry("500x600")
-        self.on_save = on_save
+        self.top.configure(bg="#E3DFCF")
+        self.top.iconbitmap("ultrabend_proposed_logo.ico")
 
+        self.on_save = on_save
         self.entries = {}
         self.dynamic_entries = []
 
-        tk.Label(self.top, text="Material identifier").pack(pady=5)
+        # === Reusable styles ===
+        label_style = {
+            "bg": "#E3DFCF",
+            "fg": "black",
+            "font": ("Arial", 10, "bold")
+        }
+        button_style = {
+            "bg": "#E3C376",
+            "fg": "black",
+            "bd": 1,
+            "relief": "solid",
+            "highlightbackground": "black",
+            "activebackground": "#d2b660",
+            "font": ("Arial", 10, "bold"),
+            "padx": 10,
+            "pady": 5
+        }
+
+        # === Static Fields ===
+        tk.Label(self.top, text="Material identifier", **label_style).pack(pady=(10, 3))
         self.entries["Material identifier "] = tk.Entry(self.top)
         self.entries["Material identifier "] .pack(pady=5)
 
-        tk.Label(self.top, text="Number of datapoints in stress/strain table").pack(pady=5)
+        tk.Label(self.top, text="Number of datapoints in stress/strain table", **label_style).pack(pady=(10, 3))
         self.entries["number of datapoints in stress/strain table"] = tk.Entry(self.top)
         self.entries["number of datapoints in stress/strain table"].pack(pady=5)
 
-        self.generate_button = tk.Button(self.top, text="Generate Fields", command=self.generate_datapoint_fields, **self.button_style)
+        self.generate_button = tk.Button(self.top, text="Generate Fields", command=self.generate_datapoint_fields, **button_style)
         self.generate_button.pack(pady=10)
 
-        # Scrollable canvas for dynamic entry fields
-        self.canvas = Canvas(self.top, height=300)
-        self.scrollable_frame = Frame(self.canvas)
+        # === Scrollable canvas ===
+        self.canvas = Canvas(self.top, height=300, bg="#E3DFCF", highlightthickness=0, bd=0)
+        self.scrollable_frame = Frame(self.canvas, bg="#E3DFCF")
         self.scrollbar = Scrollbar(self.top, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
@@ -1090,7 +1111,8 @@ class createNewMaterialFrame:
             "<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
 
-        self.submit_button = tk.Button(self.top, text="Submit", command=self.collect_material_data, **self.button_style)
+        # === Submit Button ===
+        self.submit_button = tk.Button(self.top, text="Submit", command=self.collect_material_data, **button_style)
         self.submit_button.pack(pady=10)
 
     def generate_datapoint_fields(self):
