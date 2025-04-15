@@ -784,18 +784,8 @@ class DataProcessor:
                 print(f"{bs_key}: {status}")
 
             return [bs for bs, status in all_bs_status.items() if status.startswith("✅")]
-
-
-
-
-
-            
-
         run_threads()
         check_results()
-
-
-    
 
 # Base Frame for all screens
 class BaseFrame(tk.Frame):
@@ -806,6 +796,14 @@ class BaseFrame(tk.Frame):
         self.button_style = {
             "bg": "#E3C376", "fg": "black",
             "width": 30, "height": 2,
+            "bd": 1, "relief": "solid",
+            "highlightbackground": "black",
+            "font": ("Arial", 10, "bold"),
+            "activebackground": "#d2b660"
+        }
+        self.sub_button_style = {
+            "bg": "#E3C376", "fg": "black",
+            "width": 20, "height": 2,
             "bd": 1, "relief": "solid",
             "highlightbackground": "black",
             "font": ("Arial", 10, "bold"),
@@ -843,6 +841,14 @@ class BaseFrame(tk.Frame):
             "padx": 5,
             "pady": 2
         }
+        self.label_plot_style = {
+            "bg": "#1D6F6E",
+            "fg": "white",
+            "font": ("Arial", 15, "bold"),
+            "anchor": "w",
+            "padx": 5,
+            "pady": 2
+        }
 
         self.center_frame = tk.Frame(self, bg=self["bg"])
         self.center_frame.place(relx=0.5, rely=0.30, anchor="center")
@@ -861,40 +867,37 @@ class BaseFrame(tk.Frame):
 class FindOptimalBsNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(110, 10))
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(110, 10))
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(0, 10))
-        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack()
-        tk.Button(self.center_frame, text="Back", command=self.go_back, **self.back_button_style).pack() ## redundant? om vi har back i banner
+        tk.Label(self.center_frame, text="Navigation", **self.title_style).pack(pady=(110, 10))
+        tk.Button(self.center_frame, text="Project Info", command=lambda: self.switch_to("ProjectInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Info", command=lambda: self.switch_to("RiserInfoFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
 
 # start frame
 class NavigationFrame(BaseFrame):
@@ -933,8 +936,7 @@ class InputFrame(BaseFrame):
             entry.pack()
             self.entries[field] = entry
 
-        tk.Button(self, text="Save data", command=self.save_data, **self.button_style).pack()
-        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
+        tk.Button(self, text="Save data", command=self.save_data, **self.sub_button_style).pack(pady=5)
 
     def save_data(self):
         grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
@@ -952,27 +954,26 @@ class PlotFrame(BaseFrame):
         super().__init__(parent, controller)
         self.data_key = data_key  # Unique key for storing data in DataStore
         
-        self.input_frame = tk.Frame(self)
+        self.input_frame = tk.Frame(self, bg="#1D6F6E", highlightbackground="black", highlightthickness=1)
         self.input_frame.pack(side="left", padx=10, pady=10)
-        self.plot_frame = tk.Frame(self)
+        self.plot_frame = tk.Frame(self, bg="#1D6F6E", highlightbackground="black", highlightthickness=1)
         self.plot_frame.pack(side="right", padx=10, pady=10)
 
         self.normal_rows = []
         self.abnormal_rows = []
 
         # Normal Operation Section
-        self.normal_section = tk.Frame(self.input_frame)
+        self.normal_section = tk.Frame(self.input_frame, bg="#1D6F6E")
         self.normal_section.pack(pady=10)
-        tk.Label(self.normal_section, text="Normal Operation", **self.label_style).pack()
-        tk.Button(self.normal_section, text="Add Row (Normal)", command=self.add_normal_row, **self.button_style).pack()
+        tk.Label(self.normal_section, text="Normal Operation", **self.label_plot_style).pack()
+        tk.Button(self.normal_section, text="Add Row (Normal)", command=self.add_normal_row, **self.sub_button_style).pack()
 
         # Abnormal Operation Section
-        self.abnormal_section = tk.Frame(self.input_frame)
+        self.abnormal_section = tk.Frame(self.input_frame, bg="#1D6F6E")
         self.abnormal_section.pack(pady=10)
-        tk.Label(self.abnormal_section, text="Abnormal Operation", **self.label_style).pack()
-        tk.Button(self.abnormal_section, text="Add Row (Abnormal)", command=self.add_abnormal_row, **self.button_style).pack()
-        tk.Button(self.input_frame, text="Plot Data", command=self.update_plot, **self.button_style).pack(pady=10)
-        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
+        tk.Label(self.abnormal_section, text="Abnormal Operation", **self.label_plot_style).pack()
+        tk.Button(self.abnormal_section, text="Add Row (Abnormal)", command=self.add_abnormal_row, **self.sub_button_style).pack()
+        tk.Button(self.input_frame, text="Plot Data", command=self.update_plot, **self.sub_button_style).pack(pady=10)
         self.figure, self.ax = plt.subplots(figsize=(6, 4))
         self.ax.set_title(title)
         self.ax.set_xlabel("Curvature [1/m]")
@@ -1010,9 +1011,9 @@ class PlotFrame(BaseFrame):
         abnormal_curvature, abnormal_tension = self.get_data(self.abnormal_rows)
 
         if normal_curvature and normal_tension:
-            self.ax.plot(normal_curvature, normal_tension, marker='o', label="Normal", color='blue')
+            self.ax.plot(normal_curvature, normal_tension, marker='o', label="Normal", color="#E3C376")
         if abnormal_curvature and abnormal_tension:
-            self.ax.plot(abnormal_curvature, abnormal_tension, marker='s', label="Abnormal", color='red')
+            self.ax.plot(abnormal_curvature, abnormal_tension, marker='s', label="Abnormal", color="#1D6F6E")
 
         self.ax.legend()
         self.canvas.draw()
@@ -1172,8 +1173,6 @@ class SelectMaterialFrame(BaseFrame):
 
         tk.Button(self, text="Load Material", command=self.load_selected_material, **self.button_style).pack(pady=10)
         tk.Button(self, text="Create New Material", command=self.create_new_material, **self.button_style).pack(pady=5)
-        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
-
 
     def create_new_material(self):
         """Opens a new window to create a new material."""
@@ -1250,8 +1249,6 @@ class BSDimensionsFrameMulti(BaseFrame):
         self.input_frame.pack(pady=10)
 
         tk.Button(self, text="Save Data", command=self.save_data, **self.button_style).pack(pady=5)
-        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
-
         tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn(),**self.button_style).pack(pady=5)
         tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis(), **self.button_style).pack(pady=5)
         
@@ -1317,7 +1314,6 @@ class RunAnalysisFrame(BaseFrame):
         tk.Button(self, text="Run Analysis", command=self.run_analysis, **self.button_style).pack(pady=5)
         tk.Button(self, text="Save Data", command=self.data_store.save_data, **self.button_style).pack(pady=5)
         tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
-        tk.Button(self, text="Back", command=self.go_back, **self.back_button_style).pack()
         self.update_labels()
 
     def run_analysis(self):
@@ -1382,17 +1378,14 @@ class RunAnalysisFrame(BaseFrame):
 class ReportFrame(BaseFrame):
     def __init__(self, parent, controller, analysis_data):
         super().__init__(parent, controller)
-
         self.controller = controller
         self.data_store = analysis_data  # Store received data
         self.analysis_data = analysis_data
-
         self.case = analysis_data.get("shortest_valid_result")
         self.capacities = analysis_data.get("riser_capacities")
         self.response = analysis_data.get("riser_response")
         self.threshold_normal = analysis_data.get("thresholds_normal")
         self.threshold_abnormal = analysis_data.get("thresholds_abnormal")
-
         self.normal_curves, self.abnormal_curves = self.getCurves(self.case)
 
         # Main container frame
@@ -1414,16 +1407,9 @@ class ReportFrame(BaseFrame):
         self.ax.set_xlabel("Curvature [1/m]")
         self.ax.set_ylabel("Tension [kN]")
         self.ax.grid(True)
-
         self.canvas = FigureCanvasTkAgg(self.figure, self.plot_frame)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
-
         self.update_plot()
-
-        # Back Button
-        tk.Button(self, text="Back", command=lambda: self.switch_to("NavigationFrame"), **self.back_button_style).pack()
-
-
         if(self.analysis_data.get("bs_dimension_multi")):
             self.generateCasesForMultipleBs()
 
@@ -1518,7 +1504,6 @@ class ReportFrame(BaseFrame):
 
         return normal_curves, abnormal_curves
 
-
     def extract_data(self, case_file):
         """Extracts key values from log files."""
         try:
@@ -1567,25 +1552,20 @@ def create_banner(parent, controller=None, go_back_callback=None, menu_callback=
     menu_btn.place(x=40, y=5, width=87, height=26)
 
     # BACK button
-    back_btn = tk.Button(banner, text="BACK", bg="black", fg="white",
-                         bd=1, relief="solid", highlightbackground="black",
-                         command=go_back_callback or (lambda: print("Back")))
+    back_btn = tk.Button(
+        banner, text="BACK", bg="black", fg="white",
+        bd=1, relief="solid", highlightbackground="black",
+        command=(lambda: controller.go_back()) if controller else (lambda: print("Back")))
     back_btn.place(x=135, y=5, width=87, height=26)
-
-    # OK button
-    ok_btn = tk.Button(banner, text="OK", bg="white", fg="black",
-                       bd=1, relief="solid", highlightbackground="black",
-                       command=lambda: print("OK"))
-    ok_btn.place(x=230, y=5, width=87, height=26)
 
     # Divider
     divider = tk.Frame(banner, bg="black", width=2, height=28)
-    divider.place(x=327 + 10, y=5)
+    divider.place(x=220 + 10, y=5)
 
     # Entry fields with placeholders
     entries = {}
     labels = ["project name", "client", "designer name"]
-    start_x = 337 + 10
+    start_x = 230 + 10
     spacing = 222
 
     for i, key in enumerate(labels):
@@ -1613,7 +1593,6 @@ def add_placeholder(entry_widget, placeholder_text, color="gray"):
 
     entry_widget.bind("<FocusIn>", on_focus_in)
     entry_widget.bind("<FocusOut>", on_focus_out)
-
 
 # Main App Controller
 class App(tk.Tk):
@@ -1680,6 +1659,11 @@ class App(tk.Tk):
                 self.banner_entries["designer"].config(
                     text=f"Designer: {project_info.get('designer name', '')}"
                 )
+    def go_back(self):
+        if self.current_frame:
+            current = self.frames[self.current_frame]
+            if hasattr(current, "previous_frame"):
+                self.show_frame(current.previous_frame)
 
     def show_frame(self, frame_name):
         if self.current_frame:
