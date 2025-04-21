@@ -1445,15 +1445,15 @@ class ReportFrame(BaseFrame):
 
         if self.capacities and self.response:
             # Capacities
-            self.ax.plot(self.capacities["normal"][0], self.capacities["normal"][1], marker='o', label="Normal Capacity", color='blue', linewidth=0.5, markersize=5)
-            self.ax.plot(self.capacities["abnormal"][0], self.capacities["abnormal"][1], marker='s', label="Abnormal Capacity", color='red', linewidth=0.5, markersize=5)
+            self.ax.plot(self.capacities["normal"][0], self.capacities["normal"][1], marker='o', label="Normal Capacity", color="#1D6F6E", linewidth=0.5, markersize=5)
+            self.ax.plot(self.capacities["abnormal"][0], self.capacities["abnormal"][1], marker='s', label="Abnormal Capacity", color="#E3C376", linewidth=0.5, markersize=5)
 
             # Response
             normal_curvature_resp = [float(curve["maximum_bs_curvature"]) for curve in self.normal_curves]
             abnormal_curvature_resp = [float(curve["maximum_bs_curvature"]) for curve in self.abnormal_curves]
 
-            self.ax.plot(normal_curvature_resp, self.response["normal"][1], marker='o', label="Normal Response", color='blue', linewidth=0.5, markersize=5, markerfacecolor='yellow')
-            self.ax.plot(abnormal_curvature_resp, self.response["abnormal"][1], marker='s', label="Abnormal Response", color='red', linewidth=0.5, markersize=5, markerfacecolor='yellow')
+            self.ax.plot(normal_curvature_resp, self.response["normal"][1], marker='o', label="Normal Response", color="#1D6F6E", linewidth=0.5, markersize=5, markerfacecolor='yellow')
+            self.ax.plot(abnormal_curvature_resp, self.response["abnormal"][1], marker='s', label="Abnormal Response", color="#E3C376", linewidth=0.5, markersize=5, markerfacecolor='yellow')
 
         self.ax.legend()
         self.canvas.draw()
