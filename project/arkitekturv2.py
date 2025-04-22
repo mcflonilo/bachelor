@@ -100,7 +100,6 @@ class DataStore:
                 self.set_parameter(key, value)
 
             print(f"Data loaded from {filename}")
-
 @dataclass
 class DataProcessor:
     _instance = None
@@ -212,7 +211,6 @@ class DataProcessor:
 
         tk.messagebox.showinfo("Case Files", f"Generated {casetotal} cases.")
 
-
     def generate_case_files_multi_BS_btn(self):
         length = round(float(self.data.get_parameter("riser_info")["riser length"]), 3)
         EA = round(float(self.data.get_parameter("riser_info")["axial stiffness"]), 3)
@@ -289,7 +287,6 @@ class DataProcessor:
                     total_cases += 1
 
         return total_cases
-
 
     def generate_case_files(self, length, EA, EI, GT, m, cases, ID, SL, OD, CL, TL, TOD, material_text_block, matID, label):
 
@@ -777,16 +774,16 @@ class DataProcessor:
                     all_bs_status[bs_key] = "✅ PASSED"
                 else:
                     all_bs_status[bs_key] = f"❌ FAILED – {failure_reason}"
+                
 
             # Print summary
             print("\n=== BS Configuration Results ===")
             for bs_key, status in all_bs_status.items():
                 print(f"{bs_key}: {status}")
-
+            self.data.set_parameter("bs_evaluation_summary", all_bs_status)
             return [bs for bs, status in all_bs_status.items() if status.startswith("✅")]
         run_threads()
         check_results()
-
 # Base Frame for all screens
 class BaseFrame(tk.Frame):
     def __init__(self, parent, controller):
@@ -863,7 +860,13 @@ class BaseFrame(tk.Frame):
     def switch_to(self, frame_name):
         self.controller.show_frame(frame_name)
 
-# Navigation Frame - design optimal BS frame
+    def load_data(self):
+        """Loads data and refreshes labels."""
+        self.data_store.load_data()
+    # Navigation Frame - design optimal BS frame
+    def set_analysis_mode(self, mode):
+        self.data_store.set_parameter("analysis_mode", mode)
+
 class FindOptimalBsNavFrame(BaseFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -874,7 +877,8 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("optimal_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
+        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -886,7 +890,8 @@ class CheckExistingBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack(pady=5)
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("check_Existing_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
+        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -897,8 +902,8 @@ class RunLoadCaseOnBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
-        tk.Button(self.center_frame, text="Run Analysis", command=lambda: self.switch_to("RunAnalysisFrame"), **self.button_style).pack(pady=5)
-
+        tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("optimal_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
+        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 # start frame
 class NavigationFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -919,8 +924,6 @@ class NavigationFrame(BaseFrame):
         tk.Button(center_frame, text="Design Optimal BS", command=lambda: self.switch_to("FindOptimalBsNavFrame"), **button_style).pack(pady=5)
         tk.Button(center_frame, text="Check Existing BS Designs", command=lambda: self.switch_to("CheckExistingBSNavFrame"), **button_style).pack(pady=5)
         tk.Button(center_frame, text="Run Load Cases on Existing BS", command=lambda: self.switch_to("RunLoadCaseOnBSNavFrame"), **button_style).pack(pady=5)
-
-
 # Generic Input Frame
 class InputFrame(BaseFrame):
     def __init__(self, parent, controller, fields, frame_name, data_group_name):
@@ -947,7 +950,6 @@ class InputFrame(BaseFrame):
             for key in grouped_data:
                 if key.lower() in banner_labels:
                     banner_labels[key.lower()].config(text=grouped_data[key])
-
 # Updated PlotFrame to handle normal and abnormal data
 class PlotFrame(BaseFrame):
     def __init__(self, parent, controller, title, data_key):
@@ -1043,18 +1045,22 @@ class RiserResponseFrame(PlotFrame):
 class RiserCapacitiesFrame(PlotFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, controller, "Riser Capacities", "riser_capacities_data")
+
 class ProjectInfoFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["Project name", "client", "designer name"]
         super().__init__(parent, controller, fields, "ProjectInfoFrame", "project_info")
+
 class RiserInfoFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["riser identification", "outer diameter", "outer diameter tolerance", "mass per unit length", "axial stiffness", "bending stiffness", "torsial stiffness", "riser length"]
         super().__init__(parent, controller, fields, "RiserInfoFrame", "riser_info")
+
 class BSDimensionsFrame(InputFrame):
     def __init__(self, parent, controller):
         fields = ["root length", "tip length", "min root outer diameter", "max root outer diameter", "min overall length", "max overall length", "clearance ", "increment width", "increment length"]
         super().__init__(parent, controller, fields, "BSDimensionsFrame", "bs_dimension")
+
 class createNewMaterialFrame:
     def __init__(self, parent, on_save=None):
         self.top = Toplevel(parent)
@@ -1220,7 +1226,7 @@ class SelectMaterialFrame(BaseFrame):
         if material_name in self.materials:
             self.data_store.set_parameter("selected_material", self.materials[material_name])
             self.data_store.set_parameter("material_identifier", material_name)
-            messagebox.showinfo("Success", f"Material '{material_name}' loaded successfully!")
+            self.go_back()  # Go back to previous frame
         else:
             messagebox.showerror("Error", "Please select a valid material.")
 
@@ -1251,8 +1257,6 @@ class SelectMaterialFrame(BaseFrame):
 
         # Store the formatted text in the DataStore for input file generation
         self.data_store.set_parameter("material_text_block", material_text)
-        messagebox.showinfo("Material Block Generated", "Formatted material block saved in DataStore.")
-
 
 class BSDimensionsFrameMulti(BaseFrame):
     def __init__(self, parent, controller):
@@ -1271,8 +1275,6 @@ class BSDimensionsFrameMulti(BaseFrame):
         self.input_frame.pack(pady=10)
 
         tk.Button(self, text="Save Data", command=self.save_data, **self.button_style).pack(pady=5)
-        tk.Button(self, text="Generate Cases", command=lambda:DataProcessor().generate_case_files_multi_BS_btn(),**self.button_style).pack(pady=5)
-        tk.Button(self, text="Run Analysis", command=lambda:DataProcessor().multithreadedAnalysis(), **self.button_style).pack(pady=5)
         
 
     def generate_fields(self):
@@ -1313,6 +1315,8 @@ class BSDimensionsFrameMulti(BaseFrame):
             bs_data.append(bs_entry)
 
         self.data_store.set_parameter("bs_dimension_multi", bs_data)
+        self.go_back()  # Go back to previous frame
+
         print("BS Dimensions Saved:", bs_data)  # Debugging
 
 class RunAnalysisFrame(BaseFrame):
@@ -1325,71 +1329,49 @@ class RunAnalysisFrame(BaseFrame):
 
         # Title
         tk.Label(self, text="Run Analysis", **self.title_style).pack(pady=10)
-
-        # Progress Bar
-        self.progress = ttk.Progressbar(self, orient="horizontal", length=300, mode="determinate")
-        self.progress.pack(pady=10)
-
         # Buttons
         tk.Button(self, text="Refresh", command=self.update_labels, **self.button_style).pack(pady=5)
         tk.Button(self, text="Generate Cases", command=self.data_processor.casesBtn, **self.button_style).pack(pady=5)
-        tk.Button(self, text="Run Analysis", command=self.run_analysis, **self.button_style).pack(pady=5)
+        tk.Button(self, text="Run Analysis", command=self.run_selected_analysis, **self.button_style).pack(pady=5)
         tk.Button(self, text="Save Data", command=self.data_store.save_data, **self.button_style).pack(pady=5)
         tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
         self.update_labels()
 
-    def run_analysis(self):
-        """Runs analysis in a separate thread and updates the progress bar."""
-        self.progress["value"] = 0  # Reset progress bar
-        thread = threading.Thread(target=self.analysis_task, daemon=True)
-        thread.start()
+    def run_selected_analysis(self):
+        mode = self.data_store.get_parameter("analysis_mode")
+        if mode == "optimal_bs":
+            self.data_processor.casesBtn()
+            self.data_processor.loadBSCases("bsengine-cases-normal.txt")
+            analysis_data = self.data_store.parameters
+            if "ReportFrame" in self.controller.frames:
+                del self.controller.frames["ReportFrame"]
+            report_frame = ReportFrame(self.controller.container, self.controller, analysis_data)
+            self.controller.frames["ReportFrame"] = report_frame
+            report_frame.grid(row=0, column=0, sticky="nsew")
+            self.controller.show_frame("ReportFrame")
+        
+        elif mode == "check_Existing_bs":
+            self.data_processor.generate_case_files_multi_BS_btn()
+            self.data_processor.multithreadedAnalysis()
+            analysis_data = self.data_store.parameters
+            if "ReportFrame" in self.controller.frames:
+                del self.controller.frames["ReportFrame"]
+            report_frame = ReportFrame(self.controller.container, self.controller, analysis_data)
+            self.controller.frames["ReportFrame"] = report_frame
+            report_frame.grid(row=0, column=0, sticky="nsew")
+            self.controller.show_frame("ReportFrame")
+            
 
-    def analysis_task(self):
-        """Performs analysis and updates progress safely."""
-        total_steps = 10  # Simulated steps for progress (increase if needed)
-
-        for i in range(total_steps):
-            time.sleep(0.2)  # Simulate processing
-            self.controller.after(0, self.update_progress, i + 1, total_steps)  # Update progress in main thread
-
-        # Run actual analysis **in the main thread**
-        self.controller.after(0, self.run_analysis_main_thread)
-
-    def run_analysis_main_thread(self):
-        """Runs the analysis on the main thread and ensures ReportFrame is shown."""
-        self.data_processor.loadBSCases("bsengine-cases-normal.txt")  # Now safely runs in the main thread
-
-        # Retrieve updated analysis data
-        analysis_data = self.data_store.parameters
-
-        # **Always create a new ReportFrame to ensure fresh data**
-        if "ReportFrame" in self.controller.frames:
-            del self.controller.frames["ReportFrame"]  # Remove old frame
-
-        # Create new ReportFrame with updated data
-        report_frame = ReportFrame(self.controller.container, self.controller, analysis_data)
-        self.controller.frames["ReportFrame"] = report_frame
-
-        # **Add it to the Tkinter grid properly**
-        report_frame.grid(row=0, column=0, sticky="nsew")
-
-        # **Switch to ReportFrame**
-        self.controller.show_frame("ReportFrame")
-
-    def update_progress(self, value, max_value):
-        """Updates the progress bar safely in the main thread."""
-        self.progress["value"] = (value / max_value) * 100
-        self.progress.update_idletasks()
 
     def load_data(self):
         """Loads data and refreshes labels."""
         self.data_store.load_data()
-        self.update_labels()  # Refresh UI after loading
+        self.update_labels()
 
     def update_labels(self):
         """Updates displayed labels with stored parameters."""
         for label in self.labels.values():
-            label.destroy()  # Remove old labels
+            label.destroy()
         self.labels.clear()
 
         for key, value in self.data_store.parameters.items():
@@ -1397,33 +1379,55 @@ class RunAnalysisFrame(BaseFrame):
             label.pack()
             self.labels[key] = label
 
+
 class ReportFrame(BaseFrame):
     def __init__(self, parent, controller, analysis_data):
         super().__init__(parent, controller)
         self.controller = controller
-        self.data_store = analysis_data  # Store received data
+        self.data_store = analysis_data
         self.analysis_data = analysis_data
-        self.case = analysis_data.get("shortest_valid_result")
-        self.capacities = analysis_data.get("riser_capacities")
-        self.response = analysis_data.get("riser_response")
-        self.threshold_normal = analysis_data.get("thresholds_normal")
-        self.threshold_abnormal = analysis_data.get("thresholds_abnormal")
-        self.normal_curves, self.abnormal_curves = self.getCurves(self.case)
 
-        # Main container frame
+        # Mode detection
+        self.mode = self.data_store.get("analysis_mode", "unknown")
+
+        # Main layout
         self.main_frame = tk.Frame(self)
         self.main_frame.pack(fill="both", expand=True)
 
-        # Table Frame
+        # Left: Table
         self.table_frame = tk.Frame(self.main_frame)
         self.table_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
-        self.create_tkinter_table(self.table_frame)
 
-        # Plot Frame
-        self.plot_frame = tk.Frame(self.main_frame)
+        # Choose table based on mode
+        if self.mode == "check_Existing_bs":
+            self.create_multibs_result_table(self.table_frame)
+        elif self.mode == "optimal_bs":
+            print(analysis_data.get("shortest_valid_result"))
+            self.createBsResultView(analysis_data.get("shortest_valid_result"))
+
+
+    def createBsResultView(self, case):
+        # Data needed for plotting (only relevant for optimal BS analysis)
+        self.case = case
+        self.capacities = self.analysis_data.get("riser_capacities")
+        self.response = self.analysis_data.get("riser_response")
+        self.threshold_normal = self.analysis_data.get("thresholds_normal")
+        self.threshold_abnormal = self.analysis_data.get("thresholds_abnormal")
+
+        # Try to extract curves if applicable
+        if self.case is not None and not self.case.empty:
+            try:
+                self.normal_curves, self.abnormal_curves = self.getCurves(self.case)
+            except Exception as e:
+                print(f"Failed to get curves: {e}")
+                self.normal_curves, self.abnormal_curves = [], []
+        else:
+            self.normal_curves, self.abnormal_curves = [], []
+        self.create_tkinter_table(self.table_frame)
+        # Right: Plot (only show if relevant)
+        self.plot_frame = tk.Frame(self.main_frame)            
         self.plot_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
-        # Matplotlib Figure
         self.figure, self.ax = plt.subplots(figsize=(6, 6))
         self.ax.set_title("Tension vs. Curvature")
         self.ax.set_xlabel("Curvature [1/m]")
@@ -1431,119 +1435,155 @@ class ReportFrame(BaseFrame):
         self.ax.grid(True)
         self.canvas = FigureCanvasTkAgg(self.figure, self.plot_frame)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
-        self.update_plot()
-        if(self.analysis_data.get("bs_dimension_multi")):
-            self.generateCasesForMultipleBs()
+        self.update_plot()  # Initial plot update
+    
+    def create_table(self, parent, title, columns, values):
+        label = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
+        label.pack(anchor="w", pady=5)
+
+        tree = ttk.Treeview(parent, columns=columns, show="headings", height=min(10, len(values)))
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=150, anchor="center")
+
+        for val in values:
+            tree.insert("", "end", values=val)
+
+        tree.pack(fill="both", expand=True, pady=5)
+
+    def create_tkinter_table(self, frame):
+        data = self.analysis_data
+
+        self.create_table(frame, "Project Information", ["Field", "Value"], data.get("project_info", {}).items())
+        self.create_table(frame, "Riser Information", ["Field", "Value"], data.get("riser_info", {}).items())
+        self.create_table(frame, "BS Dimensions", ["Field", "Value"], data.get("bs_dimension", {}).items())
+
+        if "bs_material" in data:
+            material_data = [
+                (section, mat["material_characteristics"], mat["elastic_modules"])
+                for section, mat in data["bs_material"].items()
+            ]
+            self.create_table(frame, "BS Material", ["Section", "Material", "Elastic Modules"], material_data)
+
+        if self.mode in ["optimal_bs", "multi_bs"]:
+            self.render_threshold_tables(frame)
+
+    def render_threshold_tables(self, frame):
+        if not self.normal_curves or not self.abnormal_curves:
+            return
+
+        normal_data = [
+            (
+                i + 1,
+                round(self.response["normal"][1][i], 5),
+                round(self.response["normal"][0][i], 5),
+                round(self.threshold_normal[f"case_files\\Case-normal{i+1}"]["maximum_curvature"], 5),
+                round(float(self.normal_curves[i]["maximum_curvature"]), 5)
+            )
+            for i in range(len(self.normal_curves))
+        ]
+        self.create_table(frame, "Threshold Normal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], normal_data)
+
+        abnormal_data = [
+            (
+                i + 1,
+                round(self.response["abnormal"][1][i], 5),
+                round(self.response["abnormal"][0][i], 5),
+                round(self.threshold_abnormal[f"case_files\\Case-abnormal{i+1}"]["maximum_curvature"], 5),
+                round(float(self.abnormal_curves[i]["maximum_curvature"]), 5)
+            )
+            for i in range(len(self.abnormal_curves))
+        ]
+        self.create_table(frame, "Threshold Abnormal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], abnormal_data)
+   
+    def create_multibs_result_table(self, frame):
+        """Displays the pass/fail status of all BS configurations in a table."""
+        results = self.analysis_data.get("bs_evaluation_summary", {})
+
+        label = tk.Label(frame, text="BS Configuration Results", font=("Arial", 12, "bold"), anchor="w")
+        label.pack(anchor="w", pady=5)
+
+        tree = ttk.Treeview(frame, columns=["BS Configuration", "Status"], show="headings", height=min(20, len(results)))
+        tree.heading("BS Configuration", text="BS Configuration")
+        tree.heading("Status", text="Status")
+        tree.column("BS Configuration", width=400, anchor="w")
+        tree.column("Status", width=150, anchor="center")
+
+        for bs_key, status in results.items():
+            tree.insert("", "end", values=(bs_key, status))
+
+        tree.pack(fill="both", expand=True, padx=10, pady=5)
 
     def update_plot(self):
-        """Update the plot with the data from DataStore."""
         self.ax.clear()
         self.ax.set_title(f"BS Response at NO and AO Loads for case:\n {self.case}")
         self.ax.set_xlabel("Curvature [1/m]")
         self.ax.set_ylabel("Tension [kN]")
         self.ax.grid(True)
 
-        if self.capacities and self.response:
-            # Capacities
+        if self.capacities and self.response and self.normal_curves and self.abnormal_curves:
+            normal_curvature_resp = [float(c["maximum_bs_curvature"]) for c in self.normal_curves if c]
+            abnormal_curvature_resp = [float(c["maximum_bs_curvature"]) for c in self.abnormal_curves if c]
+            print("Normal curves:", self.normal_curves)
+            print("Abnormal curves:", self.abnormal_curves)
+
+
+            if len(normal_curvature_resp) == len(self.response["normal"][1]):
+                self.ax.plot(normal_curvature_resp, self.response["normal"][1], marker='o', label="Normal Response", color="#1D6F6E", linewidth=0.5, markersize=5, markerfacecolor='yellow')
+            
+            if len(abnormal_curvature_resp) == len(self.response["abnormal"][1]):
+                self.ax.plot(abnormal_curvature_resp, self.response["abnormal"][1], marker='s', label="Abnormal Response", color="#E3C376", linewidth=0.5, markersize=5, markerfacecolor='yellow')
+
             self.ax.plot(self.capacities["normal"][0], self.capacities["normal"][1], marker='o', label="Normal Capacity", color="#1D6F6E", linewidth=0.5, markersize=5)
             self.ax.plot(self.capacities["abnormal"][0], self.capacities["abnormal"][1], marker='s', label="Abnormal Capacity", color="#E3C376", linewidth=0.5, markersize=5)
 
-            # Response
-            normal_curvature_resp = [float(curve["maximum_bs_curvature"]) for curve in self.normal_curves]
-            abnormal_curvature_resp = [float(curve["maximum_bs_curvature"]) for curve in self.abnormal_curves]
-
-            self.ax.plot(normal_curvature_resp, self.response["normal"][1], marker='o', label="Normal Response", color="#1D6F6E", linewidth=0.5, markersize=5, markerfacecolor='yellow')
-            self.ax.plot(abnormal_curvature_resp, self.response["abnormal"][1], marker='s', label="Abnormal Response", color="#E3C376", linewidth=0.5, markersize=5, markerfacecolor='yellow')
+        else:
+            self.ax.set_title("No valid curve data available.")
 
         self.ax.legend()
         self.canvas.draw()
 
-    def create_tkinter_table(self, frame):
-        """Creates tables inside a Tkinter frame using Treeview to display stored data."""
-        
-        def create_table(parent, title, columns, values):
-            """Helper function to create and pack a table."""
-            label = tk.Label(parent, text=title, font=("Arial", 12, "bold"), anchor="w")
-            label.pack(anchor="w", pady=5)
-
-            tree = ttk.Treeview(parent, columns=columns, show="headings", height=min(10, len(values)))
-                
-            for col in columns:
-                tree.heading(col, text=col)
-                tree.column(col, width=150, anchor="center")
-
-            for val in values:
-                tree.insert("", "end", values=val)
-
-            tree.pack(fill="both", expand=True, pady=5)
-
-        # Retrieve data from DataStore
-        data = self.analysis_data
-
-        # Create tables
-        create_table(frame, "Project Information", ["Field", "Value"], data["project_info"].items())
-        create_table(frame, "Riser Information", ["Field", "Value"], data["riser_info"].items())
-        create_table(frame, "BS Dimensions", ["Field", "Value"], data["bs_dimension"].items())
-
-        material_data = [(section, material["material_characteristics"], material["elastic_modules"]) for section, material in data["bs_material"].items()]
-        create_table(frame, "BS Material", ["Section", "Material", "Elastic Modules"], material_data)
-
-        # Threshold Normal
-        threshold_normal_data = [
-            (i+1, round(self.response["normal"][1][i], 5), round(self.response["normal"][0][i], 5), round(threshold[1]["maximum_curvature"], 5), round(float(self.normal_curves[i]["maximum_curvature"]), 5))
-            for i, threshold in enumerate(self.threshold_normal.items())
-        ]
-        create_table(frame, "Threshold Normal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], threshold_normal_data)
-
-        # Threshold Abnormal
-        threshold_abnormal_data = [
-            (i+1, round(self.response["abnormal"][1][i], 5), round(self.response["abnormal"][0][i], 5), round(threshold[1]["maximum_curvature"], 5), round(float(self.abnormal_curves[i]["maximum_curvature"]), 5))
-            for i, threshold in enumerate(self.threshold_abnormal.items())
-        ]
-        create_table(frame, "Threshold Abnormal", ["Case", "Tension", "Angle", "Threshold", "Max Curvature"], threshold_abnormal_data)
 
     def getCurves(self, case):
         """Extract curves from log files based on case name."""
         if isinstance(case, pd.Series):  
-            case = case["case_name"]  # Extract the string from the 'case_name' column
+            case = case["case_name"]
 
-        case = str(case)  # Ensure it is a string
+        case = str(case)
         noOfCases = len(self.response['normal'][0])
+        mat = self.data_store.get("material_identifier")
 
         try:
-            length, width = map(float, case.split('-')[2:4])  # Extract numeric values
+            length, width = map(float, case.split('-')[2:4])
         except (IndexError, ValueError):
-            raise ValueError(f"Invalid case format: {case}")  # Handle errors gracefully
+            raise ValueError(f"Invalid case format: {case}")
 
         normal_curves = [
-            self.extract_data(f"case_files/Case-normal{i}-{length}-{width}-60D_30.log")
+            self.extract_data(f"case_files/Case-normal{i}-{length}-{width}-{mat}.log")
             for i in range(1, noOfCases + 1)
         ]
         abnormal_curves = [
-            self.extract_data(f"case_files/Case-abnormal{i}-{length}-{width}-60D_30.log")
+            self.extract_data(f"case_files/Case-abnormal{i}-{length}-{width}-{mat}.log")
             for i in range(1, noOfCases + 1)
         ]
 
         return normal_curves, abnormal_curves
 
     def extract_data(self, case_file):
-        """Extracts key values from log files."""
         try:
             with open(case_file, 'r') as res_file:
                 res_lines = res_file.readlines()
-            
-            keyres1 = keyres2 = None
             for line in res_lines:
                 if "Maximum BS curvature" in line:
-                    keyres1 = line.strip().split(':')[-1].strip()
+                    max_bs = line.strip().split(":")[-1].strip()
                 if "Maximum curvature" in line:
-                    keyres2 = line.strip().split(':')[-1].strip()
+                    max_c = line.strip().split(":")[-1].strip()
+            return {"maximum_bs_curvature": max_bs, "maximum_curvature": max_c}
+        except Exception as e:
+            print(f"Error reading {case_file}: {e}")
+            return None
 
-            if keyres1 and keyres2:
-                return {"case_name": case_file.rstrip('.log'), "maximum_bs_curvature": keyres1, "maximum_curvature": keyres2}
-        except FileNotFoundError:
-            print(f"File not found: {case_file}")
-        return None
+
     
 
 def create_banner(parent, controller=None, go_back_callback=None, menu_callback=None):
