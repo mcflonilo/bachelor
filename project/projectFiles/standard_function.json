@@ -1,6 +1,7 @@
 {
+    "analysis_mode": "optimal_bs",
     "project_info": {
-        "Project Name": "episkb\u00f8ystiver",
+        "Project name": "episkb\u00f8ystiver",
         "client": "knut ivar",
         "designer name": "lars opheim"
     },

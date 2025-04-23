@@ -39,50 +39,28 @@ class DataStore:
     def print_parameters(self):
         print(self.parameters)
     def save_data(self):
-        """Save stored data to a JSON file."""
-        project_name = self.parameters.get("project_info", {}).get("project_name", "default_project")
+        """Save all stored parameters to a JSON file."""
+        # Try to get project name for default filename
+        project_info = self.parameters.get("project_info", {})
+        project_name = project_info.get("project name", "default_project")
         default_filename = f"{project_name}_saved_data.json"
-        grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
-        self.data_store.parameters[self.data_group_name] = grouped_data
 
-        if hasattr(self.controller, "update_banner_info"):
-            self.controller.update_banner_info()
-        self.go_back()
-
-    def update_banner_info(self):
-        project_info = DataStore().get_parameter("project_info")
-
-    # Map keys in project_info to their respective label prefixes
-        key_to_prefix = {
-            "project name": "Project Name: ",
-            "client": "Client: ",
-            "designer name": "Designer: "
-        }
-
-    # Loop through the mapping and update labels safely
-        for key, prefix in key_to_prefix.items():
-        # Normalize keys to lowercase when accessing banner_entries
-            entry_key = key.lower()
-
-            if entry_key in self.banner_entries:
-                value = project_info.get(key, "")
-                label_widget = self.banner_entries[entry_key]
-
-            # Only update label if value is non-empty
-                if value:
-                    label_widget.config(text=f"{prefix}{value}")
-
+        # Ask user where to save the file
         filename = filedialog.asksaveasfilename(
             initialfile=default_filename,
             defaultextension=".json",
             filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
-            title="Save file"
+            title="Save Project Data"
         )
 
-        
-        with open(filename, "w") as file:
-            json.dump(self.parameters, file, indent=4)
-        print(f"Data saved to {filename}")
+        if filename:
+            try:
+                with open(filename, "w") as file:
+                    json.dump(self.parameters, file, indent=4)
+                print(f"✅ Data saved to {filename}")
+            except Exception as e:
+                print(f"❌ Failed to save data: {e}")
+
 
     def load_data(self):
         """Load data from a JSON file into the datastore."""
@@ -98,6 +76,7 @@ class DataStore:
             # Update the stored parameters with loaded data
             for key, value in data.items():
                 self.set_parameter(key, value)
+
 
             print(f"Data loaded from {filename}")
 @dataclass
@@ -942,14 +921,18 @@ class InputFrame(BaseFrame):
         tk.Button(self, text="Save data", command=self.save_data, **self.sub_button_style).pack(pady=5)
 
     def save_data(self):
-        grouped_data = {field: entry.get() for field, entry in self.entries.items()}  
-        self.data_store.parameters[self.data_group_name] = grouped_data  # Store under group
+        grouped_data = {field: entry.get() for field, entry in self.entries.items()}
+        self.data_store.parameters[self.data_group_name] = grouped_data
         self.go_back()  # Go back to previous frame
+
+        print(f"project info saved {self.data_store.get_parameter("project_info")}")
+
+        # ✅ Let the App handle banner update if it's project info
         if self.frame_name == "ProjectInfoFrame":
-            banner_labels = self.controller.banner_entries
-            for key in grouped_data:
-                if key.lower() in banner_labels:
-                    banner_labels[key.lower()].config(text=grouped_data[key])
+            print("Project info saved.")
+            if hasattr(self.controller, "update_banner_info"):
+                self.controller.update_banner_info()
+
 # Updated PlotFrame to handle normal and abnormal data
 class PlotFrame(BaseFrame):
     def __init__(self, parent, controller, title, data_key):
@@ -1067,7 +1050,7 @@ class createNewMaterialFrame:
         self.top.title("Create New Material")
         self.top.geometry("500x600")
         self.top.configure(bg="#E3DFCF")
-        self.top.iconbitmap("ultrabend_proposed_logo.ico")
+        self.top.iconbitmap(resource_path("ultrabend_proposed_logo.ico"))
 
         self.on_save = on_save
         self.entries = {}
@@ -1167,7 +1150,7 @@ class createNewMaterialFrame:
                 messagebox.showerror("Error", "Please enter valid numbers for all datapoints")
                 return
 
-        db_path = "material_database.json"
+        db_path = resource_path("materials/material_database.json")
         if os.path.exists(db_path):
             with open(db_path, "r") as file:
                 material_db = json.load(file)
@@ -1207,7 +1190,7 @@ class SelectMaterialFrame(BaseFrame):
         self.new_material_window = createNewMaterialFrame(self, on_save=self.refresh_dropdown)
 
     def load_materials(self):
-        db_path = "materials/material_database.json"
+        db_path = resource_path("materials/material_database.json")
         if os.path.exists(db_path):
             with open(db_path, "r") as file:
                 return json.load(file)
@@ -1360,12 +1343,12 @@ class RunAnalysisFrame(BaseFrame):
             self.controller.frames["ReportFrame"] = report_frame
             report_frame.grid(row=0, column=0, sticky="nsew")
             self.controller.show_frame("ReportFrame")
-            
-
 
     def load_data(self):
         """Loads data and refreshes labels."""
         self.data_store.load_data()
+        self.controller.update_banner_info()
+
         self.update_labels()
 
     def update_labels(self):
@@ -1378,7 +1361,6 @@ class RunAnalysisFrame(BaseFrame):
             label = tk.Label(self, text=f"{key}: {value}")
             label.pack()
             self.labels[key] = label
-
 
 class ReportFrame(BaseFrame):
     def __init__(self, parent, controller, analysis_data):
@@ -1598,7 +1580,7 @@ def create_banner(parent, controller=None, go_back_callback=None, menu_callback=
 
     # Logo as image (PNG)
     try:
-        logo_image = tk.PhotoImage(file="logo.png")  # <-- update path if needed
+        logo_image = tk.PhotoImage(file=resource_path("logo.png"))  # <-- update path if needed
         logo = tk.Label(banner, image=logo_image, bg=banner_color)
         logo.image = logo_image  # prevent garbage collection
     except Exception as e:
@@ -1626,7 +1608,7 @@ def create_banner(parent, controller=None, go_back_callback=None, menu_callback=
 
     # Entry fields with placeholders
     entries = {}
-    labels = ["project name", "client", "designer name"]
+    labels = ["Project name", "Client", "Designer name"]
     start_x = 230 + 10
     spacing = 222
 
@@ -1659,17 +1641,24 @@ def add_placeholder(entry_widget, placeholder_text, color="gray"):
 # Main App Controller
 class App(tk.Tk):
     def __init__(self):
-        super().__init__()
+        super().__init__()  # ✅ First line in __init__
+        self.data_store = DataStore()
         self.title("BS Ultradeep")
         self.geometry("1080x720")
-        self.iconbitmap("ultrabend_proposed_logo.ico")
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
-        # NEW master layout frame
+        
+
+        try:
+            self.iconbitmap(resource_path("ultrabend_proposed_logo.ico"))
+        except tk.TclError:
+            print("⚠️ Icon failed to load — continuing without it.")
+
+
+        # Now continue as before...
         self.main_frame = tk.Frame(self)
         self.main_frame.pack(fill="both", expand=True)
 
-        # Banner goes at the top of main_frame
         self.banner, self.banner_entries = create_banner(
             self.main_frame,
             self,
@@ -1683,7 +1672,6 @@ class App(tk.Tk):
             "designer": "Designer: "
         }
 
-        # Container for the pages (goes below the banner)
         self.container = tk.Frame(self.main_frame, width=1080, height=720, bg="#E3DFCF")
         self.container.pack(fill="both", expand=True)
 
@@ -1704,23 +1692,8 @@ class App(tk.Tk):
             self.container.grid_rowconfigure(0, weight=1)
             self.container.grid_columnconfigure(0, weight=1)
 
-
         self.show_frame("NavigationFrame")
-        def update_banner_info(self):
-            project_info = DataStore().get_parameter("project_info")
 
-            if "project name" in self.banner_entries:
-                self.banner_entries["project name"].config(
-                    text=f"Project Name: {project_info.get('Project Name', '')}"
-                )
-            if "client" in self.banner_entries:
-                self.banner_entries["client"].config(
-                    text=f"Client: {project_info.get('client', '')}"
-                )
-            if "designer" in self.banner_entries:
-                self.banner_entries["designer"].config(
-                    text=f"Designer: {project_info.get('designer name', '')}"
-                )
     def go_back(self):
         if self.current_frame:
             current = self.frames[self.current_frame]
@@ -1733,7 +1706,42 @@ class App(tk.Tk):
         self.frames[frame_name].tkraise()
         self.current_frame = frame_name
 
+    def update_banner_info(self):
+        print("Updating banner info...")
+        project_info = self.data_store.get_parameter("project_info")
+        print("Project info:", project_info)
+        if isinstance(project_info, str):
+            try:
+                project_info = json.loads(project_info)  # In case it was saved as a JSON string
+            except Exception:
+                project_info = {}  # Fallback
+        
+
+        if "Project name" in self.banner_entries:
+            self.banner_entries["Project name"].config(
+                text=f"Project Name: {project_info.get('Project name', '')}"
+            )
+        if "Client" in self.banner_entries:
+            self.banner_entries["Client"].config(
+                text=f"Client: {project_info.get('client', '')}"
+            )
+        if "Designer name" in self.banner_entries:
+            self.banner_entries["Designer name"].config(
+                text=f"Designer: {project_info.get('designer name', '')}"
+            )
+
+
+
+def resource_path(relative_path):
+            """ Get absolute path to resource, works for dev and for PyInstaller """
+            try:
+                base_path = sys._MEIPASS  # PyInstaller sets this at runtime
+            except Exception:
+                base_path = os.path.abspath(".")
+
+            return os.path.join(base_path, relative_path)
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-    app.destroy()  # Close the app properly
+    app.destroy()

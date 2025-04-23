@@ -291,5 +291,6 @@
         "case_files\\Case-abnormal7": {
             "maximum_curvature": 0.07156428571428572
         }
-    }
+    },
+    "analysis_mode": "check_Existing_bs"
 }
