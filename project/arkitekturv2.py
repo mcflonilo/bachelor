@@ -932,7 +932,6 @@ class InputFrame(BaseFrame):
             print("Project info saved.")
             if hasattr(self.controller, "update_banner_info"):
                 self.controller.update_banner_info()
-
 # Updated PlotFrame to handle normal and abnormal data
 class PlotFrame(BaseFrame):
     def __init__(self, parent, controller, title, data_key):
@@ -1565,9 +1564,6 @@ class ReportFrame(BaseFrame):
             print(f"Error reading {case_file}: {e}")
             return None
 
-
-    
-
 def create_banner(parent, controller=None, go_back_callback=None, menu_callback=None):
     banner_color = "#1D6F6E"
     banner = tk.Frame(parent, height=37, bg=banner_color)
@@ -1637,7 +1633,6 @@ def add_placeholder(entry_widget, placeholder_text, color="gray"):
 
     entry_widget.bind("<FocusIn>", on_focus_in)
     entry_widget.bind("<FocusOut>", on_focus_out)
-
 # Main App Controller
 class App(tk.Tk):
     def __init__(self):
@@ -1729,8 +1724,6 @@ class App(tk.Tk):
             self.banner_entries["Designer name"].config(
                 text=f"Designer: {project_info.get('designer name', '')}"
             )
-
-
 
 def resource_path(relative_path):
             """ Get absolute path to resource, works for dev and for PyInstaller """
