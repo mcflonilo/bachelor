@@ -857,7 +857,7 @@ class FindOptimalBsNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("optimal_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
-        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 
 class CheckExistingBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -870,7 +870,7 @@ class CheckExistingBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="BS Material", command=lambda: self.switch_to("SelectMaterialFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("check_Existing_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
-        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 
 class RunLoadCaseOnBSNavFrame(BaseFrame):
     def __init__(self, parent, controller):
@@ -881,8 +881,9 @@ class RunLoadCaseOnBSNavFrame(BaseFrame):
         tk.Button(self.center_frame, text="BS Dimensions", command=lambda: self.switch_to("BSDimensionsFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="Riser Response", command=lambda: self.switch_to("RiserResponseFrame"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame, text="Riser Capacities", command=lambda: self.switch_to("RiserCapacitiesFrame"), **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="BS designs", command=lambda: self.switch_to("BSDimensionsFrameMulti"), **self.button_style).pack(pady=5)
         tk.Button(self.center_frame,text="Run Analysis",command=lambda: [self.set_analysis_mode("optimal_bs"), self.switch_to("RunAnalysisFrame")],**self.button_style).pack(pady=5)
-        tk.Button(self, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
+        tk.Button(self.center_frame, text="Load Data", command=self.load_data, **self.button_style).pack(pady=5)
 # start frame
 class NavigationFrame(BaseFrame):
     def __init__(self, parent, controller):
