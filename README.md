@@ -10,3 +10,14 @@ Ting som må installeres for å kjøre programmet/ting for requirements.txt
 - matplotlib
 - scipy
 - pandas
+(lage en requirements.txt for quick-install?)
+
+
+
+TODO:
+- Fikse runde hjørner for knapper og div.
+- spacing på knapper for meny
+- fikse back-funksjonen på backknapp i banner
+- funksjonalitet for ok knapp
+- Gi inputfields i banner en funksjon
+- Div rundt content
