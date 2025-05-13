@@ -1156,6 +1156,7 @@ class createNewMaterialFrame:
                 material_db = json.load(file)
         else:
             material_db = {}
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
         material_db[material_id] = {
             "NMAT": num_points,
